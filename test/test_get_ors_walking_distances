@@ -1,0 +1,43 @@
+interactions:
+- request:
+    body: '{"coordinates": [[8.773, 49.376], [8.773085, 49.376161]], "geometry": false}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-type:
+      - application/json
+      User-Agent:
+      - ORSClientPython.v2.2.2
+    method: POST
+    uri: http://localhost:8080/ors/v2/directions/foot-walking/json
+  response:
+    body:
+      string: "{\"bbox\":[8.772967,49.376011,8.773085,49.376161],\"routes\":[{\"summary\":{\"distance\":18.8,\"duration\":13.5},\"segments\":[{\"distance\":18.8,\"duration\":13.5,\"steps\":[{\"distance\":18.8,\"duration\":13.5,\"type\":11,\"instruction\":\"Head
+        northeast on Schulstra\xDFe\",\"name\":\"Schulstra\xDFe\",\"way_points\":[0,1]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Schulstra\xDFe, straight ahead\",\"name\":\"-\",\"way_points\":[1,1]}]}],\"bbox\":[8.772967,49.376011,8.773085,49.376161]}],\"metadata\":{\"attribution\":\"openrouteservice.org,
+        OpenStreetMap contributors, tmc - BASt\",\"service\":\"routing\",\"timestamp\":1746607451048,\"query\":{\"coordinates\":[[8.773,49.376],[8.773085,49.376161]],\"profile\":\"foot-walking\",\"profileName\":\"foot-walking\",\"format\":\"json\"},\"engine\":{\"version\":\"9.1.0\",\"build_date\":\"2025-01-29T12:32:30Z\",\"graph_date\":\"2024-12-05T09:47:01Z\"}}}"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json;charset=UTF-8
+      Date:
+      - Wed, 07 May 2025 08:44:11 GMT
+      Keep-Alive:
+      - timeout=30
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - Access-Control-Request-Method
+      - Access-Control-Request-Headers
+    status:
+      code: 200
+      message: ''
+version: 1

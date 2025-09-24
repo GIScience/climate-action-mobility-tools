@@ -7,7 +7,7 @@ authors = [
     {name = "Satvik Parashar", email = "satvik.parashar@heigit.org"}
 ]
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = "~=3.11"
 dependencies = [
     "shapely (>=2.1.1,<3.0.0)",
     "pandas (>=2.3.2,<3.0.0)",
@@ -17,17 +17,51 @@ dependencies = [
     "h3pandas (>=0.3.0,<0.4.0)",
     "numpy (>=2.3.3,<3.0.0)",
     "pydantic (>=2.11.7)",
+    "requests-ratelimiter (>=0.7.0,<0.8.0)",
 ]
 
 [tool.poetry]
-packages= [
-    {include = "mobility-tools"}
-]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.2"
 pre-commit = "^4.3.0"
 
+[tool.poetry.group.test.dependencies]
+vcrpy = {version = "^7.0.0", markers = "platform_python_implementation !='PyPy'"}
+pytest-cov = "^7.0.0"
+approvaltests = "^15.3.2"
+responses = "^0.25.8"
+pytest = "^8.4.2"
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff.lint]
+# https://docs.astral.sh/ruff/rules
+select=[
+    # defaults
+    "F",
+    "E4", "E7", "E9",
+
+    # additional
+    "A", # be sure not to shadow built-in functions
+    "I", # isort to sort imports
+    "N", # check for use of PEP8 naming conventions
+
+    # docstring cleaning
+    "D201", "D207", "D208", "D209", "D210", "D214", "D215", "D300", "D403",
+
+    # auto-remove unused 'noqa' comments
+    "RUF100", "RUF101",
+]
+
+[tool.coverage.run]
+omit = ["test/*" , "walkability/core/*"]
+
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+

@@ -20,7 +20,7 @@ class ORSSettings(BaseSettings):
 
     ors_coordinate_precision: float = 0.000001
 
-    model_config = SettingsConfigDict(env_file=".env.ors")  # dead: disable
+    model_config = SettingsConfigDict(env_file='.env.ors')  # dead: disable
 
     @cached_property
     def client(self) -> openrouteservice.Client:
@@ -28,6 +28,4 @@ class ORSSettings(BaseSettings):
         if self.ors_base_url is None:
             return openrouteservice.Client(key=self.ors_api_key)
         else:
-            return openrouteservice.Client(
-                base_url=self.ors_base_url, key=self.ors_api_key
-            )
+            return openrouteservice.Client(base_url=self.ors_base_url, key=self.ors_api_key)

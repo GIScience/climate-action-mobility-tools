@@ -1,0 +1,80 @@
+interactions:
+- request:
+    body: '{"locations": [[8.77298, 49.37726]], "radius": 150}'
+    headers:
+      Accept:
+      - application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '51'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.32.3
+    method: POST
+    uri: http://localhost:8080/ors/v2/snap/foot-walking
+  response:
+    body:
+      string: "{\"locations\":[{\"location\":[8.773085,49.376161],\"name\":\"Schulstra\xDFe\",\"snapped_distance\":122.49}],\"metadata\":{\"attribution\":\"openrouteservice.org,
+        OpenStreetMap contributors\",\"service\":\"snap\",\"timestamp\":1746708119319,\"query\":{\"locations\":[[8.77298,49.37726]],\"profile\":\"foot-walking\",\"profileName\":\"foot-walking\",\"format\":\"json\",\"radius\":150.0},\"engine\":{\"version\":\"9.1.0\",\"build_date\":\"2025-01-29T12:32:30Z\",\"graph_date\":\"2024-12-05T09:47:01Z\"}}}"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 08 May 2025 12:41:59 GMT
+      Keep-Alive:
+      - timeout=30
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - Access-Control-Request-Method
+      - Access-Control-Request-Headers
+    status:
+      code: 200
+      message: ''
+- request:
+    body: '{"locations": [[8.77471, 49.37707]], "radius": 150}'
+    headers:
+      Accept:
+      - application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '51'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.32.3
+    method: POST
+    uri: http://localhost:8080/ors/v2/snap/foot-walking
+  response:
+    body:
+      string: '{"locations":[null],"metadata":{"attribution":"openrouteservice.org,
+        OpenStreetMap contributors","service":"snap","timestamp":1746708119329,"query":{"locations":[[8.77471,49.37707]],"profile":"foot-walking","profileName":"foot-walking","format":"json","radius":150.0},"engine":{"version":"9.1.0","build_date":"2025-01-29T12:32:30Z","graph_date":"2024-12-05T09:47:01Z"}}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 08 May 2025 12:41:59 GMT
+      Keep-Alive:
+      - timeout=30
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - Access-Control-Request-Method
+      - Access-Control-Request-Headers
+    status:
+      code: 200
+      message: ''
+version: 1

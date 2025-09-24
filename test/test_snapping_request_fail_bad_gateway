@@ -1,0 +1,154 @@
+interactions:
+- request:
+    body: '{"locations": [[1.0, 1.0], [1.1, 1.1]], "radius": 150}'
+    headers:
+      Accept:
+      - application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - test-key
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '54'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.32.3
+    method: POST
+    uri: http://localhost:8080/ors/v2/snap/foot-walking
+  response:
+    body:
+      string: "{\n    \"error\": \"Access to this API has been disallowed\"\n}"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '57'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 May 2025 13:15:06 GMT
+      Server:
+      - nginx/1.25.4
+      X-Generator:
+      - tyk.io
+    status:
+      code: 502
+      message: Forbidden
+- request:
+    body: '{"locations": [[1.0, 1.0], [1.1, 1.1]], "radius": 150}'
+    headers:
+      Accept:
+      - application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - test-key
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '54'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.32.3
+    method: POST
+    uri: http://localhost:8080/ors/v2/snap/foot-walking
+  response:
+    body:
+      string: "{\n    \"error\": \"Access to this API has been disallowed\"\n}"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '57'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 May 2025 13:24:52 GMT
+      Server:
+      - nginx/1.25.4
+      X-Generator:
+      - tyk.io
+    status:
+      code: 502
+      message: Bad Gateway
+- request:
+    body: '{"locations": [[1.0, 1.0], [1.1, 1.1]], "radius": 150}'
+    headers:
+      Accept:
+      - application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - test-key
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '54'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.32.3
+    method: POST
+    uri: http://localhost:8080/ors/v2/snap/foot-walking
+  response:
+    body:
+      string: "{\n    \"error\": \"Access to this API has been disallowed\"\n}"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '57'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 May 2025 13:25:21 GMT
+      Server:
+      - nginx/1.25.4
+      X-Generator:
+      - tyk.io
+    status:
+      code: 502
+      message: Bad Gateway
+- request:
+    body: '{"locations": [[1.0, 1.0], [1.1, 1.1]], "radius": 150}'
+    headers:
+      Accept:
+      - application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - test-key
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '54'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.32.3
+    method: POST
+    uri: http://localhost:8080/ors/v2/snap/foot-walking
+  response:
+    body:
+      string: "{\n    \"error\": \"Access to this API has been disallowed\"\n}"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '57'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 May 2025 13:25:54 GMT
+      Server:
+      - nginx/1.25.4
+      X-Generator:
+      - tyk.io
+    status:
+      code: 502
+      message: Bad Gateway
+version: 1
