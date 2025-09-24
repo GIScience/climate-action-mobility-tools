@@ -20,6 +20,9 @@ dependencies = [
 ]
 
 [tool.poetry]
+packages= [
+    {include = "mobility-tools"}
+]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.2"
