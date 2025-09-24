@@ -74,5 +74,5 @@ def get_ors_walking_distances(
     distance_between_cells: float,
     destinations: gpd.GeoDataFrame,
     profile: str,
-):
+) -> gpd.GeoDataFrame:
     pass
