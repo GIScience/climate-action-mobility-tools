@@ -35,6 +35,7 @@ from mobility_tools.detour_factors import (
     snap_destinations,
 )
 from mobility_tools.ors_settings import ORSSettings
+from mobility_tools.utils.exceptions import SizeLimitExceededError
 
 
 @pytest.fixture(autouse=True)
@@ -393,6 +394,29 @@ def test_get_ors_walking_distances(default_ors_settings):
     )
 
     verify(result.to_json(indent=2))
+
+
+def test_get_ors_walking_distance_too_large(default_ors_settings):
+    ors_settings = default_ors_settings.copy(deep=True)
+    ors_settings.ors_directions_rate_limit = 0.1
+
+    destinations = pd.DataFrame(
+        data={
+            'id': ['8a1faad6992ffff', '8a1faad69927fff', '8a1faad69927fff'],
+            'spur_id': ['a', 'b', 'c'],
+            'ordinal': [0, 1, 2],
+            'snapped_location': [[8.773, 49.376], [8.773085, 49.376161], [8.773085, 49.376161]],
+            'snapped_distance': [114.44, 114.44, 114.2],
+        },
+    )
+
+    with pytest.raises(SizeLimitExceededError):
+        get_ors_walking_distances(
+            ors_settings=ors_settings,
+            cell_distance=150,
+            destinations_with_snapping=destinations,
+            profile='foot-walking',
+        )
 
 
 @pytest.fixture

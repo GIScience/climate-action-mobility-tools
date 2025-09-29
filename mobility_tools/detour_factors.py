@@ -16,6 +16,7 @@ from requests_ratelimiter import LimiterSession
 from urllib3.util import Retry
 
 from mobility_tools.ors_settings import ORSSettings
+from mobility_tools.utils.exceptions import SizeLimitExceededError
 
 log = logging.getLogger(__name__)
 
@@ -392,6 +393,9 @@ def get_ors_walking_distances(
     log.debug('Requesting direction from the ors')
     sleep_time = 60 / ors_settings.ors_directions_rate_limit
     spur_ids: set[str] = set(destinations_with_snapping['spur_id'].to_list())
+
+    if len(spur_ids) > ors_settings.ors_directions_rate_limit * 25:
+        raise SizeLimitExceededError()
 
     list_of_df: list[pd.DataFrame] = []
     for spur_id in spur_ids:
