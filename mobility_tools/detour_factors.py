@@ -21,7 +21,9 @@ from mobility_tools.utils.exceptions import SizeLimitExceededError
 log = logging.getLogger(__name__)
 
 
-def get_detour_factors(aoi: shapely.MultiPolygon, ors_settings: ORSSettings, profile: str) -> gpd.GeoDataFrame:
+def get_detour_factors(
+    aoi: shapely.MultiPolygon, paths: gpd.GeoDataFrame, ors_settings: ORSSettings, profile: str
+) -> gpd.GeoDataFrame:
     """
     Get detour factors calculates detour factors for the aoi in a hexgrid.
     :param: aoi: `shapely.MultiPolygon` area to calculate the detour factors for.
@@ -48,6 +50,8 @@ def get_detour_factors(aoi: shapely.MultiPolygon, ors_settings: ORSSettings, pro
         snapping_radius=distance_center_corner,
         profile=profile,
     )
+
+    snapped_destinations = exclude_ferries(snapped_destinations, paths)
 
     destinations_with_snapping = pd.merge(
         left=destinations,
@@ -386,6 +390,13 @@ def batching(series: gpd.GeoSeries, batch_size: int) -> list[gpd.GeoSeries]:
     return batches
 
 
+def exclude_ferries(snapped_destinations: pd.DataFrame, paths: gpd.GeoDataFrame) -> pd.DataFrame:
+    boundaries = snapped_destinations.h3.h3_to_geo_boundary()
+    snapped_destinations['contains_paths'] = boundaries.intersects(paths.union_all())
+    snapped_destinations.loc[~snapped_destinations['contains_paths'], 'snapped_location'] = None
+    return snapped_destinations.drop(columns=['contains_paths'])
+
+
 def get_ors_walking_distances(
     ors_settings: ORSSettings, cell_distance: float, destinations_with_snapping: pd.DataFrame, profile: str
 ) -> pd.DataFrame:
@@ -439,7 +450,11 @@ def ors_request(
         sleep_time *= 2.0
     try:
         json_result = openrouteservice.directions.directions(
-            client=ors_settings.client, coordinates=coordinates, profile=profile, geometry=False
+            client=ors_settings.client,
+            coordinates=coordinates,
+            profile=profile,
+            geometry=False,
+            options={'avoid_features': ['ferries']},
         )
     except (
         openrouteservice.exceptions.ApiError,

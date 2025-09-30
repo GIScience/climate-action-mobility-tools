@@ -23,6 +23,7 @@ from mobility_tools.detour_factors import (
     batching,
     check_aoi_contains_cell,
     create_destinations,
+    exclude_ferries,
     generate_waypoint_pairs,
     get_cell_distance,
     get_detour_factors,
@@ -73,6 +74,8 @@ def test_get_detour_factors(
 
     request_call_back = partial(request_handling, directions=ors_directions_responses['responses'])
 
+    paths = gpd.GeoDataFrame(data={'test': [0]}, geometry=[small_aoi], crs='EPSG:4326')
+
     with responses.RequestsMock() as rsps:
         rsps.add(method='POST', url='http://localhost:8080/ors/v2/snap/foot-walking', json=snapping_response)
 
@@ -82,7 +85,9 @@ def test_get_detour_factors(
             callback=request_call_back,
         )
 
-        result = get_detour_factors(aoi=small_aoi, ors_settings=default_ors_settings, profile='foot-walking')
+        result = get_detour_factors(
+            aoi=small_aoi, paths=paths, ors_settings=default_ors_settings, profile='foot-walking'
+        )
 
         assert_geodataframe_equal(
             result.drop(columns='detour_factor').sort_index(),
@@ -375,6 +380,19 @@ def test_batching():
         assert_series_equal(batch, expected_result[index], check_index=False)
 
 
+def test_exclude_ferries():
+    snapped_input = pd.DataFrame(
+        data={'snapped_location': [[8.773085, 49.376161], None], 'snapped_distance': [122.49, None]},
+        index=['8a1faad69927fff', '8a1faad6992ffff'],
+    ).rename_axis('id')
+
+    paths = gpd.GeoDataFrame(geometry=[shapely.LineString([(0, 0), (1, 1)])])
+
+    result = exclude_ferries(snapped_input, paths)
+
+    verify(result.to_json())
+
+
 @use_cassette
 def test_get_ors_walking_distances(default_ors_settings):
     destinations = pd.DataFrame(
@@ -427,7 +445,7 @@ def ors_directions_request_fail():
 
 
 def mock_directions_with_ors_error(
-    client: ORSSettings, coordinates: list[list[float]], profile: str, geometry: bool
+    client: ORSSettings, coordinates: list[list[float]], profile: str, geometry: bool, options: dict
 ) -> None:
     raise ApiError(status=500)
 

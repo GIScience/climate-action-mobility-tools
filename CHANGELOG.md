@@ -12,3 +12,4 @@ and this project mostly adheres to [Semantic Versioning](https://semver.org/spec
 
 ### Changed
 - Detour Factors now fail with an Exception if the computation request gets too large ([#4](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/issues/4))
+- Detour Factors now avoid ferries on routing requests and checks snapped results against our paths([#1](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/issues/4))
