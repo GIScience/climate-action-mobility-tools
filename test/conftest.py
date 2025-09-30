@@ -1,5 +1,6 @@
 import json
 
+import numpy as np
 import pandas as pd
 import pytest
 import shapely
@@ -45,7 +46,7 @@ def expected_detour_factors() -> pd.DataFrame:
                 1.7969363677141994,
                 1.4832090368368422,
                 1.8521635465676833,
-                1.3880294081510607,
+                np.nan,
             ],
             'id': [
                 '8a1faa996847fff',
@@ -77,7 +78,7 @@ def snapping_response():
             {'location': [8.692346, 49.416992], 'snapped_distance': 0.43},
             {'location': [8.693091, 49.418907], 'snapped_distance': 1.28},
             {'location': [8.692439, 49.418159], 'snapped_distance': 43.83},
-            {'location': [8.691352, 49.419144], 'snapped_distance': 6.04},
+            None,
         ]
     }
 

@@ -12,7 +12,6 @@ import responses
 import responses.matchers
 import shapely
 from approvaltests import DiffReporter, set_default_reporter, verify
-from geopandas.testing import assert_geodataframe_equal
 from openrouteservice.exceptions import ApiError
 from pandas.testing import assert_frame_equal, assert_series_equal
 from requests.exceptions import HTTPError, RetryError
@@ -89,21 +88,13 @@ def test_get_detour_factors(
             aoi=small_aoi, paths=paths, ors_settings=default_ors_settings, profile='foot-walking'
         )
 
-        assert_geodataframe_equal(
-            result.drop(columns='detour_factor').sort_index(),
-            expected_detour_factors.drop(columns='detour_factor').sort_index(),
-        )
-        assert_frame_equal(
-            result.drop(columns='geometry').sort_index(),
-            expected_detour_factors.drop(columns='geometry').sort_index(),
-            check_exact=False,
-            atol=0.1,
-            rtol=0.1,
-        )
+        verify(result.sort_index().to_csv())
 
 
 def test_create_destinations(default_aoi):
-    result: pd.DataFrame = create_destinations(default_aoi)
+    full_hexgrid = gpd.GeoDataFrame(geometry=[default_aoi], crs='EPSG:4326').h3.polyfill_resample(10).reset_index()
+
+    result: pd.DataFrame = create_destinations(default_aoi, hexgrid=full_hexgrid)
 
     hexgrid_size = gpd.GeoDataFrame(geometry=[default_aoi], crs='EPSG:4326').h3.polyfill(10).shape[0]
 

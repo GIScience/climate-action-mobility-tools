@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 
 
 def get_detour_factors(
-    aoi: shapely.MultiPolygon, paths: gpd.GeoDataFrame, ors_settings: ORSSettings, profile: str
+    aoi: shapely.MultiPolygon, paths: gpd.GeoDataFrame, ors_settings: ORSSettings, profile: str, resolution: int = 10
 ) -> gpd.GeoDataFrame:
     """
     Get detour factors calculates detour factors for the aoi in a hexgrid.
@@ -33,10 +33,16 @@ def get_detour_factors(
         "foot-hiking", "cycling-regular", "cycling-road",
         "cycling-safe", "cycling-mountain", "cycling-tour",
         "cycling-electric",].
+    :param: resolution: int setting the hexgrid resolution. Defaults to 10.
     """
     log.info('Computing detour factors')
 
-    destinations = create_destinations(aoi, max_waypoint_number=ors_settings.ors_directions_waypoint_limit)
+    log.debug(f'Using h3pandas v{h3pandas.version} to get hexgrid for aoi.')  # need to use h3pandas import
+    full_hexgrid = gpd.GeoDataFrame(geometry=[aoi], crs='EPSG:4326').h3.polyfill_resample(resolution).reset_index()
+
+    destinations = create_destinations(
+        aoi, hexgrid=full_hexgrid.copy(deep=True), max_waypoint_number=ors_settings.ors_directions_waypoint_limit
+    )
     distance_between_cells = get_cell_distance(destinations)
 
     # This following calculation gives the distance from the cell center point to one of the corners.
@@ -67,24 +73,32 @@ def get_detour_factors(
         destinations_with_snapping,
         profile=profile,
     )
-    return mean_walking_distances.h3.h3_to_geo_boundary().drop(columns='distance')
+
+    detour_factors = mean_walking_distances.drop(columns='distance')
+
+    return pd.merge(
+        left=full_hexgrid.set_index('h3_polyfill').drop(columns=['index']),
+        right=detour_factors,
+        how='left',
+        left_index=True,
+        right_on='id',
+    ).set_index('id', drop=True)
 
 
-def create_destinations(aoi: shapely.MultiPolygon, resolution: int = 10, max_waypoint_number: int = 50) -> pd.DataFrame:
+def create_destinations(
+    aoi: shapely.MultiPolygon, hexgrid: gpd.GeoDataFrame, max_waypoint_number: int = 50
+) -> pd.DataFrame:
     """
     This function creates a set of spurs (straight lines) through the hexgrid covering the aoi.
     These spurs cover all three directions in a hexagonal grid,
     and are the basis for routing to get the distances between all adjacent cells in the hexgrid.
     ## Parameters
     - :param:`aoi`: the `shapely.MultiPolygon` to be covered with spurs.
-    - :param:`resolution`: h3 grid resolution to use. Default: `10`.
     - :param:`max_waypoint_number`: length of the admissible ors_directions request.
     Defines how long each resulting spur can be. Default: `50`.
     ## Return
     - :return:`batched_spurs`: `gpd.GeoDataFrame` containing `'id'` with h3 cell ids, and `'spur_id'` in order of adjacency
     """
-    log.debug(f'Using h3pandas v{h3pandas.version} to get hexgrid for aoi.')  # need to use h3pandas import
-    hexgrid = gpd.GeoDataFrame(geometry=[aoi], crs='EPSG:4326').h3.polyfill_resample(resolution).reset_index()
 
     log.debug('Creating Destinations')
     origin_id = hexgrid.loc[0, 'h3_polyfill']
