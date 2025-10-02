@@ -76,13 +76,15 @@ def get_detour_factors(
 
     detour_factors = mean_walking_distances.drop(columns='distance')
 
-    return pd.merge(
+    detour_factors_all_cells = pd.merge(
         left=full_hexgrid.set_index('h3_polyfill').drop(columns=['index']),
         right=detour_factors,
         how='left',
         left_index=True,
         right_on='id',
-    ).set_index('id', drop=True)
+    )
+
+    return detour_factors_all_cells
 
 
 def create_destinations(
