@@ -4,9 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project mostly adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-## [Unreleased](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/compare/1.0.2...main)
+## [Unreleased](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/compare/1.0.3...main)
+
+## [1.0.3](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/releases/1.0.3) 2025-10-14
+
+### Fix
+
+- detour factor now handles (partly) inaccessible grid-cells by setting the inaccessible route to infinite
+  distance ([#270](https://gitlab.heigit.org/climate-action/plugins/walkability/-/issues/270))
+
+
 
 ## [1.0.2](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/releases/1.0.2) 2025-10-02
+
 ### Changed
 
 - adapt return to actual data return

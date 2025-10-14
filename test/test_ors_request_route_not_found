@@ -1,0 +1,242 @@
+interactions:
+- request:
+    body: '{"coordinates": [[8.689787, 53.148575], [8.688666, 53.147917]], "geometry":
+      false}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - ''
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '82'
+      Content-type:
+      - application/json
+      User-Agent:
+      - ORSClientPython.v2.2.2
+    method: POST
+    uri: http://localhost:8080/ors/v2/directions/foot-walking/json
+  response:
+    body:
+      string: '{"error":{"code":2009,"message":"Route could not be found - Unable
+        to find a route between points 1 (8.6897870 53.1485750) and 2 (8.6886660 53.1479170)."},"info":{"engine":{"build_date":"2025-06-06T15:39:25Z","graph_version":"2","graph_date":"2025-09-30T12:58:27Z","osm_date":"2025-09-22T00:00:02Z","version":"9.3.0"},"timestamp":1760016612708}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '345'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Oct 2025 13:30:12 GMT
+      Server:
+      - nginx/1.25.4
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubdomains;
+      Vary:
+      - Origin,Access-Control-Request-Method,Access-Control-Request-Headers
+      X-Ratelimit-Limit:
+      - '10000'
+      X-Ratelimit-Remaining:
+      - '9999'
+      X-Ratelimit-Reset:
+      - '1760016608'
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: '{"coordinates": [[8.689787, 53.148575], [8.688666, 53.147917]], "geometry":
+      false}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - ''
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '82'
+      Content-type:
+      - application/json
+      User-Agent:
+      - ORSClientPython.v2.2.2
+    method: POST
+    uri: http://localhost:8080/ors/v2/directions/foot-walking/json
+  response:
+    body:
+      string: '{"error":{"code":2009,"message":"Route could not be found - Unable
+        to find a route between points 1 (8.6897870 53.1485750) and 2 (8.6886660 53.1479170)."},"info":{"engine":{"build_date":"2025-06-06T15:39:25Z","graph_version":"2","graph_date":"2025-09-30T12:58:27Z","osm_date":"2025-09-22T00:00:02Z","version":"9.3.0"},"timestamp":1760016615170}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '345'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Oct 2025 13:30:15 GMT
+      Server:
+      - nginx/1.25.4
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubdomains;
+      Vary:
+      - Origin,Access-Control-Request-Method,Access-Control-Request-Headers
+      X-Ratelimit-Limit:
+      - '10000'
+      X-Ratelimit-Remaining:
+      - '9998'
+      X-Ratelimit-Reset:
+      - '1760103008'
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: '{"coordinates": [[8.689787, 53.148575], [8.688666, 53.147917]], "geometry":
+      false}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - ''
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '82'
+      Content-type:
+      - application/json
+      User-Agent:
+      - ORSClientPython.v2.2.2
+    method: POST
+    uri: http://localhost:8080/ors/v2/directions/foot-walking/json
+  response:
+    body:
+      string: '{"error":{"code":2009,"message":"Route could not be found - Unable
+        to find a route between points 1 (8.6897870 53.1485750) and 2 (8.6886660 53.1479170)."},"info":{"engine":{"build_date":"2025-06-06T15:39:25Z","graph_version":"2","graph_date":"2025-09-30T12:58:27Z","osm_date":"2025-09-22T00:00:02Z","version":"9.3.0"},"timestamp":1760016619447}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '345'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Oct 2025 13:30:19 GMT
+      Server:
+      - nginx/1.25.4
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubdomains;
+      Vary:
+      - Origin,Access-Control-Request-Method,Access-Control-Request-Headers
+      X-Ratelimit-Limit:
+      - '10000'
+      X-Ratelimit-Remaining:
+      - '9997'
+      X-Ratelimit-Reset:
+      - '1760103008'
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: '{"coordinates": [[8.689787, 53.148575], [8.688666, 53.147917]], "geometry":
+      false}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - ''
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '82'
+      Content-type:
+      - application/json
+      User-Agent:
+      - ORSClientPython.v2.2.2
+    method: POST
+    uri: http://localhost:8080/ors/v2/directions/foot-walking/json
+  response:
+    body:
+      string: '{"error":{"code":2009,"message":"Route could not be found - Unable
+        to find a route between points 1 (8.6897870 53.1485750) and 2 (8.6886660 53.1479170)."},"info":{"engine":{"build_date":"2025-06-06T15:39:25Z","graph_version":"2","graph_date":"2025-09-30T12:58:27Z","osm_date":"2025-09-22T00:00:02Z","version":"9.3.0"},"timestamp":1760016627755}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '345'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Oct 2025 13:30:27 GMT
+      Server:
+      - nginx/1.25.4
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubdomains;
+      Vary:
+      - Origin,Access-Control-Request-Method,Access-Control-Request-Headers
+      X-Ratelimit-Limit:
+      - '10000'
+      X-Ratelimit-Remaining:
+      - '9996'
+      X-Ratelimit-Reset:
+      - '1760103008'
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: '{"coordinates": [[8.689787, 53.148575], [8.688666, 53.147917]], "geometry":
+      false}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - ''
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '82'
+      Content-type:
+      - application/json
+      User-Agent:
+      - ORSClientPython.v2.2.2
+    method: POST
+    uri: http://localhost:8080/ors/v2/directions/foot-walking/json
+  response:
+    body:
+      string: '{"error":{"code":2009,"message":"Route could not be found - Unable
+        to find a route between points 1 (8.6897870 53.1485750) and 2 (8.6886660 53.1479170)."},"info":{"engine":{"build_date":"2025-06-06T15:39:25Z","graph_version":"2","graph_date":"2025-09-30T12:58:27Z","osm_date":"2025-09-22T00:00:02Z","version":"9.3.0"},"timestamp":1760016643980}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '345'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Oct 2025 13:30:43 GMT
+      Server:
+      - nginx/1.25.4
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubdomains;
+      Vary:
+      - Origin,Access-Control-Request-Method,Access-Control-Request-Headers
+      X-Ratelimit-Limit:
+      - '10000'
+      X-Ratelimit-Remaining:
+      - '9995'
+      X-Ratelimit-Reset:
+      - '1760103008'
+    status:
+      code: 404
+      message: Not Found
+version: 1

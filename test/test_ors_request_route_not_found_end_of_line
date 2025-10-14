@@ -1,0 +1,107 @@
+interactions:
+- request:
+    body: '{"coordinates": [[8.655924, 53.135569], [8.656426, 53.136326], [8.656937,
+      53.134469]], "geometry": false}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - ''
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '105'
+      Content-type:
+      - application/json
+      User-Agent:
+      - ORSClientPython.v2.2.2
+    method: POST
+    uri: http://localhost:8080/ors/v2/directions/foot-walking/json
+  response:
+    body:
+      string: '{"error":{"code":2009,"message":"Route could not be found - Unable
+        to find a route between points 2 (8.6564260 53.1363260) and 3 (8.6569370 53.1344690)."},"info":{"engine":{"build_date":"2025-06-06T15:39:25Z","graph_version":"2","graph_date":"2025-09-30T12:58:27Z","osm_date":"2025-09-22T00:00:02Z","version":"9.3.0"},"timestamp":1760021633339}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '345'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Oct 2025 14:53:53 GMT
+      Server:
+      - nginx/1.25.4
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubdomains;
+      Vary:
+      - Origin,Access-Control-Request-Method,Access-Control-Request-Headers
+      X-Ratelimit-Limit:
+      - '10000'
+      X-Ratelimit-Remaining:
+      - '9986'
+      X-Ratelimit-Reset:
+      - '1760103008'
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: '{"coordinates": [[8.655924, 53.135569], [8.656426, 53.136326]], "geometry":
+      false}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - ''
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '82'
+      Content-type:
+      - application/json
+      User-Agent:
+      - ORSClientPython.v2.2.2
+    method: POST
+    uri: http://localhost:8080/ors/v2/directions/foot-walking/json
+  response:
+    body:
+      string: '{"bbox":[8.655924,53.135569,8.656425,53.136326],"routes":[{"summary":{"distance":90.6,"duration":65.2},"segments":[{"distance":90.6,"duration":65.2,"steps":[{"distance":90.6,"duration":65.2,"type":11,"instruction":"Head
+        north","name":"-","way_points":[0,2]},{"distance":0.0,"duration":0.0,"type":10,"instruction":"Arrive
+        at your destination, straight ahead","name":"-","way_points":[2,2]}]}],"bbox":[8.655924,53.135569,8.656425,53.136326]}],"metadata":{"attribution":"openrouteservice.org
+        | OpenStreetMap contributors","service":"routing","timestamp":1760021649796,"query":{"coordinates":[[8.655924,53.135569],[8.656426,53.136326]],"profile":"foot-walking","profileName":"foot-walking","format":"json"},"engine":{"version":"9.3.0","build_date":"2025-06-06T15:39:25Z","graph_date":"2025-09-30T12:58:27Z","osm_date":"2025-09-22T00:00:02Z"}}}'
+    headers:
+      Access-Control-Allow-Headers:
+      - Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Authorization,
+        Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers
+      Access-Control-Allow-Methods:
+      - OPTIONS,GET,POST
+      Access-Control-Expose-Headers:
+      - x-ratelimit-remaining, x-ratelimit-reset, x-ratelimit-limit
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json;charset=UTF-8
+      Date:
+      - Thu, 09 Oct 2025 14:54:09 GMT
+      Server:
+      - nginx/1.25.4
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubdomains;
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin,Access-Control-Request-Method,Access-Control-Request-Headers
+      X-Ratelimit-Limit:
+      - '10000'
+      X-Ratelimit-Remaining:
+      - '9985'
+      X-Ratelimit-Reset:
+      - '1760103008'
+    status:
+      code: 200
+      message: OK
+version: 1

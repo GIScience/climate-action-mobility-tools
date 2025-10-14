@@ -26,6 +26,10 @@ class ORSSettings(BaseSettings):
     def client(self) -> openrouteservice.Client:
         # For future reference maybe check this suggestion: https://gitlab.heigit.org/climate-action/plugins/walkability/-/merge_requests/82#note_61406
         if self.ors_base_url is None:
-            return openrouteservice.Client(key=self.ors_api_key)
+            client = openrouteservice.Client(key=self.ors_api_key)
         else:
-            return openrouteservice.Client(base_url=self.ors_base_url, key=self.ors_api_key)
+            client = openrouteservice.Client(base_url=self.ors_base_url, key=self.ors_api_key)
+
+        openrouteservice.client._RETRIABLE_STATUSES = {502, 503}
+
+        return client

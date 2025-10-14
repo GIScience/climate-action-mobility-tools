@@ -1,6 +1,6 @@
 import logging
 import math
-import time
+import re
 
 import geopandas as gpd
 import h3
@@ -13,6 +13,7 @@ import pandas as pd
 import shapely
 from requests.adapters import HTTPAdapter
 from requests_ratelimiter import LimiterSession
+from tqdm import tqdm
 from urllib3.util import Retry
 
 from mobility_tools.ors_settings import ORSSettings
@@ -418,34 +419,29 @@ def get_ors_walking_distances(
 ) -> pd.DataFrame:
     """Route between destinations of adjacent cells using ORS."""
     log.debug('Requesting direction from the ors')
-    sleep_time = 60 / ors_settings.ors_directions_rate_limit
     spur_ids: set[str] = set(destinations_with_snapping['spur_id'].to_list())
 
     if len(spur_ids) > ors_settings.ors_directions_rate_limit * 25:
         raise SizeLimitExceededError()
 
     list_of_df: list[pd.DataFrame] = []
-    for spur_id in spur_ids:
+    for spur_id in tqdm(spur_ids, desc='Requesting directions for spurs from ORS'):
         spur = (
             destinations_with_snapping[destinations_with_snapping['spur_id'] == spur_id]
             .set_index('ordinal')
             .sort_index()
             .reset_index()
         )
-        coordinates: list[list[float]] = list(filter(lambda x: x is not None, spur['snapped_location'].to_list()))
+        coordinates: list[tuple[float, float]] = list(
+            filter(lambda x: x is not None, spur['snapped_location'].to_list())
+        )
         if len(coordinates) < 2:
             continue
-        json_result, start_time = ors_request(ors_settings, coordinates, profile=profile)
-
-        distances = [segment['distance'] for segment in json_result['routes'][0]['segments']]
+        distances = ors_request(ors_settings, coordinates, profile=profile)
 
         walking_distances = match_ors_distance_to_cells(spur, distances)
 
         list_of_df.append(walking_distances)
-
-        time_remaining = sleep_time - (time.time() - start_time)
-        if time_remaining > 0:
-            time.sleep(time_remaining)
 
     cell_walking_distances = pd.concat(list_of_df)
     mean_walking_distances = cell_walking_distances.groupby('id').mean()
@@ -456,38 +452,73 @@ def get_ors_walking_distances(
     return mean_walking_distances
 
 
-def ors_request(
-    ors_settings: ORSSettings, coordinates: list[list[float]], profile: str, sleep_time: float = 0.0
-) -> tuple[dict, float]:
-    time.sleep(sleep_time)
-    if sleep_time == 0.0:
-        sleep_time += 2.0
-    else:
-        sleep_time *= 2.0
+def ors_request(ors_settings: ORSSettings, coordinates: list[tuple[float, float]], profile: str) -> list[float | None]:
     try:
-        json_result = openrouteservice.directions.directions(
+        ors_response = openrouteservice.directions.directions(
             client=ors_settings.client,
             coordinates=coordinates,
             profile=profile,
             geometry=False,
             options={'avoid_features': ['ferries']},
         )
-    except (
-        openrouteservice.exceptions.ApiError,
-        openrouteservice.exceptions.Timeout,
-        openrouteservice.exceptions.HTTPError,
-        # TODO raise ors-py issue from this
-    ) as e:
-        if sleep_time > 16.0:
-            raise e
-        log.debug(f'OpenRouteService request failed with {e}. Retrying once in 1 second.')
-        json_result, _ = ors_request(ors_settings, coordinates, profile, sleep_time)
-    finally:
-        start = time.time()
-    return json_result, start
+    except openrouteservice.exceptions.ApiError as e:
+        return handle_ors_errors(ors_settings, coordinates, profile, e)
+
+    segments = ors_response['routes'][0]['segments']
+    distances = [segment['distance'] for segment in segments]
+
+    return distances
 
 
-def match_ors_distance_to_cells(spur: pd.DataFrame, distances: list[float]) -> pd.DataFrame:
+def handle_ors_errors(
+    ors_settings: ORSSettings,
+    coordinates: list[tuple[float, float]],
+    profile: str,
+    ors_error: openrouteservice.exceptions.ApiError,
+) -> list[float | None]:
+    message = get_ors_directions_error_message(ors_error)
+
+    capture = re.search(
+        '^Route could not be found - Unable to find a route between points ([0-9]*) \(.*\) and ([0-9]*) \(.*\)\.$',
+        message,
+    )
+    assert capture is not None, f'The error message "{message}",  returned by ORS, could not be parsed.'
+
+    error_start_index = int(capture.group(1)) - 1
+    error_end_index = int(capture.group(2)) - 1
+
+    route_to_error_start = coordinates[: error_start_index + 1]
+    route_from_error_end = coordinates[error_end_index:]
+
+    distances_to_error = (
+        [] if len(route_to_error_start) <= 1 else ors_request(ors_settings, route_to_error_start, profile=profile)
+    )
+    distances_from_error = (
+        [] if len(route_from_error_end) <= 1 else ors_request(ors_settings, route_from_error_end, profile=profile)
+    )
+
+    distances = distances_to_error + [None] + distances_from_error
+    return distances
+
+
+def get_ors_directions_error_message(e: openrouteservice.exceptions.ApiError) -> str:
+    if e.status != 404:
+        raise e
+
+    error_message = (e.message or {}).get('error', {})
+    if error_message.get('code') != 2009:
+        raise e
+
+    message = error_message.get('message')
+    if message is None:
+        raise e
+
+    log.warning(message)
+
+    return message
+
+
+def match_ors_distance_to_cells(spur: pd.DataFrame, distances: list[float | None]) -> pd.DataFrame:
     walking_distances = pd.DataFrame(columns=['id', 'distance'])
     waypoint_pairs = generate_waypoint_pairs(spur)
     spur_by_ordinal = spur.set_index('ordinal', drop=True)
@@ -502,7 +533,7 @@ def match_ors_distance_to_cells(spur: pd.DataFrame, distances: list[float]) -> p
         cell_id_destination = spur_by_ordinal.loc[destination_ordinal, 'id']
 
         actual_distance = (
-            distance
+            (distance or np.inf)
             + spur_by_ordinal.loc[origin_ordinal, 'snapped_distance']  # type: ignore
             + spur_by_ordinal.loc[destination_ordinal, 'snapped_distance']
         )  # type: ignore

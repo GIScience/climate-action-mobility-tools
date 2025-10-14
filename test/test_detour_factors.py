@@ -1,10 +1,10 @@
 import json
 from functools import partial
-from unittest.mock import patch
 
 import geopandas as gpd
 import h3
 import h3pandas
+import numpy
 import numpy as np
 import pandas as pd
 import pytest
@@ -12,7 +12,6 @@ import responses
 import responses.matchers
 import shapely
 from approvaltests import DiffReporter, set_default_reporter, verify
-from openrouteservice.exceptions import ApiError
 from pandas.testing import assert_frame_equal, assert_series_equal
 from requests.exceptions import HTTPError, RetryError
 from vcr import use_cassette
@@ -34,7 +33,6 @@ from mobility_tools.detour_factors import (
     snap_batched_records,
     snap_destinations,
 )
-from mobility_tools.ors_settings import ORSSettings
 from mobility_tools.utils.exceptions import SizeLimitExceededError
 
 
@@ -88,6 +86,7 @@ def test_get_detour_factors(
             aoi=small_aoi, paths=paths, ors_settings=default_ors_settings, profile='foot-walking'
         )
 
+        result.geometry = result.geometry.set_precision(0.0000001)
         verify(result.sort_index().to_csv())
 
 
@@ -405,6 +404,37 @@ def test_get_ors_walking_distances(default_ors_settings):
     verify(result.to_json(indent=2))
 
 
+@use_cassette
+def test_get_ors_walking_distances_breaking_route(default_ors_settings):
+    destinations = pd.DataFrame(
+        data={
+            'id': ['a', 'b', 'c', 'd', 'e'],
+            'spur_id': ['a'] * 5,
+            'ordinal': [0, 1, 2, 3, 4],
+            'snapped_location': [
+                [8.655924, 53.135569],
+                [8.656426, 53.136326],
+                [8.656937, 53.134469],
+                [8.656426, 53.136326],
+                [8.655924, 53.135569],
+            ],
+            'snapped_distance': [0] * 5,
+        },
+    )
+    expected_distances = pd.Series(data=[90.6, numpy.inf, numpy.inf, numpy.inf, 90.6], name='distance')
+    expected_detours = pd.Series(data=[0.604, numpy.inf, numpy.inf, numpy.inf, 0.604], name='detour_factor')
+
+    result = get_ors_walking_distances(
+        ors_settings=default_ors_settings,
+        cell_distance=150,
+        destinations_with_snapping=destinations,
+        profile='foot-walking',
+    )
+
+    pd.testing.assert_series_equal(result.distance, expected_distances, check_index=False)
+    pd.testing.assert_series_equal(result.detour_factor, expected_detours, check_index=False)
+
+
 def test_get_ors_walking_distance_too_large(default_ors_settings):
     ors_settings = default_ors_settings.copy(deep=True)
     ors_settings.ors_directions_rate_limit = 0.1
@@ -428,41 +458,13 @@ def test_get_ors_walking_distance_too_large(default_ors_settings):
         )
 
 
-@pytest.fixture
-def ors_directions_request_fail():
-    with patch('openrouteservice.directions.directions') as mock:
-        mock.side_effect = mock_directions_with_ors_error
-        yield mock
-
-
-def mock_directions_with_ors_error(
-    client: ORSSettings, coordinates: list[list[float]], profile: str, geometry: bool, options: dict
-) -> None:
-    raise ApiError(status=500)
-
-
-@pytest.fixture
-def mock_sleep():
-    with patch('time.sleep') as mock:
-        mock.return_value = None
-
-
-def test_ors_request_fail(ors_directions_request_fail, mock_sleep, default_ors_settings):
-    coordinates = [[1.0, 1.0], [1.1, 1.1]]
-    with pytest.raises(ApiError):
-        ors_request(default_ors_settings, coordinates, profile='foot-walking')
-
-    ors_directions_request_fail.assert_called()
-    assert ors_directions_request_fail.call_count == 5
-
-
 @use_cassette
 def test_ors_request(default_ors_settings):
-    result, start_time = ors_request(
+    result = ors_request(
         ors_settings=default_ors_settings, coordinates=[[8.773, 49.376], [8.773085, 49.376161]], profile='foot-walking'
     )
-    assert isinstance(start_time, float)
-    verify(result)
+
+    assert result == [18.7]
 
 
 def test_match_ors_distance_to_cells():
@@ -523,3 +525,53 @@ def test_generate_waypoint_pairs():
     result = generate_waypoint_pairs(spur)
 
     assert result == expected_result
+
+
+@use_cassette
+def test_ors_request_route_not_found(default_ors_settings):
+    result = ors_request(
+        ors_settings=default_ors_settings,
+        coordinates=[(8.6897870, 53.1485750), (8.6886660, 53.1479170)],
+        profile='foot-walking',
+    )
+
+    assert result == [None]
+
+
+@use_cassette
+def test_ors_request_route_not_found_start_of_line(default_ors_settings):
+    result = ors_request(
+        ors_settings=default_ors_settings,
+        coordinates=[[8.656937, 53.134469], [8.655924, 53.135569], [8.656426, 53.136326]],
+        profile='foot-walking',
+    )
+
+    assert result == [None, 90.6]
+
+
+@use_cassette
+def test_ors_request_route_not_found_end_of_line(default_ors_settings):
+    result = ors_request(
+        ors_settings=default_ors_settings,
+        coordinates=[[8.655924, 53.135569], [8.656426, 53.136326], [8.656937, 53.134469]],
+        profile='foot-walking',
+    )
+
+    assert result == [90.6, None]
+
+
+@use_cassette
+def test_ors_request_route_not_found_middle_of_line_multiple(default_ors_settings):
+    result = ors_request(
+        ors_settings=default_ors_settings,
+        coordinates=[
+            [8.655924, 53.135569],
+            [8.656426, 53.136326],
+            [8.656937, 53.134469],
+            [8.656426, 53.136326],
+            [8.655924, 53.135569],
+        ],
+        profile='foot-walking',
+    )
+
+    assert result == [90.6, None, None, 90.6]

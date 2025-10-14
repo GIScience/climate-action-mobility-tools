@@ -1,6 +1,6 @@
 [project]
 name = "mobility-tools"
-version = "1.0.2"
+version = "1.0.3"
 description = "A library to bundle shared code between hiWalk and hiBike plugins"
 authors = [
     {name = "Emily C. Wilke", email = "emily.wilke@heigit.org"},
@@ -17,6 +17,7 @@ dependencies = [
     "h3pandas (>=0.3.0,<0.4.0)",
     "numpy (>=2.3.3,<3.0.0)",
     "requests-ratelimiter (>=0.7.0,<0.8.0)",
+    "tqdm (>=4.67.1,<5.0.0)",
 ]
 
 [tool.poetry]
