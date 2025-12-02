@@ -29,31 +29,31 @@ files = [
 
 [[package]]
 name = "approval-utilities"
-version = "15.3.2"
+version = "16.1.0"
 description = "Utilities for your production code that work well with approvaltests"
 optional = false
 python-versions = ">=3.8"
 groups = ["test"]
 files = [
-    {file = "approval_utilities-15.3.2-py3-none-any.whl", hash = "sha256:f56bf63c8b048586547354d3320ea71718f9f9acf4e0c622113bf86f99b7ba72"},
-    {file = "approval_utilities-15.3.2.tar.gz", hash = "sha256:e783163e1ad8fb784ee41eaf6b335585843fa531ddb80fc426eaad47cd3e2861"},
+    {file = "approval_utilities-16.1.0-py3-none-any.whl", hash = "sha256:e197f854af57c791c2637cebd76d905ac260dcfa095909210b3b59f2edae55ac"},
+    {file = "approval_utilities-16.1.0.tar.gz", hash = "sha256:15e2aa550cdf611edfa21796fdd8dfb34c72d0f349941586eba6ec53411ca2ad"},
 ]
 
 [[package]]
 name = "approvaltests"
-version = "15.3.2"
+version = "16.1.0"
 description = "Assertion/verification library to aid testing"
 optional = false
 python-versions = ">=3.8"
 groups = ["test"]
 files = [
-    {file = "approvaltests-15.3.2-py3-none-any.whl", hash = "sha256:ac9e2da587b1f1c3f72b1199afd8d03ea651fd7855de389b167988bc9a97e1fa"},
-    {file = "approvaltests-15.3.2.tar.gz", hash = "sha256:e5bd42517f9b93f371497049af44f11bf5669edadeb31fa7675aa9917697cf15"},
+    {file = "approvaltests-16.1.0-py3-none-any.whl", hash = "sha256:d7d6a53844f98a9efe0426d6d09811387d7d22b25a6163f50d492af2d5572796"},
+    {file = "approvaltests-16.1.0.tar.gz", hash = "sha256:a5ba0030d6d2ea3a9cfefb5522a02917e19b10df07d6ae9019f22148607b8bcb"},
 ]
 
 [package.dependencies]
 allpairspy = ">=2.1.0"
-approval_utilities = "15.3.2"
+approval_utilities = "16.1.0"
 beautifulsoup4 = ">=4.4.0"
 empty-files = ">=0.0.3"
 mock = ">=5.1.0"
@@ -2022,4 +2022,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "~=3.11"
-content-hash = "1f7a6205a4505463d60965ca7a43c2958083dcf713e5d6497dd1cc270ef4f4a5"
+content-hash = "8f0a608acebf66755f9b052af903a07674e19d691a1addb3714cf3c0f4de2f7e"
