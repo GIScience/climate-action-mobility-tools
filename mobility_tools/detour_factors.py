@@ -23,7 +23,11 @@ log = logging.getLogger(__name__)
 
 
 def get_detour_factors(
-    aoi: shapely.MultiPolygon, paths: gpd.GeoDataFrame, ors_settings: ORSSettings, profile: str, resolution: int = 10
+    aoi: shapely.MultiPolygon,
+    # paths: gpd.GeoDataFrame,
+    ors_settings: ORSSettings,
+    profile: str,
+    resolution: int = 10,
 ) -> gpd.GeoDataFrame:
     """
     Get detour factors calculates detour factors for the aoi in a hexgrid.
@@ -58,7 +62,7 @@ def get_detour_factors(
         profile=profile,
     )
 
-    snapped_destinations = exclude_ferries(snapped_destinations, paths)
+    # snapped_destinations = exclude_ferries(snapped_destinations, paths)
 
     destinations_with_snapping = pd.merge(
         left=destinations,
