@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import shapely
-from detour_factors import get_detour_factors
+from detour_factors_new import get_detour_factors_new as get_detour_factors
 from ors_settings import ORSSettings
 
 aoi = shapely.box(8.671217, 49.408404, 8.680658, 49.418400)
