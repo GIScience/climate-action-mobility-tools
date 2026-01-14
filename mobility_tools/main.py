@@ -3,7 +3,7 @@ import shapely
 from detour_factors_new import get_detour_factors_new
 from ors_settings import ORSSettings
 
-aoi = shapely.box(8.671217, 49.408404, 8.680658, 49.418400)
+aoi = shapely.box(8.671217, 49.408404, 8.7000658, 49.420400)
 ors_settings = ORSSettings()
 
 detour_factors_new = get_detour_factors_new(aoi=aoi, ors_settings=ors_settings, profile='foot-walking')
