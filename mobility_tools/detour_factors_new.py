@@ -1,23 +1,10 @@
 import logging
-import math
-import re
 
 import geopandas as gpd
-import h3
 import h3pandas
-import numpy as np
-import openrouteservice
-import openrouteservice.directions
-import openrouteservice.exceptions
-import pandas as pd
 import shapely
-from requests.adapters import HTTPAdapter
-from requests_ratelimiter import LimiterSession
-from tqdm import tqdm
-from urllib3.util import Retry
 
 from mobility_tools.ors_settings import ORSSettings
-from mobility_tools.utils.exceptions import SizeLimitExceededError
 
 log = logging.getLogger(__name__)
 
@@ -49,6 +36,5 @@ def get_detour_factors_new(
     full_hexgrid.h3.h3_to_geo().rename(columns={'geometry': 'cell_center'})
     full_hexgrid.h3.h3_to_geo_boundary()
 
-    full_hexgrid["detour_factor"] = 1
+    full_hexgrid['detour_factor'] = 1
     return full_hexgrid
-
