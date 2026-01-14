@@ -4,10 +4,12 @@ from time import time_ns
 import geopandas as gpd
 import h3pandas
 import numpy as np
-import openrouteservice.distance_matrix as ors
+import openrouteservice.directions as ors
 import pandas as pd
 import shapely
+import urllib3
 from pyproj import Transformer
+from urllib3 import Retry
 
 from mobility_tools.ors_settings import ORSSettings
 
@@ -57,7 +59,7 @@ def extract_routing_coordinates(
     row: pd.Series, ors_settings: ORSSettings, profile: str, transform: Transformer
 ) -> float:
     start = time_ns()
-    vertices = extract_points(row)
+    vertices = extract_points(row, ors_settings=ors_settings, profile=profile)
     end = time_ns()
     extract_time = end - start
 
@@ -67,7 +69,7 @@ def extract_routing_coordinates(
     request_time = end - start
 
     start = time_ns()
-    detour_factor = calculate_detour_factor(transform, result)
+    detour_factor = calculate_detour_factor(transform, result, vertices)
     end = time_ns()
     result_time = end - start
 
@@ -76,25 +78,28 @@ def extract_routing_coordinates(
 
 
 def ors_request(ors_settings: ORSSettings, profile: str, vertices: list[tuple]) -> dict:
-    return ors.distance_matrix(
+    return ors.directions(
         client=ors_settings.client,
-        locations=vertices,
+        coordinates=vertices,
         profile=profile,
-        sources=[0],
-        destinations=list(range(1, len(vertices))),
-        metrics=['distance'],
+        geometry=False,
+        options={'avoid_features': ['ferries']},
     )
 
 
-def calculate_detour_factor(transform, result):
-    distances = result['distances'][0]
-    snapped_vertices = [destination.get('location') for destination in result['destinations']]
+def calculate_detour_factor(transform: Transformer, result: dict, waypoints: list[tuple[float, float]]) -> float:
+    segments = result['routes'][0]['segments']
 
-    snapped_sources = result['sources'][0].get('location')
-    snapped_vertices.insert(0, snapped_sources)
+    center_segments = [segments[0], segments[2], segments[3], segments[5], segments[6], segments[8]]
+    distances = [segment.get('distance') for segment in center_segments]
+
+    # remove all but first instance of center point as source
+    waypoints.pop(9)
+    waypoints.pop(6)
+    waypoints.pop(3)
 
     utm_lon, utm_lat = transform.transform(
-        xx=[location[0] for location in snapped_vertices], yy=[location[1] for location in snapped_vertices]
+        xx=[location[0] for location in waypoints], yy=[location[1] for location in waypoints]
     )
 
     utm_points = [shapely.Point(utm_lon[i], utm_lat[i]) for i in range(0, len(utm_lon))]
@@ -116,7 +121,7 @@ def calculate_detour_factor(transform, result):
     return detour_factor
 
 
-def extract_points(row):
+def extract_points(row: pd.Series, ors_settings: ORSSettings, profile: str):
     center: shapely.Point = row['cell_center']
     boundary: shapely.Polygon = row['geometry']
 
@@ -125,6 +130,50 @@ def extract_points(row):
     center_point = (center_lon[0], center_lat[0])
     vertices = list(zip(boundary_lon, boundary_lat))
 
-    vertices.insert(0, center_point)
     vertices.pop()
-    return vertices
+    vertices.append(center_point)
+
+    # snapped_vertices = snap_vertices(vertices, ors_settings=ors_settings, profile=profile)
+
+    # #remove last point from linear ring because it closes the ring
+    snapped_vertices = vertices
+    snapped_center = snapped_vertices.pop()
+
+    # insert center point every 3 positions so the center point is adjacent to each point
+    snapped_vertices.insert(0, snapped_center)
+    snapped_vertices.insert(3, snapped_center)
+    snapped_vertices.insert(6, snapped_center)
+    snapped_vertices.insert(9, snapped_center)
+
+    return snapped_vertices
+
+
+def snap_vertices(
+    vertices: list[tuple[float, float]], ors_settings: ORSSettings, profile: str
+) -> list[tuple[float, float]]:
+    headers = {
+        'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8',
+        'Authorization': ors_settings.ors_api_key,
+        'Content-Type': 'application/json; charset=utf-8',
+    }
+
+    body = {'locations': vertices}
+
+    retries = Retry(
+        total=3,
+        backoff_factor=0.1,
+        status_forcelist=[502, 503, 504],
+        allowed_methods={'POST'},
+    )
+
+    response = urllib3.request(
+        method='post',
+        url=f'{ors_settings.client._base_url}/v2/snap/{profile}',
+        headers=headers,
+        json=body,
+        retries=retries,
+    )
+
+    result = response.json()
+    snapped_vertices = [location.get('location') for location in result['locations']]
+    return snapped_vertices
