@@ -4,9 +4,7 @@ import geopandas as gpd
 import h3pandas
 import numpy as np
 import openrouteservice.directions as directions
-import pandas as pd
 import shapely
-from PIL.ImageChops import offset
 from pyproj import Transformer
 
 from mobility_tools.ors_settings import ORSSettings
@@ -21,7 +19,7 @@ def calculate_detour_factors(chunk_distances, transform: Transformer):
         waypoints.insert(0, center)
 
         utm_lon, utm_lat = transform.transform(
-            xx=[location[0] for location in waypoints], yy=[location[1] for location in waypoints]
+            xx=[location[1] for location in waypoints], yy=[location[0] for location in waypoints]
         )
         utm_points = [shapely.Point(utm_lon[i], utm_lat[i]) for i in range(0, len(utm_lon))]
         source = utm_points.pop(0)
@@ -69,7 +67,7 @@ def get_detour_factors_batched(
     hexgrid = hexgrid.h3.h3_to_geo_boundary()
 
     # Process hexgrid in batches to avoid applying row-by-row for the entire frame
-    batch_size = 3 #should be set dynamically depending on the size of the hexgrid and ORS rate limits
+    batch_size = 3  # should be set dynamically depending on the size of the hexgrid and ORS rate limits
     detour_factors = []
     for start in range(0, len(hexgrid), batch_size):
         end = min(start + batch_size, len(hexgrid))
@@ -97,6 +95,7 @@ def extract_points(row):
     vertices.pop()
     return vertices
 
+
 def extract_coordinates(row):
     center_point: shapely.Point = row['cell_center']
     boundary: shapely.Polygon = row['geometry']
@@ -109,9 +108,8 @@ def extract_coordinates(row):
 
     return (center, corners)
 
-def compute_distances(
-        chunk_coordinates, ors_settings: ORSSettings, profile: str
-) -> list[(list[float], list[float])]:
+
+def compute_distances(chunk_coordinates, ors_settings: ORSSettings, profile: str) -> list[(list[float], list[float])]:
     coordinates = []
     skip_segments = []
     segment_indices = []
@@ -132,19 +130,21 @@ def compute_distances(
         client=ors_settings.client,
         coordinates=coordinates,
         profile=profile,
-        #geometry=False,
-        #skip_segments=skip_segments,
-        format = 'geojson'
+        # geometry=False,
+        # skip_segments=skip_segments,
+        format='geojson',
     )
 
     segment_distances = [segment['distance'] for segment in result['features'][0]['properties']['segments']]
-    snapped_coordinates = [result['features'][0]['geometry']['coordinates'][i] for i in result['features'][0]['properties']['way_points']]
+    snapped_coordinates = [
+        result['features'][0]['geometry']['coordinates'][i] for i in result['features'][0]['properties']['way_points']
+    ]
 
     distances = []
     for indices in segment_indices:
         routes_distances = [segment_distances[i] for i in indices]
         snapped_center = snapped_coordinates[indices[0]]
-        snapped_corners = [snapped_coordinates[i+1] for i in indices]
+        snapped_corners = [snapped_coordinates[i + 1] for i in indices]
         distances.append((routes_distances, (snapped_center, snapped_corners)))
 
     return distances

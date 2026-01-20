@@ -99,7 +99,7 @@ def calculate_detour_factor(transform: Transformer, result: dict, waypoints: lis
     waypoints.pop(3)
 
     utm_lon, utm_lat = transform.transform(
-        xx=[location[0] for location in waypoints], yy=[location[1] for location in waypoints]
+        xx=[location[1] for location in waypoints], yy=[location[0] for location in waypoints]
     )
 
     utm_points = [shapely.Point(utm_lon[i], utm_lat[i]) for i in range(0, len(utm_lon))]
@@ -133,10 +133,10 @@ def extract_points(row: pd.Series, ors_settings: ORSSettings, profile: str):
     vertices.pop()
     vertices.append(center_point)
 
-    # snapped_vertices = snap_vertices(vertices, ors_settings=ors_settings, profile=profile)
+    snapped_vertices = snap_vertices(vertices, ors_settings=ors_settings, profile=profile)
 
     # #remove last point from linear ring because it closes the ring
-    snapped_vertices = vertices
+    # snapped_vertices = vertices
     snapped_center = snapped_vertices.pop()
 
     # insert center point every 3 positions so the center point is adjacent to each point
