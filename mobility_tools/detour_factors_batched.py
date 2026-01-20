@@ -7,19 +7,29 @@ import openrouteservice.directions as directions
 import pandas as pd
 import shapely
 from PIL.ImageChops import offset
+from pyproj import Transformer
 
 from mobility_tools.ors_settings import ORSSettings
 
 log = logging.getLogger(__name__)
 
 
-def calculate_detour_factors(chunk_distances):
+def calculate_detour_factors(chunk_distances, transform: Transformer):
     chunk_detour_factors = []
-    for actual_distances, linear_distances in chunk_distances:
-        for index, linear_distance in enumerate(linear_distances):
-            if linear_distance == 0.0:
-                linear_distances.pop(index)
-                actual_distances.pop(index)
+    for actual_distances, coordinates in chunk_distances:
+        center, waypoints = coordinates
+        waypoints.insert(0, center)
+
+        utm_lon, utm_lat = transform.transform(
+            xx=[location[0] for location in waypoints], yy=[location[1] for location in waypoints]
+        )
+        utm_points = [shapely.Point(utm_lon[i], utm_lat[i]) for i in range(0, len(utm_lon))]
+        source = utm_points.pop(0)
+
+        linear_distances = []
+        for destination in utm_points:
+            distance = shapely.distance(source, destination)
+            linear_distances.append(distance)
 
         detour_ratio = np.array(actual_distances) / np.array(linear_distances)
         detour_factor = detour_ratio.mean()
@@ -51,6 +61,9 @@ def get_detour_factors_batched(
     log.debug(f'Using h3pandas v{h3pandas.version} to get hexgrid for aoi.')  # need to use h3pandas import
     full_hexgrid = gpd.GeoDataFrame(geometry=[aoi], crs='EPSG:4326').h3.polyfill_resample(resolution)
 
+    crs = full_hexgrid.estimate_utm_crs()
+    transform = Transformer.from_crs(crs_from='EPSG:4326', crs_to=crs)
+
     # get cell centers and geometry
     hexgrid = full_hexgrid.h3.h3_to_geo().rename(columns={'geometry': 'cell_center'}).set_geometry('cell_center')
     hexgrid = hexgrid.h3.h3_to_geo_boundary()
@@ -64,7 +77,7 @@ def get_detour_factors_batched(
         log.debug(f'Processing hexgrid batch {start}:{end}')
         chunk_coordinates = chunk.apply(extract_coordinates, axis=1).tolist()
         chunk_distances = compute_distances(chunk_coordinates, ors_settings, profile)
-        batch_detour_factors = calculate_detour_factors(chunk_distances)
+        batch_detour_factors = calculate_detour_factors(chunk_distances, transform)
         detour_factors += batch_detour_factors
     full_hexgrid['detour_factor'] = detour_factors
 
@@ -119,15 +132,19 @@ def compute_distances(
         client=ors_settings.client,
         coordinates=coordinates,
         profile=profile,
-        geometry=False,
-        skip_segments=skip_segments
+        #geometry=False,
+        #skip_segments=skip_segments,
+        format = 'geojson'
     )
 
-    segment_distances = [segment['distance'] for segment in result['routes'][0]['segments']]
+    segment_distances = [segment['distance'] for segment in result['features'][0]['properties']['segments']]
+    snapped_coordinates = [result['features'][0]['geometry']['coordinates'][i] for i in result['features'][0]['properties']['way_points']]
+
     distances = []
     for indices in segment_indices:
         routes_distances = [segment_distances[i] for i in indices]
-        linear_distances = [segment_distances[i+1] for i in indices]
-        distances.append((routes_distances, linear_distances))
+        snapped_center = snapped_coordinates[indices[0]]
+        snapped_corners = [snapped_coordinates[i+1] for i in indices]
+        distances.append((routes_distances, (snapped_center, snapped_corners)))
 
     return distances
