@@ -68,7 +68,7 @@ def get_detour_factors_batched(
     hexgrid = hexgrid.h3.h3_to_geo_boundary()
 
     # Process hexgrid in batches to avoid applying row-by-row for the entire frame
-    batch_size = 1  # should be set dynamically depending on the size of the hexgrid and ORS rate limits
+    batch_size = 3  # should be set dynamically depending on the size of the hexgrid and ORS rate limits
     detour_factors = []
     for start in range(0, len(hexgrid), batch_size):
         end = min(start + batch_size, len(hexgrid))
@@ -114,18 +114,21 @@ def compute_distances(chunk_coordinates, ors_settings: ORSSettings, profile: str
     coordinates = []
     skip_segments = []
     segment_indices = []
-    for center, vertices in chunk_coordinates:
+    for center, waypoints in chunk_coordinates:
         if len(coordinates):
             # skip connection from last cell center to this cell center
             skip_segments.append(len(coordinates))
-        for i in range(len(vertices) + 1):
-            vertices.insert(2 * i, center)
-        n = len(vertices)
+        for i in range(len(waypoints) // 2 + 1):
+            waypoints.insert(3 * i, center)
         offset = len(coordinates)
-        linear_indices = [i + offset for i in list(range(2, n, 2))]
-        coordinates += vertices
-        skip_segments += linear_indices
-        segment_indices.append([i - 2 for i in linear_indices])
+        connecting_segments = [i + offset for i in list(range(2, len(waypoints), 3))]
+        route_segments = []
+        for i in connecting_segments:
+            route_segments.append(i - 1)
+            route_segments.append(i + 1)
+        coordinates += waypoints
+        skip_segments += connecting_segments
+        segment_indices.append([i - 1 for i in route_segments])
 
     result = directions.directions(
         client=ors_settings.client,
@@ -148,7 +151,8 @@ def compute_distances(chunk_coordinates, ors_settings: ORSSettings, profile: str
     for indices in segment_indices:
         routes_distances = [segment_distances[i] for i in indices]
         snapped_center = snapped_coordinates[indices[0]]
-        snapped_corners = [snapped_coordinates[i + 1] for i in indices]
+        corner_indices = [i + indices[0] for i in [1, 2, 4, 5, 7, 8]]
+        snapped_corners = [snapped_coordinates[i] for i in corner_indices]
         distances.append((routes_distances, (snapped_center, snapped_corners)))
 
     return distances
