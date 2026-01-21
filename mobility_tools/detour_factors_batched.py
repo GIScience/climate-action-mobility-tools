@@ -1,3 +1,4 @@
+import json
 import logging
 
 import geopandas as gpd
@@ -67,7 +68,7 @@ def get_detour_factors_batched(
     hexgrid = hexgrid.h3.h3_to_geo_boundary()
 
     # Process hexgrid in batches to avoid applying row-by-row for the entire frame
-    batch_size = 3  # should be set dynamically depending on the size of the hexgrid and ORS rate limits
+    batch_size = 1  # should be set dynamically depending on the size of the hexgrid and ORS rate limits
     detour_factors = []
     for start in range(0, len(hexgrid), batch_size):
         end = min(start + batch_size, len(hexgrid))
@@ -134,6 +135,9 @@ def compute_distances(chunk_coordinates, ors_settings: ORSSettings, profile: str
         # skip_segments=skip_segments,
         format='geojson',
     )
+
+    with open('test.json', 'w+') as file:
+        json.dump(result, indent=2, fp=file)
 
     segment_distances = [segment['distance'] for segment in result['features'][0]['properties']['segments']]
     snapped_coordinates = [
