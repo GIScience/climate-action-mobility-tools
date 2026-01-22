@@ -3,6 +3,7 @@ import pandas as pd
 import shapely
 from pyproj import Transformer
 from vcr import use_cassette
+from approvaltests import verify
 
 from mobility_tools.detour_factors_batched import (
     calculate_detour_factors,
@@ -18,19 +19,16 @@ def test_get_detour_factors_batched(default_ors_settings):
 
     result = get_detour_factors_batched(aoi, default_ors_settings, profile='foot-walking')
 
-    # approval test here is hard because batching happens in non-deterministic order,
-    # so recorded request returns static data for varied orders of cells
     assert 'detour_factor' in result.columns
     for detour_factor in result.detour_factor:
         assert isinstance(detour_factor, float)
     assert result.active_geometry_name is not None
 
-
-def test_get_detour_factors_low_paths(default_aoi):
-    ors_settings = ORSSettings()
-    aoi = shapely.box(8.671217, 49.408404, 8.6800658, 49.410400)
-
-    get_detour_factors_batched(aoi, ors_settings, profile='foot-walking')
+@use_cassette
+def test_get_detour_factors_approval_test(small_aoi, default_ors_settings):
+    
+    result = get_detour_factors_batched(small_aoi, default_ors_settings, profile='foot-walking')
+    verify(result.to_csv())
 
 
 def test_extract_coordinates():

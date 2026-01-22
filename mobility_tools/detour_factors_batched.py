@@ -38,7 +38,7 @@ def get_detour_factors_batched(
     log.info('Computing detour factors')
 
     log.debug(f'Using h3pandas v{h3pandas.version} to get hexgrid for aoi.')  # need to use h3pandas import
-    full_hexgrid = gpd.GeoDataFrame(geometry=[aoi], crs='EPSG:4326').h3.polyfill_resample(resolution)
+    full_hexgrid = gpd.GeoDataFrame(geometry=[aoi], crs='EPSG:4326').h3.polyfill_resample(resolution).sort_values(by='h3_polyfill')
 
     crs = full_hexgrid.estimate_utm_crs()
     transform = Transformer.from_crs(crs_from='EPSG:4326', crs_to=crs)

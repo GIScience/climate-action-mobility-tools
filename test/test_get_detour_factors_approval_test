@@ -1,0 +1,471 @@
+interactions:
+- request:
+    body: '{"locations": [[8.69186, 49.41804], [8.69234, 49.41699], [8.69013, 49.41823],
+      [8.69311, 49.4189], [8.69061, 49.41718], [8.68936, 49.41632], [8.69138, 49.41909]],
+      "radius": 70}'
+    headers:
+      Accept:
+      - application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - test-key
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '175'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.32.5
+    method: POST
+    uri: http://localhost:8080/ors/v2/snap/foot-walking
+  response:
+    body:
+      string: "{\"locations\":[{\"location\":[8.692441,49.418156],\"name\":\"Bergstra\xDFe\",\"snapped_distance\":43.96},{\"location\":[8.692342,49.416989],\"snapped_distance\":0.22},{\"location\":[8.690381,49.418226],\"name\":\"Lutherstra\xDFe\",\"snapped_distance\":18.17},{\"location\":[8.693087,49.418903],\"name\":\"Gustav-Kirchhoff-Stra\xDFe\",\"snapped_distance\":1.7},{\"location\":[8.690392,49.417184],\"snapped_distance\":15.74},{\"location\":[8.689776,49.416313],\"snapped_distance\":30.13},{\"location\":[8.691352,49.419144],\"name\":\"Kuno-Fischer-Stra\xDFe\",\"snapped_distance\":6.38}],\"metadata\":{\"attribution\":\"openrouteservice.org,
+        OpenStreetMap contributors\",\"service\":\"snap\",\"timestamp\":1769095886572,\"query\":{\"locations\":[[8.69186,49.41804],[8.69234,49.41699],[8.69013,49.41823],[8.69311,49.4189],[8.69061,49.41718],[8.68936,49.41632],[8.69138,49.41909]],\"profile\":\"foot-walking\",\"profileName\":\"foot-walking\",\"format\":\"json\",\"radius\":70.0},\"engine\":{\"version\":\"9.5.0\",\"build_date\":\"2025-10-31T12:33:09Z\",\"graph_date\":\"2026-01-12T12:42:39Z\",\"osm_date\":\"2026-01-05T01:00:02Z\"}}}"
+    headers:
+      Access-Control-Allow-Headers:
+      - Access-Control-Allow-Headers, Origin, Accept, X-Requested-With, Authorization,
+        Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers
+      Access-Control-Allow-Methods:
+      - OPTIONS,GET,POST
+      Access-Control-Expose-Headers:
+      - x-ratelimit-remaining, x-ratelimit-reset, x-ratelimit-limit
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 22 Jan 2026 15:31:26 GMT
+      Server:
+      - nginx/1.25.4
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubdomains;
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin,Access-Control-Request-Method,Access-Control-Request-Headers
+      X-Ratelimit-Limit:
+      - '-1'
+      X-Ratelimit-Remaining:
+      - '0'
+      X-Ratelimit-Reset:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"coordinates": [[8.692441, 49.418156], [8.691123064128732, 49.4184560896518],
+      [8.690867443745669, 49.417819362199985], [8.692441, 49.418156], [8.691604593959488,
+      49.41740680874916], [8.692597371204453, 49.4176309797701], [8.692441, 49.418156],
+      [8.692853008581372, 49.41826770782902], [8.692115851719578, 49.41868026425992],
+      [8.692441, 49.418156], [8.692342, 49.416989], [8.691604593959488, 49.41740680874916],
+      [8.691348972376915, 49.41677007354305], [8.692342, 49.416989], [8.69208611104595,
+      49.41635750875067], [8.69307887794511, 49.416581676184364], [8.692342, 49.416989],
+      [8.693334516520958, 49.41721841199761], [8.692597371204453, 49.4176309797701],
+      [8.692342, 49.416989], [8.690381, 49.418226], [8.689393126876997, 49.41864444343829],
+      [8.689137523488084, 49.41800771659404], [8.690381, 49.418226], [8.689874678597821,
+      49.41759517746481], [8.690867443745669, 49.417819362199985], [8.690381, 49.418226],
+      [8.691123064128732, 49.4184560896518], [8.69038590236991, 49.41886863176089],
+      [8.690381, 49.418226], [8.693087, 49.418903], [8.692371487897379, 49.41931698456434],
+      [8.692115851719578, 49.41868026425992], [8.693087, 49.418903], [8.692853008581372,
+      49.41826770782902], [8.693845808268394, 49.4184918687223], [8.693087, 49.418903],
+      [8.694101461440287, 49.41912858963343], [8.693364297931161, 49.41954114904462],
+      [8.693087, 49.418903], [8.690392, 49.417184], [8.689874678597821, 49.41759517746481],
+      [8.689619074008869, 49.41695844286624], [8.690392, 49.417184], [8.69035621757407,
+      49.41654589239527], [8.691348972376915, 49.41677007354305], [8.690392, 49.417184],
+      [8.691604593959488, 49.41740680874916], [8.690867443745669, 49.417819362199985],
+      [8.690392, 49.417184], [8.689776, 49.416313], [8.688626331304002, 49.41673424800478],
+      [8.688370742508578, 49.41609750626006], [8.689776, 49.416313], [8.68910787942453,
+      49.41568495876877], [8.690100611785263, 49.415909150042616], [8.689776, 49.416313],
+      [8.69035621757407, 49.41654589239527], [8.689619074008869, 49.41695844286624],
+      [8.689776, 49.416313], [8.691352, 49.419144], [8.690641521553317, 49.41950535145814],
+      [8.69038590236991, 49.41886863176089], [8.691352, 49.419144], [8.691123064128732,
+      49.4184560896518], [8.692115851719578, 49.41868026425992], [8.691352, 49.419144],
+      [8.692371487897379, 49.41931698456434], [8.69163431949004, 49.4197295296535],
+      [8.691352, 49.419144]]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - test-key
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2331'
+      Content-type:
+      - application/json
+      User-Agent:
+      - ORSClientPython.v2.2.2
+    method: POST
+    uri: http://localhost:8080/ors/v2/directions/foot-walking/geojson
+  response:
+    body:
+      string: "{\"type\":\"FeatureCollection\",\"bbox\":[8.687543,49.415779,8.695748,49.419743],\"features\":[{\"bbox\":[8.687543,49.415779,8.695748,49.419743],\"type\":\"Feature\",\"properties\":{\"segments\":[{\"distance\":137.4,\"duration\":99.0,\"steps\":[{\"distance\":56.0,\"duration\":40.3,\"type\":11,\"instruction\":\"Head
+        north on Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[0,2]},{\"distance\":81.5,\"duration\":58.7,\"type\":0,\"instruction\":\"Turn
+        left onto Ku\xDFmaulstra\xDFe\",\"name\":\"Ku\xDFmaulstra\xDFe\",\"way_points\":[2,3]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Ku\xDFmaulstra\xDFe, on the right\",\"name\":\"-\",\"way_points\":[3,3]}]},{\"distance\":68.6,\"duration\":49.4,\"steps\":[{\"distance\":16.7,\"duration\":12.0,\"type\":11,\"instruction\":\"Head
+        west on Ku\xDFmaulstra\xDFe\",\"name\":\"Ku\xDFmaulstra\xDFe\",\"way_points\":[3,4]},{\"distance\":21.3,\"duration\":15.4,\"type\":0,\"instruction\":\"Turn
+        left onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[4,6]},{\"distance\":18.1,\"duration\":13.1,\"type\":4,\"instruction\":\"Turn
+        slight left onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[6,7]},{\"distance\":12.4,\"duration\":8.9,\"type\":13,\"instruction\":\"Keep
+        right onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[7,8]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Handschuhsheimer Landstra\xDFe, B 3, on the left\",\"name\":\"-\",\"way_points\":[8,8]}]},{\"distance\":205.9,\"duration\":148.2,\"steps\":[{\"distance\":30.6,\"duration\":22.0,\"type\":11,\"instruction\":\"Head
+        northwest on Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[8,10]},{\"distance\":21.3,\"duration\":15.4,\"type\":13,\"instruction\":\"Keep
+        right onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[10,12]},{\"distance\":98.0,\"duration\":70.6,\"type\":1,\"instruction\":\"Turn
+        right onto Ku\xDFmaulstra\xDFe\",\"name\":\"Ku\xDFmaulstra\xDFe\",\"way_points\":[12,13]},{\"distance\":12.2,\"duration\":8.8,\"type\":1,\"instruction\":\"Turn
+        right onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[13,14]},{\"distance\":43.8,\"duration\":31.5,\"type\":13,\"instruction\":\"Keep
+        right onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[14,15]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Bergstra\xDFe, on the right\",\"name\":\"-\",\"way_points\":[15,15]}]},{\"distance\":208.2,\"duration\":149.9,\"steps\":[{\"distance\":104.5,\"duration\":75.2,\"type\":11,\"instruction\":\"Head
+        south on Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[15,17]},{\"distance\":50.2,\"duration\":36.1,\"type\":1,\"instruction\":\"Turn
+        right onto M\xF6nchhofplatz\",\"name\":\"M\xF6nchhofplatz\",\"way_points\":[17,18]},{\"distance\":24.2,\"duration\":17.4,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[18,24]},{\"distance\":29.4,\"duration\":21.2,\"type\":1,\"instruction\":\"Turn
+        right onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[24,26]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Handschuhsheimer Landstra\xDFe, B 3, on the right\",\"name\":\"-\",\"way_points\":[26,26]}]},{\"distance\":149.1,\"duration\":107.4,\"steps\":[{\"distance\":29.4,\"duration\":21.2,\"type\":11,\"instruction\":\"Head
+        southeast on Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[26,28]},{\"distance\":24.2,\"duration\":17.4,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[28,34]},{\"distance\":50.2,\"duration\":36.1,\"type\":0,\"instruction\":\"Turn
+        left onto M\xF6nchhofplatz\",\"name\":\"M\xF6nchhofplatz\",\"way_points\":[34,35]},{\"distance\":4.4,\"duration\":3.2,\"type\":0,\"instruction\":\"Turn
+        left onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[35,36]},{\"distance\":41.0,\"duration\":29.5,\"type\":12,\"instruction\":\"Keep
+        left onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[36,37]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Bergstra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[37,37]}]},{\"distance\":59.1,\"duration\":42.6,\"steps\":[{\"distance\":59.1,\"duration\":42.6,\"type\":11,\"instruction\":\"Head
+        north on Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[37,38]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Bergstra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[38,38]}]},{\"distance\":3.1,\"duration\":2.2,\"steps\":[{\"distance\":3.1,\"duration\":2.2,\"type\":11,\"instruction\":\"Head
+        north on Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[38,39]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Bergstra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[39,39]}]},{\"distance\":59.5,\"duration\":42.9,\"steps\":[{\"distance\":52.8,\"duration\":38.1,\"type\":11,\"instruction\":\"Head
+        north on Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[39,41]},{\"distance\":6.7,\"duration\":4.8,\"type\":12,\"instruction\":\"Keep
+        left onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[41,42]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Bergstra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[42,42]}]},{\"distance\":62.7,\"duration\":45.1,\"steps\":[{\"distance\":18.9,\"duration\":13.6,\"type\":11,\"instruction\":\"Head
+        south on Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[42,44]},{\"distance\":43.8,\"duration\":31.5,\"type\":13,\"instruction\":\"Keep
+        right onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[44,45]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Bergstra\xDFe, on the right\",\"name\":\"-\",\"way_points\":[45,45]}]},{\"distance\":166.1,\"duration\":119.6,\"steps\":[{\"distance\":115.8,\"duration\":83.3,\"type\":11,\"instruction\":\"Head
+        south on Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[45,48]},{\"distance\":17.8,\"duration\":12.8,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[48,51]},{\"distance\":32.5,\"duration\":23.4,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[51,54]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the right\",\"name\":\"-\",\"way_points\":[54,54]}]},{\"distance\":142.9,\"duration\":102.9,\"steps\":[{\"distance\":15.5,\"duration\":11.2,\"type\":11,\"instruction\":\"Head
+        southwest\",\"name\":\"-\",\"way_points\":[54,57]},{\"distance\":16.0,\"duration\":11.5,\"type\":13,\"instruction\":\"Keep
+        right\",\"name\":\"-\",\"way_points\":[57,59]},{\"distance\":22.9,\"duration\":16.5,\"type\":3,\"instruction\":\"Turn
+        sharp right\",\"name\":\"-\",\"way_points\":[59,61]},{\"distance\":17.7,\"duration\":12.8,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[61,65]},{\"distance\":8.4,\"duration\":6.1,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[65,67]},{\"distance\":19.9,\"duration\":14.4,\"type\":13,\"instruction\":\"Keep
+        right\",\"name\":\"-\",\"way_points\":[67,71]},{\"distance\":13.0,\"duration\":9.4,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[71,74]},{\"distance\":29.4,\"duration\":21.2,\"type\":0,\"instruction\":\"Turn
+        left onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[74,76]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Handschuhsheimer Landstra\xDFe, B 3, on the right\",\"name\":\"-\",\"way_points\":[76,76]}]},{\"distance\":87.5,\"duration\":63.0,\"steps\":[{\"distance\":29.4,\"duration\":21.2,\"type\":11,\"instruction\":\"Head
+        southeast on Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[76,78]},{\"distance\":13.0,\"duration\":9.4,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[78,81]},{\"distance\":19.9,\"duration\":14.4,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[81,85]},{\"distance\":25.2,\"duration\":18.1,\"type\":3,\"instruction\":\"Turn
+        sharp right\",\"name\":\"-\",\"way_points\":[85,86]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the right\",\"name\":\"-\",\"way_points\":[86,86]}]},{\"distance\":105.7,\"duration\":76.1,\"steps\":[{\"distance\":33.6,\"duration\":24.2,\"type\":11,\"instruction\":\"Head
+        east\",\"name\":\"-\",\"way_points\":[86,89]},{\"distance\":17.7,\"duration\":12.8,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[89,93]},{\"distance\":22.9,\"duration\":16.5,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[93,95]},{\"distance\":16.0,\"duration\":11.5,\"type\":2,\"instruction\":\"Turn
+        sharp left\",\"name\":\"-\",\"way_points\":[95,97]},{\"distance\":15.5,\"duration\":11.2,\"type\":4,\"instruction\":\"Turn
+        slight left\",\"name\":\"-\",\"way_points\":[97,100]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the left\",\"name\":\"-\",\"way_points\":[100,100]}]},{\"distance\":87.5,\"duration\":63.0,\"steps\":[{\"distance\":15.5,\"duration\":11.2,\"type\":11,\"instruction\":\"Head
+        southwest\",\"name\":\"-\",\"way_points\":[100,103]},{\"distance\":16.0,\"duration\":11.5,\"type\":13,\"instruction\":\"Keep
+        right\",\"name\":\"-\",\"way_points\":[103,105]},{\"distance\":16.1,\"duration\":11.6,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[105,107]},{\"distance\":13.7,\"duration\":9.9,\"type\":1,\"instruction\":\"Turn
+        right onto M\xF6nchhofplatz\",\"name\":\"M\xF6nchhofplatz\",\"way_points\":[107,108]},{\"distance\":26.2,\"duration\":18.9,\"type\":0,\"instruction\":\"Turn
+        left onto Br\xFCckenstra\xDFe, B 3\",\"name\":\"Br\xFCckenstra\xDFe, B 3\",\"way_points\":[108,109]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Br\xFCckenstra\xDFe, B 3, on the right\",\"name\":\"-\",\"way_points\":[109,109]}]},{\"distance\":107.8,\"duration\":77.6,\"steps\":[{\"distance\":26.2,\"duration\":18.9,\"type\":11,\"instruction\":\"Head
+        north on Br\xFCckenstra\xDFe, B 3\",\"name\":\"Br\xFCckenstra\xDFe, B 3\",\"way_points\":[109,110]},{\"distance\":76.6,\"duration\":55.2,\"type\":1,\"instruction\":\"Turn
+        right onto M\xF6nchhofplatz\",\"name\":\"M\xF6nchhofplatz\",\"way_points\":[110,113]},{\"distance\":4.9,\"duration\":3.5,\"type\":1,\"instruction\":\"Turn
+        right onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[113,114]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Bergstra\xDFe, on the right\",\"name\":\"-\",\"way_points\":[114,114]}]},{\"distance\":83.6,\"duration\":60.2,\"steps\":[{\"distance\":4.9,\"duration\":3.5,\"type\":11,\"instruction\":\"Head
+        north on Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[114,115]},{\"distance\":9.9,\"duration\":7.1,\"type\":0,\"instruction\":\"Turn
+        left onto M\xF6nchhofplatz\",\"name\":\"M\xF6nchhofplatz\",\"way_points\":[115,116]},{\"distance\":53.3,\"duration\":38.4,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[116,120]},{\"distance\":15.5,\"duration\":11.2,\"type\":5,\"instruction\":\"Turn
+        slight right\",\"name\":\"-\",\"way_points\":[120,123]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the left\",\"name\":\"-\",\"way_points\":[123,123]}]},{\"distance\":97.7,\"duration\":70.3,\"steps\":[{\"distance\":32.5,\"duration\":23.4,\"type\":11,\"instruction\":\"Head
+        northeast\",\"name\":\"-\",\"way_points\":[123,126]},{\"distance\":17.8,\"duration\":12.8,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[126,129]},{\"distance\":15.6,\"duration\":11.3,\"type\":0,\"instruction\":\"Turn
+        left onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[129,131]},{\"distance\":31.7,\"duration\":22.8,\"type\":1,\"instruction\":\"Turn
+        right onto M\xF6nchbergsteige\",\"name\":\"M\xF6nchbergsteige\",\"way_points\":[131,132]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at M\xF6nchbergsteige, on the left\",\"name\":\"-\",\"way_points\":[132,132]}]},{\"distance\":72.7,\"duration\":52.3,\"steps\":[{\"distance\":31.7,\"duration\":22.8,\"type\":11,\"instruction\":\"Head
+        west on M\xF6nchbergsteige\",\"name\":\"M\xF6nchbergsteige\",\"way_points\":[132,133]},{\"distance\":41.0,\"duration\":29.5,\"type\":1,\"instruction\":\"Turn
+        right onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[133,134]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Bergstra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[134,134]}]},{\"distance\":107.0,\"duration\":77.0,\"steps\":[{\"distance\":56.6,\"duration\":40.8,\"type\":11,\"instruction\":\"Head
+        south on Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[134,137]},{\"distance\":17.8,\"duration\":12.8,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[137,140]},{\"distance\":32.5,\"duration\":23.4,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[140,143]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the right\",\"name\":\"-\",\"way_points\":[143,143]}]},{\"distance\":292.8,\"duration\":210.8,\"steps\":[{\"distance\":15.5,\"duration\":11.2,\"type\":11,\"instruction\":\"Head
+        southwest\",\"name\":\"-\",\"way_points\":[143,146]},{\"distance\":16.0,\"duration\":11.5,\"type\":13,\"instruction\":\"Keep
+        right\",\"name\":\"-\",\"way_points\":[146,148]},{\"distance\":22.9,\"duration\":16.5,\"type\":3,\"instruction\":\"Turn
+        sharp right\",\"name\":\"-\",\"way_points\":[148,150]},{\"distance\":17.7,\"duration\":12.8,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[150,154]},{\"distance\":8.4,\"duration\":6.1,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[154,156]},{\"distance\":112.0,\"duration\":80.7,\"type\":12,\"instruction\":\"Keep
+        left\",\"name\":\"-\",\"way_points\":[156,161]},{\"distance\":11.4,\"duration\":8.2,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[161,165]},{\"distance\":5.4,\"duration\":3.9,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[165,167]},{\"distance\":83.3,\"duration\":60.0,\"type\":1,\"instruction\":\"Turn
+        right onto Lutherstra\xDFe\",\"name\":\"Lutherstra\xDFe\",\"way_points\":[167,168]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Lutherstra\xDFe, on the right\",\"name\":\"-\",\"way_points\":[168,168]}]},{\"distance\":104.8,\"duration\":75.4,\"steps\":[{\"distance\":33.3,\"duration\":24.0,\"type\":11,\"instruction\":\"Head
+        north on Lutherstra\xDFe\",\"name\":\"Lutherstra\xDFe\",\"way_points\":[168,169]},{\"distance\":31.8,\"duration\":22.9,\"type\":0,\"instruction\":\"Turn
+        left onto Weberstra\xDFe\",\"name\":\"Weberstra\xDFe\",\"way_points\":[169,170]},{\"distance\":39.7,\"duration\":28.6,\"type\":12,\"instruction\":\"Keep
+        left onto Weberstra\xDFe\",\"name\":\"Weberstra\xDFe\",\"way_points\":[170,171]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Weberstra\xDFe, on the right\",\"name\":\"-\",\"way_points\":[171,171]}]},{\"distance\":108.3,\"duration\":77.9,\"steps\":[{\"distance\":55.0,\"duration\":39.6,\"type\":11,\"instruction\":\"Head
+        west on Weberstra\xDFe\",\"name\":\"Weberstra\xDFe\",\"way_points\":[171,172]},{\"distance\":53.3,\"duration\":38.3,\"type\":0,\"instruction\":\"Turn
+        left onto Erwin-Rohde-Stra\xDFe\",\"name\":\"Erwin-Rohde-Stra\xDFe\",\"way_points\":[172,174]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Erwin-Rohde-Stra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[174,174]}]},{\"distance\":213.0,\"duration\":153.4,\"steps\":[{\"distance\":53.3,\"duration\":38.3,\"type\":11,\"instruction\":\"Head
+        north on Erwin-Rohde-Stra\xDFe\",\"name\":\"Erwin-Rohde-Stra\xDFe\",\"way_points\":[174,176]},{\"distance\":126.4,\"duration\":91.0,\"type\":1,\"instruction\":\"Turn
+        right onto Weberstra\xDFe\",\"name\":\"Weberstra\xDFe\",\"way_points\":[176,178]},{\"distance\":33.3,\"duration\":24.0,\"type\":1,\"instruction\":\"Turn
+        right onto Lutherstra\xDFe\",\"name\":\"Lutherstra\xDFe\",\"way_points\":[178,179]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Lutherstra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[179,179]}]},{\"distance\":117.4,\"duration\":84.5,\"steps\":[{\"distance\":83.3,\"duration\":60.0,\"type\":11,\"instruction\":\"Head
+        south on Lutherstra\xDFe\",\"name\":\"Lutherstra\xDFe\",\"way_points\":[179,180]},{\"distance\":34.1,\"duration\":24.5,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[180,183]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the right\",\"name\":\"-\",\"way_points\":[183,183]}]},{\"distance\":254.6,\"duration\":183.3,\"steps\":[{\"distance\":143.9,\"duration\":103.6,\"type\":11,\"instruction\":\"Head
+        east\",\"name\":\"-\",\"way_points\":[183,193]},{\"distance\":13.0,\"duration\":9.4,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[193,196]},{\"distance\":65.7,\"duration\":47.3,\"type\":0,\"instruction\":\"Turn
+        left onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[196,198]},{\"distance\":31.9,\"duration\":23.0,\"type\":12,\"instruction\":\"Keep
+        left onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[198,199]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Handschuhsheimer Landstra\xDFe, B 3, on the right\",\"name\":\"-\",\"way_points\":[199,199]}]},{\"distance\":207.0,\"duration\":149.1,\"steps\":[{\"distance\":12.4,\"duration\":8.9,\"type\":11,\"instruction\":\"Head
+        northwest on Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[199,200]},{\"distance\":104.6,\"duration\":75.3,\"type\":12,\"instruction\":\"Keep
+        left\",\"name\":\"-\",\"way_points\":[200,204]},{\"distance\":9.2,\"duration\":6.7,\"type\":12,\"instruction\":\"Keep
+        left\",\"name\":\"-\",\"way_points\":[204,206]},{\"distance\":47.4,\"duration\":34.1,\"type\":2,\"instruction\":\"Turn
+        sharp left onto Lutherstra\xDFe\",\"name\":\"Lutherstra\xDFe\",\"way_points\":[206,208]},{\"distance\":33.3,\"duration\":24.0,\"type\":12,\"instruction\":\"Keep
+        left onto Lutherstra\xDFe\",\"name\":\"Lutherstra\xDFe\",\"way_points\":[208,209]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Lutherstra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[209,209]}]},{\"distance\":184.0,\"duration\":132.5,\"steps\":[{\"distance\":80.8,\"duration\":58.1,\"type\":11,\"instruction\":\"Head
+        north on Lutherstra\xDFe\",\"name\":\"Lutherstra\xDFe\",\"way_points\":[209,212]},{\"distance\":63.4,\"duration\":45.6,\"type\":3,\"instruction\":\"Turn
+        sharp right\",\"name\":\"-\",\"way_points\":[212,215]},{\"distance\":19.5,\"duration\":14.0,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[215,219]},{\"distance\":3.7,\"duration\":2.6,\"type\":1,\"instruction\":\"Turn
+        right onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[219,220]},{\"distance\":16.7,\"duration\":12.0,\"type\":0,\"instruction\":\"Turn
+        left onto Ku\xDFmaulstra\xDFe\",\"name\":\"Ku\xDFmaulstra\xDFe\",\"way_points\":[220,221]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Ku\xDFmaulstra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[221,221]}]},{\"distance\":112.5,\"duration\":81.0,\"steps\":[{\"distance\":16.7,\"duration\":12.0,\"type\":11,\"instruction\":\"Head
+        west on Ku\xDFmaulstra\xDFe\",\"name\":\"Ku\xDFmaulstra\xDFe\",\"way_points\":[221,222]},{\"distance\":3.7,\"duration\":2.6,\"type\":1,\"instruction\":\"Turn
+        right onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[222,223]},{\"distance\":19.5,\"duration\":14.0,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[223,227]},{\"distance\":54.1,\"duration\":39.0,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[227,228]},{\"distance\":9.2,\"duration\":6.7,\"type\":12,\"instruction\":\"Keep
+        left\",\"name\":\"-\",\"way_points\":[228,230]},{\"distance\":9.3,\"duration\":6.7,\"type\":2,\"instruction\":\"Turn
+        sharp left onto Lutherstra\xDFe\",\"name\":\"Lutherstra\xDFe\",\"way_points\":[230,232]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Lutherstra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[232,232]}]},{\"distance\":71.5,\"duration\":51.5,\"steps\":[{\"distance\":38.1,\"duration\":27.4,\"type\":11,\"instruction\":\"Head
+        south on Lutherstra\xDFe\",\"name\":\"Lutherstra\xDFe\",\"way_points\":[232,233]},{\"distance\":33.3,\"duration\":24.0,\"type\":12,\"instruction\":\"Keep
+        left onto Lutherstra\xDFe\",\"name\":\"Lutherstra\xDFe\",\"way_points\":[233,234]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Lutherstra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[234,234]}]},{\"distance\":357.8,\"duration\":257.6,\"steps\":[{\"distance\":80.8,\"duration\":58.1,\"type\":11,\"instruction\":\"Head
+        north on Lutherstra\xDFe\",\"name\":\"Lutherstra\xDFe\",\"way_points\":[234,237]},{\"distance\":63.4,\"duration\":45.6,\"type\":3,\"instruction\":\"Turn
+        sharp right\",\"name\":\"-\",\"way_points\":[237,240]},{\"distance\":19.5,\"duration\":14.0,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[240,244]},{\"distance\":3.7,\"duration\":2.6,\"type\":1,\"instruction\":\"Turn
+        right onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[244,245]},{\"distance\":98.0,\"duration\":70.6,\"type\":0,\"instruction\":\"Turn
+        left onto Ku\xDFmaulstra\xDFe\",\"name\":\"Ku\xDFmaulstra\xDFe\",\"way_points\":[245,246]},{\"distance\":12.2,\"duration\":8.8,\"type\":1,\"instruction\":\"Turn
+        right onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[246,247]},{\"distance\":80.2,\"duration\":57.8,\"type\":0,\"instruction\":\"Turn
+        left onto Gustav-Kirchhoff-Stra\xDFe\",\"name\":\"Gustav-Kirchhoff-Stra\xDFe\",\"way_points\":[247,251]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Gustav-Kirchhoff-Stra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[251,251]}]},{\"distance\":161.8,\"duration\":116.5,\"steps\":[{\"distance\":80.2,\"duration\":57.8,\"type\":11,\"instruction\":\"Head
+        south on Gustav-Kirchhoff-Stra\xDFe\",\"name\":\"Gustav-Kirchhoff-Stra\xDFe\",\"way_points\":[251,255]},{\"distance\":12.2,\"duration\":8.8,\"type\":1,\"instruction\":\"Turn
+        right onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[255,256]},{\"distance\":69.3,\"duration\":49.9,\"type\":12,\"instruction\":\"Keep
+        left onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[256,257]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Bergstra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[257,257]}]},{\"distance\":62.7,\"duration\":45.1,\"steps\":[{\"distance\":62.7,\"duration\":45.1,\"type\":11,\"instruction\":\"Head
+        south on Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[257,258]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Bergstra\xDFe, on the right\",\"name\":\"-\",\"way_points\":[258,258]}]},{\"distance\":99.2,\"duration\":71.4,\"steps\":[{\"distance\":18.9,\"duration\":13.6,\"type\":11,\"instruction\":\"Head
+        south on Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[258,260]},{\"distance\":80.2,\"duration\":57.8,\"type\":0,\"instruction\":\"Turn
+        left onto Gustav-Kirchhoff-Stra\xDFe\",\"name\":\"Gustav-Kirchhoff-Stra\xDFe\",\"way_points\":[260,264]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Gustav-Kirchhoff-Stra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[264,264]}]},{\"distance\":120.9,\"duration\":87.0,\"steps\":[{\"distance\":80.2,\"duration\":57.8,\"type\":11,\"instruction\":\"Head
+        south on Gustav-Kirchhoff-Stra\xDFe\",\"name\":\"Gustav-Kirchhoff-Stra\xDFe\",\"way_points\":[264,268]},{\"distance\":40.6,\"duration\":29.3,\"type\":0,\"instruction\":\"Turn
+        left onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[268,269]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Bergstra\xDFe, on the right\",\"name\":\"-\",\"way_points\":[269,269]}]},{\"distance\":259.2,\"duration\":186.6,\"steps\":[{\"distance\":103.2,\"duration\":74.3,\"type\":11,\"instruction\":\"Head
+        south on Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[269,270]},{\"distance\":156.0,\"duration\":112.3,\"type\":0,\"instruction\":\"Turn
+        left onto M\xF6nchbergsteige\",\"name\":\"M\xF6nchbergsteige\",\"way_points\":[270,275]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at M\xF6nchbergsteige, on the left\",\"name\":\"-\",\"way_points\":[275,275]}]},{\"distance\":380.1,\"duration\":273.7,\"steps\":[{\"distance\":156.0,\"duration\":112.3,\"type\":11,\"instruction\":\"Head
+        southwest on M\xF6nchbergsteige\",\"name\":\"M\xF6nchbergsteige\",\"way_points\":[275,280]},{\"distance\":143.8,\"duration\":103.6,\"type\":1,\"instruction\":\"Turn
+        right onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[280,281]},{\"distance\":80.2,\"duration\":57.8,\"type\":1,\"instruction\":\"Turn
+        right onto Gustav-Kirchhoff-Stra\xDFe\",\"name\":\"Gustav-Kirchhoff-Stra\xDFe\",\"way_points\":[281,285]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Gustav-Kirchhoff-Stra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[285,285]}]},{\"distance\":602.3,\"duration\":433.7,\"steps\":[{\"distance\":80.2,\"duration\":57.8,\"type\":11,\"instruction\":\"Head
+        south on Gustav-Kirchhoff-Stra\xDFe\",\"name\":\"Gustav-Kirchhoff-Stra\xDFe\",\"way_points\":[285,289]},{\"distance\":143.8,\"duration\":103.6,\"type\":0,\"instruction\":\"Turn
+        left onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[289,290]},{\"distance\":278.3,\"duration\":200.4,\"type\":0,\"instruction\":\"Turn
+        left onto M\xF6nchbergsteige\",\"name\":\"M\xF6nchbergsteige\",\"way_points\":[290,303]},{\"distance\":13.4,\"duration\":9.7,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[303,305]},{\"distance\":86.5,\"duration\":62.3,\"type\":13,\"instruction\":\"Keep
+        right onto Ludolf-Krehl-Stra\xDFe\",\"name\":\"Ludolf-Krehl-Stra\xDFe\",\"way_points\":[305,308]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Ludolf-Krehl-Stra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[308,308]}]},{\"distance\":674.9,\"duration\":485.9,\"steps\":[{\"distance\":86.5,\"duration\":62.3,\"type\":11,\"instruction\":\"Head
+        southeast on Ludolf-Krehl-Stra\xDFe\",\"name\":\"Ludolf-Krehl-Stra\xDFe\",\"way_points\":[308,311]},{\"distance\":13.4,\"duration\":9.7,\"type\":4,\"instruction\":\"Turn
+        slight left\",\"name\":\"-\",\"way_points\":[311,313]},{\"distance\":54.0,\"duration\":38.9,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[313,318]},{\"distance\":224.3,\"duration\":161.5,\"type\":13,\"instruction\":\"Keep
+        right\",\"name\":\"-\",\"way_points\":[318,326]},{\"distance\":143.8,\"duration\":103.6,\"type\":1,\"instruction\":\"Turn
+        right onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[326,327]},{\"distance\":152.8,\"duration\":110.0,\"type\":1,\"instruction\":\"Turn
+        right onto Gustav-Kirchhoff-Stra\xDFe\",\"name\":\"Gustav-Kirchhoff-Stra\xDFe\",\"way_points\":[327,333]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Gustav-Kirchhoff-Stra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[333,333]}]},{\"distance\":72.5,\"duration\":52.2,\"steps\":[{\"distance\":72.5,\"duration\":52.2,\"type\":11,\"instruction\":\"Head
+        south on Gustav-Kirchhoff-Stra\xDFe\",\"name\":\"Gustav-Kirchhoff-Stra\xDFe\",\"way_points\":[333,336]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Gustav-Kirchhoff-Stra\xDFe, on the right\",\"name\":\"-\",\"way_points\":[336,336]}]},{\"distance\":452.6,\"duration\":325.8,\"steps\":[{\"distance\":80.2,\"duration\":57.8,\"type\":11,\"instruction\":\"Head
+        south on Gustav-Kirchhoff-Stra\xDFe\",\"name\":\"Gustav-Kirchhoff-Stra\xDFe\",\"way_points\":[336,340]},{\"distance\":148.2,\"duration\":106.7,\"type\":0,\"instruction\":\"Turn
+        left onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[340,342]},{\"distance\":50.2,\"duration\":36.1,\"type\":1,\"instruction\":\"Turn
+        right onto M\xF6nchhofplatz\",\"name\":\"M\xF6nchhofplatz\",\"way_points\":[342,343]},{\"distance\":37.2,\"duration\":26.8,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[343,352]},{\"distance\":104.4,\"duration\":75.2,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[352,357]},{\"distance\":11.4,\"duration\":8.2,\"type\":2,\"instruction\":\"Turn
+        sharp left\",\"name\":\"-\",\"way_points\":[357,361]},{\"distance\":20.9,\"duration\":15.1,\"type\":5,\"instruction\":\"Turn
+        slight right\",\"name\":\"-\",\"way_points\":[361,363]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the left\",\"name\":\"-\",\"way_points\":[363,363]}]},{\"distance\":71.3,\"duration\":51.3,\"steps\":[{\"distance\":20.9,\"duration\":15.1,\"type\":11,\"instruction\":\"Head
+        north\",\"name\":\"-\",\"way_points\":[363,365]},{\"distance\":10.9,\"duration\":7.8,\"type\":2,\"instruction\":\"Turn
+        sharp left\",\"name\":\"-\",\"way_points\":[365,368]},{\"distance\":4.8,\"duration\":3.4,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[368,370]},{\"distance\":7.7,\"duration\":5.5,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[370,373]},{\"distance\":27.1,\"duration\":19.5,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[373,374]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the right\",\"name\":\"-\",\"way_points\":[374,374]}]},{\"distance\":87.9,\"duration\":63.3,\"steps\":[{\"distance\":27.1,\"duration\":19.5,\"type\":11,\"instruction\":\"Head
+        east\",\"name\":\"-\",\"way_points\":[374,375]},{\"distance\":7.7,\"duration\":5.5,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[375,378]},{\"distance\":53.1,\"duration\":38.3,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[378,381]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the left\",\"name\":\"-\",\"way_points\":[381,381]}]},{\"distance\":80.2,\"duration\":57.7,\"steps\":[{\"distance\":48.4,\"duration\":34.8,\"type\":11,\"instruction\":\"Head
+        north\",\"name\":\"-\",\"way_points\":[381,382]},{\"distance\":10.9,\"duration\":7.8,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[382,385]},{\"distance\":20.9,\"duration\":15.1,\"type\":3,\"instruction\":\"Turn
+        sharp right\",\"name\":\"-\",\"way_points\":[385,387]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the left\",\"name\":\"-\",\"way_points\":[387,387]}]},{\"distance\":71.0,\"duration\":51.1,\"steps\":[{\"distance\":71.0,\"duration\":51.1,\"type\":11,\"instruction\":\"Head
+        south\",\"name\":\"-\",\"way_points\":[387,388]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the left\",\"name\":\"-\",\"way_points\":[388,388]}]},{\"distance\":178.8,\"duration\":128.7,\"steps\":[{\"distance\":91.9,\"duration\":66.2,\"type\":11,\"instruction\":\"Head
+        north\",\"name\":\"-\",\"way_points\":[388,390]},{\"distance\":86.9,\"duration\":62.5,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[390,395]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the left\",\"name\":\"-\",\"way_points\":[395,395]}]},{\"distance\":107.8,\"duration\":77.6,\"steps\":[{\"distance\":86.9,\"duration\":62.5,\"type\":11,\"instruction\":\"Head
+        west\",\"name\":\"-\",\"way_points\":[395,400]},{\"distance\":20.9,\"duration\":15.1,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[400,402]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the left\",\"name\":\"-\",\"way_points\":[402,402]}]},{\"distance\":179.2,\"duration\":129.0,\"steps\":[{\"distance\":20.9,\"duration\":15.1,\"type\":11,\"instruction\":\"Head
+        north\",\"name\":\"-\",\"way_points\":[402,404]},{\"distance\":11.4,\"duration\":8.2,\"type\":4,\"instruction\":\"Turn
+        slight left\",\"name\":\"-\",\"way_points\":[404,408]},{\"distance\":104.4,\"duration\":75.2,\"type\":3,\"instruction\":\"Turn
+        sharp right\",\"name\":\"-\",\"way_points\":[408,413]},{\"distance\":13.0,\"duration\":9.4,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[413,416]},{\"distance\":29.4,\"duration\":21.2,\"type\":0,\"instruction\":\"Turn
+        left onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[416,418]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Handschuhsheimer Landstra\xDFe, B 3, on the right\",\"name\":\"-\",\"way_points\":[418,418]}]},{\"distance\":68.3,\"duration\":49.2,\"steps\":[{\"distance\":36.3,\"duration\":26.2,\"type\":11,\"instruction\":\"Head
+        northwest on Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[418,419]},{\"distance\":31.9,\"duration\":23.0,\"type\":12,\"instruction\":\"Keep
+        left onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[419,420]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Handschuhsheimer Landstra\xDFe, B 3, on the right\",\"name\":\"-\",\"way_points\":[420,420]}]},{\"distance\":247.4,\"duration\":178.1,\"steps\":[{\"distance\":97.6,\"duration\":70.3,\"type\":11,\"instruction\":\"Head
+        southeast on Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[420,423]},{\"distance\":13.0,\"duration\":9.4,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[423,426]},{\"distance\":104.4,\"duration\":75.2,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[426,431]},{\"distance\":11.4,\"duration\":8.2,\"type\":2,\"instruction\":\"Turn
+        sharp left\",\"name\":\"-\",\"way_points\":[431,435]},{\"distance\":20.9,\"duration\":15.1,\"type\":5,\"instruction\":\"Turn
+        slight right\",\"name\":\"-\",\"way_points\":[435,437]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the left\",\"name\":\"-\",\"way_points\":[437,437]}]},{\"distance\":181.5,\"duration\":130.7,\"steps\":[{\"distance\":20.9,\"duration\":15.1,\"type\":11,\"instruction\":\"Head
+        north\",\"name\":\"-\",\"way_points\":[437,439]},{\"distance\":6.2,\"duration\":4.4,\"type\":2,\"instruction\":\"Turn
+        sharp left\",\"name\":\"-\",\"way_points\":[439,441]},{\"distance\":118.2,\"duration\":85.1,\"type\":0,\"instruction\":\"Turn
+        left onto Lutherstra\xDFe\",\"name\":\"Lutherstra\xDFe\",\"way_points\":[441,443]},{\"distance\":36.2,\"duration\":26.0,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[443,446]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the right\",\"name\":\"-\",\"way_points\":[446,446]}]},{\"distance\":278.2,\"duration\":200.3,\"steps\":[{\"distance\":33.0,\"duration\":23.8,\"type\":11,\"instruction\":\"Head
+        east\",\"name\":\"-\",\"way_points\":[446,448]},{\"distance\":245.1,\"duration\":176.5,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[448,452]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the right\",\"name\":\"-\",\"way_points\":[452,452]}]},{\"distance\":284.0,\"duration\":204.4,\"steps\":[{\"distance\":74.7,\"duration\":53.8,\"type\":11,\"instruction\":\"Head
+        west\",\"name\":\"-\",\"way_points\":[452,453]},{\"distance\":209.3,\"duration\":150.7,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[453,460]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the left\",\"name\":\"-\",\"way_points\":[460,460]}]},{\"distance\":213.8,\"duration\":153.9,\"steps\":[{\"distance\":180.7,\"duration\":130.1,\"type\":11,\"instruction\":\"Head
+        east\",\"name\":\"-\",\"way_points\":[460,464]},{\"distance\":33.0,\"duration\":23.8,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[464,466]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the right\",\"name\":\"-\",\"way_points\":[466,466]}]},{\"distance\":168.5,\"duration\":121.3,\"steps\":[{\"distance\":33.0,\"duration\":23.8,\"type\":11,\"instruction\":\"Head
+        east\",\"name\":\"-\",\"way_points\":[466,468]},{\"distance\":52.9,\"duration\":38.1,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[468,471]},{\"distance\":7.1,\"duration\":5.1,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[471,473]},{\"distance\":75.5,\"duration\":54.4,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[473,475]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the right\",\"name\":\"-\",\"way_points\":[475,475]}]},{\"distance\":86.6,\"duration\":62.3,\"steps\":[{\"distance\":75.5,\"duration\":54.4,\"type\":11,\"instruction\":\"Head
+        east\",\"name\":\"-\",\"way_points\":[475,477]},{\"distance\":7.1,\"duration\":5.1,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[477,479]},{\"distance\":4.0,\"duration\":2.9,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[479,480]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the right\",\"name\":\"-\",\"way_points\":[480,480]}]},{\"distance\":89.9,\"duration\":64.7,\"steps\":[{\"distance\":56.9,\"duration\":41.0,\"type\":11,\"instruction\":\"Head
+        east\",\"name\":\"-\",\"way_points\":[480,484]},{\"distance\":33.0,\"duration\":23.8,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[484,486]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the right\",\"name\":\"-\",\"way_points\":[486,486]}]},{\"distance\":157.4,\"duration\":113.3,\"steps\":[{\"distance\":33.0,\"duration\":23.8,\"type\":11,\"instruction\":\"Head
+        east\",\"name\":\"-\",\"way_points\":[486,488]},{\"distance\":44.1,\"duration\":31.7,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[488,489]},{\"distance\":9.0,\"duration\":6.5,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[489,491]},{\"distance\":71.3,\"duration\":51.3,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[491,492]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the right\",\"name\":\"-\",\"way_points\":[492,492]}]},{\"distance\":151.2,\"duration\":108.8,\"steps\":[{\"distance\":91.9,\"duration\":66.2,\"type\":11,\"instruction\":\"Head
+        north\",\"name\":\"-\",\"way_points\":[492,494]},{\"distance\":10.9,\"duration\":7.8,\"type\":2,\"instruction\":\"Turn
+        sharp left\",\"name\":\"-\",\"way_points\":[494,497]},{\"distance\":48.4,\"duration\":34.8,\"type\":0,\"instruction\":\"Turn
+        left\",\"name\":\"-\",\"way_points\":[497,498]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the left\",\"name\":\"-\",\"way_points\":[498,498]}]},{\"distance\":103.2,\"duration\":74.3,\"steps\":[{\"distance\":70.2,\"duration\":50.5,\"type\":11,\"instruction\":\"Head
+        south\",\"name\":\"-\",\"way_points\":[498,499]},{\"distance\":33.0,\"duration\":23.8,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[499,501]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at your destination, on the right\",\"name\":\"-\",\"way_points\":[501,501]}]},{\"distance\":428.1,\"duration\":308.2,\"steps\":[{\"distance\":36.2,\"duration\":26.0,\"type\":11,\"instruction\":\"Head
+        east\",\"name\":\"-\",\"way_points\":[501,504]},{\"distance\":301.3,\"duration\":216.9,\"type\":0,\"instruction\":\"Turn
+        left onto Lutherstra\xDFe\",\"name\":\"Lutherstra\xDFe\",\"way_points\":[504,512]},{\"distance\":5.1,\"duration\":3.6,\"type\":0,\"instruction\":\"Turn
+        left onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[512,513]},{\"distance\":21.4,\"duration\":15.4,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[513,517]},{\"distance\":11.8,\"duration\":8.5,\"type\":1,\"instruction\":\"Turn
+        right onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[517,518]},{\"distance\":52.3,\"duration\":37.7,\"type\":0,\"instruction\":\"Turn
+        left onto Kuno-Fischer-Stra\xDFe\",\"name\":\"Kuno-Fischer-Stra\xDFe\",\"way_points\":[518,519]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Kuno-Fischer-Stra\xDFe, straight ahead\",\"name\":\"-\",\"way_points\":[519,519]}]},{\"distance\":147.1,\"duration\":105.9,\"steps\":[{\"distance\":52.3,\"duration\":37.7,\"type\":11,\"instruction\":\"Head
+        west on Kuno-Fischer-Stra\xDFe\",\"name\":\"Kuno-Fischer-Stra\xDFe\",\"way_points\":[519,520]},{\"distance\":71.2,\"duration\":51.2,\"type\":1,\"instruction\":\"Turn
+        right onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[520,523]},{\"distance\":23.6,\"duration\":17.0,\"type\":1,\"instruction\":\"Turn
+        right onto Gabelsbergerstra\xDFe\",\"name\":\"Gabelsbergerstra\xDFe\",\"way_points\":[523,524]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Gabelsbergerstra\xDFe, on the right\",\"name\":\"-\",\"way_points\":[524,524]}]},{\"distance\":105.3,\"duration\":75.8,\"steps\":[{\"distance\":23.6,\"duration\":17.0,\"type\":11,\"instruction\":\"Head
+        west on Gabelsbergerstra\xDFe\",\"name\":\"Gabelsbergerstra\xDFe\",\"way_points\":[524,525]},{\"distance\":24.7,\"duration\":17.8,\"type\":0,\"instruction\":\"Turn
+        left onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[525,526]},{\"distance\":40.6,\"duration\":29.2,\"type\":13,\"instruction\":\"Keep
+        right onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[526,528]},{\"distance\":7.1,\"duration\":5.1,\"type\":1,\"instruction\":\"Turn
+        right onto Lutherstra\xDFe\",\"name\":\"Lutherstra\xDFe\",\"way_points\":[528,529]},{\"distance\":9.3,\"duration\":6.7,\"type\":13,\"instruction\":\"Keep
+        right onto Lutherstra\xDFe\",\"name\":\"Lutherstra\xDFe\",\"way_points\":[529,531]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Lutherstra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[531,531]}]},{\"distance\":107.0,\"duration\":77.1,\"steps\":[{\"distance\":16.4,\"duration\":11.8,\"type\":11,\"instruction\":\"Head
+        north on Lutherstra\xDFe\",\"name\":\"Lutherstra\xDFe\",\"way_points\":[531,534]},{\"distance\":5.1,\"duration\":3.6,\"type\":0,\"instruction\":\"Turn
+        left onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[534,535]},{\"distance\":21.4,\"duration\":15.4,\"type\":1,\"instruction\":\"Turn
+        right\",\"name\":\"-\",\"way_points\":[535,539]},{\"distance\":11.8,\"duration\":8.5,\"type\":1,\"instruction\":\"Turn
+        right onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[539,540]},{\"distance\":52.3,\"duration\":37.7,\"type\":0,\"instruction\":\"Turn
+        left onto Kuno-Fischer-Stra\xDFe\",\"name\":\"Kuno-Fischer-Stra\xDFe\",\"way_points\":[540,541]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Kuno-Fischer-Stra\xDFe, straight ahead\",\"name\":\"-\",\"way_points\":[541,541]}]},{\"distance\":139.8,\"duration\":100.7,\"steps\":[{\"distance\":52.3,\"duration\":37.7,\"type\":11,\"instruction\":\"Head
+        west on Kuno-Fischer-Stra\xDFe\",\"name\":\"Kuno-Fischer-Stra\xDFe\",\"way_points\":[541,542]},{\"distance\":70.8,\"duration\":51.0,\"type\":0,\"instruction\":\"Turn
+        left onto Handschuhsheimer Landstra\xDFe, B 3\",\"name\":\"Handschuhsheimer
+        Landstra\xDFe, B 3\",\"way_points\":[542,544]},{\"distance\":16.7,\"duration\":12.0,\"type\":0,\"instruction\":\"Turn
+        left onto Ku\xDFmaulstra\xDFe\",\"name\":\"Ku\xDFmaulstra\xDFe\",\"way_points\":[544,545]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Ku\xDFmaulstra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[545,545]}]},{\"distance\":88.2,\"duration\":63.5,\"steps\":[{\"distance\":81.5,\"duration\":58.7,\"type\":11,\"instruction\":\"Head
+        east on Ku\xDFmaulstra\xDFe\",\"name\":\"Ku\xDFmaulstra\xDFe\",\"way_points\":[545,546]},{\"distance\":6.7,\"duration\":4.8,\"type\":0,\"instruction\":\"Turn
+        left onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[546,547]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Bergstra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[547,547]}]},{\"distance\":111.0,\"duration\":79.9,\"steps\":[{\"distance\":66.9,\"duration\":48.2,\"type\":11,\"instruction\":\"Head
+        north on Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[547,548]},{\"distance\":44.1,\"duration\":31.7,\"type\":0,\"instruction\":\"Turn
+        left onto Kuno-Fischer-Stra\xDFe\",\"name\":\"Kuno-Fischer-Stra\xDFe\",\"way_points\":[548,549]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Kuno-Fischer-Stra\xDFe, straight ahead\",\"name\":\"-\",\"way_points\":[549,549]}]},{\"distance\":48.4,\"duration\":34.9,\"steps\":[{\"distance\":44.1,\"duration\":31.7,\"type\":11,\"instruction\":\"Head
+        east on Kuno-Fischer-Stra\xDFe\",\"name\":\"Kuno-Fischer-Stra\xDFe\",\"way_points\":[549,550]},{\"distance\":4.4,\"duration\":3.1,\"type\":1,\"instruction\":\"Turn
+        right onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[550,551]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Bergstra\xDFe, on the right\",\"name\":\"-\",\"way_points\":[551,551]}]},{\"distance\":59.3,\"duration\":42.7,\"steps\":[{\"distance\":4.4,\"duration\":3.1,\"type\":11,\"instruction\":\"Head
+        north on Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[551,552]},{\"distance\":55.0,\"duration\":39.6,\"type\":12,\"instruction\":\"Keep
+        left onto Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[552,553]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Bergstra\xDFe, on the left\",\"name\":\"-\",\"way_points\":[553,553]}]},{\"distance\":99.0,\"duration\":71.3,\"steps\":[{\"distance\":55.0,\"duration\":39.6,\"type\":11,\"instruction\":\"Head
+        south on Bergstra\xDFe\",\"name\":\"Bergstra\xDFe\",\"way_points\":[553,554]},{\"distance\":44.1,\"duration\":31.7,\"type\":1,\"instruction\":\"Turn
+        right onto Kuno-Fischer-Stra\xDFe\",\"name\":\"Kuno-Fischer-Stra\xDFe\",\"way_points\":[554,555]},{\"distance\":0.0,\"duration\":0.0,\"type\":10,\"instruction\":\"Arrive
+        at Kuno-Fischer-Stra\xDFe, straight ahead\",\"name\":\"-\",\"way_points\":[555,555]}]}],\"way_points\":[0,3,8,15,26,37,38,39,42,45,54,76,86,100,109,114,123,132,134,143,168,171,174,179,183,199,209,221,232,234,251,257,258,264,269,275,285,308,333,336,363,374,381,387,388,395,402,418,420,437,446,452,460,466,475,480,486,492,498,501,519,524,531,541,545,547,549,551,553,555],\"summary\":{\"distance\":11061.4,\"duration\":7963.599999999999}},\"geometry\":{\"coordinates\":[[8.692441,49.418156],[8.692263,49.418532],[8.692215,49.418637],[8.691139,49.418422],[8.69092,49.418378],[8.690946,49.41825],[8.690936,49.418188],[8.691073,49.418051],[8.691172,49.41796],[8.691073,49.418051],[8.690936,49.418188],[8.690946,49.41825],[8.69092,49.418378],[8.692215,49.418637],[8.692263,49.418532],[8.692441,49.418156],[8.692848,49.417296],[8.69286,49.417257],[8.69218,49.417168],[8.692173,49.417185],[8.692163,49.417202],[8.692095,49.417211],[8.692047,49.417258],[8.692016,49.417252],[8.691931,49.417235],[8.691817,49.417369],[8.691718,49.417459],[8.691817,49.417369],[8.691931,49.417235],[8.692016,49.417252],[8.692047,49.417258],[8.692095,49.417211],[8.692163,49.417202],[8.692173,49.417185],[8.69218,49.417168],[8.69286,49.417257],[8.692848,49.417296],[8.692681,49.417648],[8.692441,49.418156],[8.692428,49.418183],[8.692263,49.418532],[8.692215,49.418637],[8.69219,49.418694],[8.692215,49.418637],[8.692263,49.418532],[8.692441,49.418156],[8.692848,49.417296],[8.69286,49.417257],[8.692898,49.417159],[8.692826,49.417148],[8.692761,49.417139],[8.692734,49.417073],[8.692605,49.417091],[8.692426,49.417052],[8.692342,49.416989],[8.692335,49.416983],[8.692321,49.416952],[8.692345,49.416854],[8.692257,49.416764],[8.692211,49.416742],[8.692175,49.416839],[8.692175,49.416946],[8.692138,49.416946],[8.692004,49.416946],[8.691948,49.416946],[8.69193,49.416946],[8.691912,49.41699],[8.691872,49.417005],[8.691865,49.417022],[8.691833,49.4171],[8.691813,49.417146],[8.69179,49.417176],[8.691822,49.417213],[8.691857,49.41722],[8.691931,49.417235],[8.691817,49.417369],[8.691718,49.417459],[8.691817,49.417369],[8.691931,49.417235],[8.691857,49.41722],[8.691822,49.417213],[8.69179,49.417176],[8.691813,49.417146],[8.691833,49.4171],[8.691865,49.417022],[8.691872,49.417005],[8.69155,49.41709],[8.691872,49.417005],[8.691912,49.41699],[8.69193,49.416946],[8.691948,49.416946],[8.692004,49.416946],[8.692138,49.416946],[8.692175,49.416946],[8.692175,49.416839],[8.692211,49.416742],[8.692257,49.416764],[8.692345,49.416854],[8.692321,49.416952],[8.692335,49.416983],[8.692342,49.416989],[8.692335,49.416983],[8.692321,49.416952],[8.692345,49.416854],[8.692257,49.416764],[8.692211,49.416742],[8.692214,49.41665],[8.692213,49.416598],[8.692024,49.416592],[8.692036,49.416356],[8.692024,49.416592],[8.692213,49.416598],[8.692945,49.41662],[8.693082,49.416626],[8.693091,49.416583],[8.693082,49.416626],[8.692945,49.41662],[8.692919,49.416671],[8.692819,49.416723],[8.692487,49.416779],[8.692345,49.416854],[8.692321,49.416952],[8.692335,49.416983],[8.692342,49.416989],[8.692426,49.417052],[8.692605,49.417091],[8.692734,49.417073],[8.692761,49.417139],[8.692826,49.417148],[8.692898,49.417159],[8.69286,49.417257],[8.692848,49.417296],[8.693269,49.417371],[8.692848,49.417296],[8.692681,49.417648],[8.692848,49.417296],[8.69286,49.417257],[8.692898,49.417159],[8.692826,49.417148],[8.692761,49.417139],[8.692734,49.417073],[8.692605,49.417091],[8.692426,49.417052],[8.692342,49.416989],[8.692335,49.416983],[8.692321,49.416952],[8.692345,49.416854],[8.692257,49.416764],[8.692211,49.416742],[8.692175,49.416839],[8.692175,49.416946],[8.692138,49.416946],[8.692004,49.416946],[8.691948,49.416946],[8.69193,49.416946],[8.691912,49.41699],[8.691872,49.417005],[8.691334,49.417148],[8.691088,49.417205],[8.691073,49.417221],[8.690518,49.417372],[8.690443,49.417363],[8.69044,49.417383],[8.690434,49.417418],[8.690429,49.417453],[8.690426,49.417466],[8.690408,49.41747],[8.690353,49.417477],[8.690381,49.418226],[8.690392,49.418526],[8.689954,49.418511],[8.689406,49.418492],[8.688647,49.418465],[8.68871,49.418194],[8.688733,49.417989],[8.68871,49.418194],[8.688647,49.418465],[8.689954,49.418511],[8.690392,49.418526],[8.690381,49.418226],[8.690353,49.417477],[8.690305,49.417477],[8.690257,49.417478],[8.689883,49.417468],[8.690257,49.417478],[8.690305,49.417477],[8.690353,49.417477],[8.690408,49.41747],[8.690426,49.417466],[8.690784,49.417376],[8.691019,49.417317],[8.691548,49.417192],[8.691685,49.417172],[8.69179,49.417176],[8.691822,49.417213],[8.691857,49.41722],[8.691931,49.417235],[8.691817,49.417369],[8.691428,49.417726],[8.691172,49.41796],[8.691073,49.418051],[8.690918,49.418149],[8.690763,49.418281],[8.690657,49.418411],[8.690466,49.418882],[8.690431,49.418918],[8.690392,49.41895],[8.690367,49.418888],[8.690392,49.418526],[8.690381,49.418226],[8.690392,49.418526],[8.690367,49.418888],[8.690392,49.41895],[8.690431,49.418918],[8.690466,49.418882],[8.690657,49.418411],[8.690694,49.41842],[8.690733,49.41843],[8.690871,49.418401],[8.690912,49.418411],[8.69092,49.418378],[8.691139,49.418422],[8.69092,49.418378],[8.690912,49.418411],[8.690871,49.418401],[8.690733,49.41843],[8.690694,49.41842],[8.690657,49.418411],[8.690466,49.418882],[8.690431,49.418918],[8.690392,49.41895],[8.690367,49.418888],[8.690368,49.418868],[8.690392,49.418526],[8.690381,49.418226],[8.690392,49.418526],[8.690367,49.418888],[8.690392,49.41895],[8.690431,49.418918],[8.690466,49.418882],[8.690657,49.418411],[8.690694,49.41842],[8.690733,49.41843],[8.690871,49.418401],[8.690912,49.418411],[8.69092,49.418378],[8.692215,49.418637],[8.692263,49.418532],[8.6929,49.418661],[8.693007,49.418708],[8.693043,49.41876],[8.693087,49.418903],[8.693043,49.41876],[8.693007,49.418708],[8.6929,49.418661],[8.692263,49.418532],[8.692215,49.418637],[8.691944,49.419235],[8.69219,49.418694],[8.692215,49.418637],[8.692263,49.418532],[8.6929,49.418661],[8.693007,49.418708],[8.693043,49.41876],[8.693087,49.418903],[8.693043,49.41876],[8.693007,49.418708],[8.6929,49.418661],[8.692263,49.418532],[8.692428,49.418183],[8.692848,49.417296],[8.693422,49.417399],[8.693521,49.417432],[8.693752,49.417629],[8.693847,49.417706],[8.694411,49.418176],[8.693847,49.417706],[8.693752,49.417629],[8.693521,49.417432],[8.693422,49.417399],[8.692848,49.417296],[8.692263,49.418532],[8.6929,49.418661],[8.693007,49.418708],[8.693043,49.41876],[8.693087,49.418903],[8.693043,49.41876],[8.693007,49.418708],[8.6929,49.418661],[8.692263,49.418532],[8.692848,49.417296],[8.693422,49.417399],[8.693521,49.417432],[8.693752,49.417629],[8.693847,49.417706],[8.694411,49.418176],[8.694704,49.418256],[8.695072,49.418246],[8.695283,49.418343],[8.695449,49.418462],[8.69546,49.418579],[8.695615,49.418627],[8.695671,49.418644],[8.695748,49.418667],[8.695725,49.418698],[8.695607,49.418737],[8.695509,49.418837],[8.694956,49.419161],[8.69482,49.419312],[8.694956,49.419161],[8.695509,49.418837],[8.695607,49.418737],[8.695725,49.418698],[8.695748,49.418667],[8.695671,49.418644],[8.695615,49.418627],[8.69546,49.418579],[8.695449,49.418462],[8.695283,49.418343],[8.695072,49.418246],[8.694704,49.418256],[8.694411,49.418176],[8.693847,49.417706],[8.693752,49.417629],[8.693521,49.417432],[8.693422,49.417399],[8.692848,49.417296],[8.692263,49.418532],[8.6929,49.418661],[8.693007,49.418708],[8.693043,49.41876],[8.693141,49.419078],[8.693201,49.41954],[8.693201,49.419544],[8.693201,49.41954],[8.693141,49.419078],[8.693087,49.418903],[8.693043,49.41876],[8.693007,49.418708],[8.6929,49.418661],[8.692263,49.418532],[8.692848,49.417296],[8.69286,49.417257],[8.69218,49.417168],[8.692173,49.417185],[8.692163,49.417202],[8.692095,49.417211],[8.692047,49.417258],[8.692016,49.417252],[8.691931,49.417235],[8.691857,49.41722],[8.691822,49.417213],[8.69179,49.417176],[8.691685,49.417172],[8.691548,49.417192],[8.691019,49.417317],[8.690784,49.417376],[8.690426,49.417466],[8.690429,49.417453],[8.690434,49.417418],[8.69044,49.417383],[8.690443,49.417363],[8.690398,49.417318],[8.690392,49.417184],[8.690398,49.417318],[8.690443,49.417363],[8.690415,49.417365],[8.690359,49.417371],[8.690295,49.417377],[8.69028,49.4174],[8.690256,49.417409],[8.690257,49.417444],[8.690257,49.417471],[8.690257,49.417478],[8.689883,49.417468],[8.690257,49.417478],[8.690257,49.417471],[8.690257,49.417444],[8.690256,49.417409],[8.69028,49.4174],[8.690295,49.417377],[8.690269,49.416942],[8.690295,49.417377],[8.690359,49.417371],[8.690415,49.417365],[8.690443,49.417363],[8.690398,49.417318],[8.690392,49.417184],[8.690365,49.416546],[8.690398,49.417318],[8.690443,49.417363],[8.690518,49.417372],[8.691073,49.417221],[8.691088,49.417205],[8.691334,49.417148],[8.69155,49.41709],[8.691334,49.417148],[8.691088,49.417205],[8.691073,49.417221],[8.690518,49.417372],[8.690443,49.417363],[8.690398,49.417318],[8.690392,49.417184],[8.690398,49.417318],[8.690443,49.417363],[8.69044,49.417383],[8.690434,49.417418],[8.690429,49.417453],[8.690426,49.417466],[8.690784,49.417376],[8.691019,49.417317],[8.691548,49.417192],[8.691685,49.417172],[8.69179,49.417176],[8.691822,49.417213],[8.691857,49.41722],[8.691931,49.417235],[8.691817,49.417369],[8.691718,49.417459],[8.691428,49.417726],[8.691172,49.41796],[8.691428,49.417726],[8.691817,49.417369],[8.691931,49.417235],[8.691857,49.41722],[8.691822,49.417213],[8.69179,49.417176],[8.691685,49.417172],[8.691548,49.417192],[8.691019,49.417317],[8.690784,49.417376],[8.690426,49.417466],[8.690429,49.417453],[8.690434,49.417418],[8.69044,49.417383],[8.690443,49.417363],[8.690398,49.417318],[8.690392,49.417184],[8.690398,49.417318],[8.690443,49.417363],[8.690415,49.417365],[8.690359,49.417371],[8.690298,49.416732],[8.690276,49.416309],[8.690233,49.416312],[8.690024,49.416315],[8.689776,49.416313],[8.690024,49.416315],[8.690233,49.416312],[8.690295,49.417377],[8.69028,49.4174],[8.690256,49.417409],[8.688574,49.417349],[8.687543,49.417312],[8.687591,49.417017],[8.687613,49.417009],[8.687818,49.415851],[8.687825,49.415817],[8.68787,49.415809],[8.687922,49.41581],[8.688389,49.415823],[8.690154,49.415872],[8.690213,49.415875],[8.690215,49.415916],[8.690233,49.416312],[8.690024,49.416315],[8.689776,49.416313],[8.690024,49.416315],[8.690233,49.416312],[8.690215,49.415916],[8.690213,49.415875],[8.690154,49.415872],[8.690152,49.415828],[8.690144,49.415809],[8.689643,49.415794],[8.689102,49.415779],[8.689643,49.415794],[8.690144,49.415809],[8.690152,49.415828],[8.690154,49.415872],[8.690103,49.415871],[8.690154,49.415872],[8.690213,49.415875],[8.690215,49.415916],[8.690233,49.416312],[8.690024,49.416315],[8.689776,49.416313],[8.690024,49.416315],[8.690233,49.416312],[8.690215,49.415916],[8.690253,49.415912],[8.690338,49.415905],[8.690365,49.416546],[8.690398,49.417318],[8.690443,49.417363],[8.690415,49.417365],[8.690359,49.417371],[8.690295,49.417377],[8.690269,49.416942],[8.690233,49.416312],[8.690024,49.416315],[8.689776,49.416313],[8.690024,49.416315],[8.690233,49.416312],[8.690276,49.416309],[8.690298,49.416732],[8.690359,49.417371],[8.690346,49.417434],[8.690353,49.417477],[8.690392,49.418526],[8.690367,49.418888],[8.690392,49.41895],[8.690441,49.419005],[8.690421,49.419049],[8.690465,49.419059],[8.690448,49.419103],[8.690553,49.419082],[8.690621,49.419095],[8.690667,49.418993],[8.691352,49.419144],[8.690667,49.418993],[8.690621,49.419095],[8.690391,49.419368],[8.690275,49.419577],[8.69059,49.419632],[8.690275,49.419577],[8.690391,49.419368],[8.690421,49.419049],[8.690441,49.419005],[8.690392,49.41895],[8.690367,49.418888],[8.690368,49.418868],[8.690367,49.418888],[8.690392,49.41895],[8.690441,49.419005],[8.690421,49.419049],[8.690465,49.419059],[8.690448,49.419103],[8.690553,49.419082],[8.690621,49.419095],[8.690667,49.418993],[8.691352,49.419144],[8.690667,49.418993],[8.690912,49.418411],[8.69092,49.418378],[8.691139,49.418422],[8.692215,49.418637],[8.69219,49.418694],[8.691928,49.419272],[8.691352,49.419144],[8.691928,49.419272],[8.691944,49.419235],[8.691928,49.419272],[8.691702,49.419743],[8.691928,49.419272],[8.691352,49.419144]],\"type\":\"LineString\"}}],\"metadata\":{\"attribution\":\"openrouteservice.org
+        | OpenStreetMap contributors\",\"service\":\"routing\",\"timestamp\":1769095886844,\"query\":{\"coordinates\":[[8.692441,49.418156],[8.691123064128732,49.4184560896518],[8.690867443745669,49.417819362199985],[8.692441,49.418156],[8.691604593959488,49.41740680874916],[8.692597371204453,49.4176309797701],[8.692441,49.418156],[8.692853008581372,49.41826770782902],[8.692115851719578,49.41868026425992],[8.692441,49.418156],[8.692342,49.416989],[8.691604593959488,49.41740680874916],[8.691348972376915,49.41677007354305],[8.692342,49.416989],[8.69208611104595,49.41635750875067],[8.69307887794511,49.416581676184364],[8.692342,49.416989],[8.693334516520958,49.41721841199761],[8.692597371204453,49.4176309797701],[8.692342,49.416989],[8.690381,49.418226],[8.689393126876997,49.41864444343829],[8.689137523488084,49.41800771659404],[8.690381,49.418226],[8.689874678597821,49.41759517746481],[8.690867443745669,49.417819362199985],[8.690381,49.418226],[8.691123064128732,49.4184560896518],[8.69038590236991,49.41886863176089],[8.690381,49.418226],[8.693087,49.418903],[8.692371487897379,49.41931698456434],[8.692115851719578,49.41868026425992],[8.693087,49.418903],[8.692853008581372,49.41826770782902],[8.693845808268394,49.4184918687223],[8.693087,49.418903],[8.694101461440287,49.41912858963343],[8.693364297931161,49.41954114904462],[8.693087,49.418903],[8.690392,49.417184],[8.689874678597821,49.41759517746481],[8.689619074008869,49.41695844286624],[8.690392,49.417184],[8.69035621757407,49.41654589239527],[8.691348972376915,49.41677007354305],[8.690392,49.417184],[8.691604593959488,49.41740680874916],[8.690867443745669,49.417819362199985],[8.690392,49.417184],[8.689776,49.416313],[8.688626331304002,49.41673424800478],[8.688370742508578,49.41609750626006],[8.689776,49.416313],[8.68910787942453,49.41568495876877],[8.690100611785263,49.415909150042616],[8.689776,49.416313],[8.69035621757407,49.41654589239527],[8.689619074008869,49.41695844286624],[8.689776,49.416313],[8.691352,49.419144],[8.690641521553317,49.41950535145814],[8.69038590236991,49.41886863176089],[8.691352,49.419144],[8.691123064128732,49.4184560896518],[8.692115851719578,49.41868026425992],[8.691352,49.419144],[8.692371487897379,49.41931698456434],[8.69163431949004,49.4197295296535],[8.691352,49.419144]],\"profile\":\"foot-walking\",\"profileName\":\"foot-walking\",\"format\":\"geojson\"},\"engine\":{\"version\":\"9.5.0\",\"build_date\":\"2025-10-31T12:33:09Z\",\"graph_date\":\"2026-01-12T12:42:39Z\",\"osm_date\":\"2026-01-05T01:00:02Z\"}}}"
+    headers:
+      Access-Control-Allow-Headers:
+      - Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Authorization,
+        Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers
+      Access-Control-Allow-Methods:
+      - OPTIONS,GET,POST
+      Access-Control-Expose-Headers:
+      - x-ratelimit-remaining, x-ratelimit-reset, x-ratelimit-limit
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/geo+json;charset=UTF-8
+      Date:
+      - Thu, 22 Jan 2026 15:31:26 GMT
+      Server:
+      - nginx/1.25.4
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubdomains;
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin,Access-Control-Request-Method,Access-Control-Request-Headers
+      X-Ratelimit-Limit:
+      - '-1'
+      X-Ratelimit-Remaining:
+      - '0'
+      X-Ratelimit-Reset:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
