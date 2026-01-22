@@ -14,33 +14,6 @@ from mobility_tools.ors_settings import ORSSettings
 log = logging.getLogger(__name__)
 
 
-def calculate_detour_factors(chunk_distances: list[dict], transform: Transformer) -> list[float]:
-    chunk_detour_factors = []
-    for chunk_distance in chunk_distances:
-        actual_distances = chunk_distance['distances']
-        center = chunk_distance['snapped_coordinates']['center']
-        waypoints = chunk_distance['snapped_coordinates']['corners']
-
-        waypoints.insert(0, center)
-
-        utm_lon, utm_lat = transform.transform(
-            xx=[location[1] for location in waypoints], yy=[location[0] for location in waypoints]
-        )
-        utm_points = [shapely.Point(utm_lon[i], utm_lat[i]) for i in range(0, len(utm_lon))]
-        source = utm_points.pop(0)
-
-        linear_distances = []
-        for destination in utm_points:
-            distance = shapely.distance(source, destination)
-            linear_distances.append(distance)
-
-        detour_ratio = np.array(actual_distances) / np.array(linear_distances)
-        detour_factor = detour_ratio.mean()
-        chunk_detour_factors.append(detour_factor)
-
-    return chunk_detour_factors
-
-
 def get_detour_factors_batched(
     aoi: shapely.MultiPolygon,
     # paths: gpd.GeoDataFrame,
@@ -173,3 +146,30 @@ def compute_distances(
         )
 
     return distances
+
+
+def calculate_detour_factors(chunk_distances: list[dict], transform: Transformer) -> list[float]:
+    chunk_detour_factors = []
+    for chunk_distance in chunk_distances:
+        actual_distances = chunk_distance['distances']
+        center = chunk_distance['snapped_coordinates']['center']
+        waypoints = chunk_distance['snapped_coordinates']['corners']
+
+        waypoints.insert(0, center)
+
+        utm_lon, utm_lat = transform.transform(
+            xx=[location[1] for location in waypoints], yy=[location[0] for location in waypoints]
+        )
+        utm_points = [shapely.Point(utm_lon[i], utm_lat[i]) for i in range(0, len(utm_lon))]
+        source = utm_points.pop(0)
+
+        linear_distances = []
+        for destination in utm_points:
+            distance = shapely.distance(source, destination)
+            linear_distances.append(distance)
+
+        detour_ratio = np.array(actual_distances) / np.array(linear_distances)
+        detour_factor = detour_ratio.mean()
+        chunk_detour_factors.append(detour_factor)
+
+    return chunk_detour_factors
