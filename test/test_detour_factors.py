@@ -12,13 +12,11 @@ import responses
 import responses.matchers
 import shapely
 from approvaltests import DiffReporter, set_default_reporter, verify
-from pandas.testing import assert_frame_equal, assert_series_equal
-from requests.exceptions import HTTPError, RetryError
+from pandas.testing import assert_frame_equal
 from vcr import use_cassette
 
 from mobility_tools.detour_factors import (
     batch_and_filter_spurs,
-    batching,
     check_aoi_contains_cell,
     create_destinations,
     exclude_ferries,
@@ -30,7 +28,6 @@ from mobility_tools.detour_factors import (
     get_ors_walking_distances,
     match_ors_distance_to_cells,
     ors_request,
-    snap_batched_records,
     snap_destinations,
 )
 from mobility_tools.utils.exceptions import SizeLimitExceededError
@@ -282,14 +279,6 @@ def test_get_cell_distance():
     assert pytest.approx(result, abs=1.0) == 131.75
 
 
-@pytest.fixture
-def small_ors_snapping_response():
-    return [
-        {'locations': [None]},
-        {'locations': [{'location': [8.773085, 49.376161], 'name': 'Schulstraße', 'snapped_distance': 114.44}]},
-    ]
-
-
 @use_cassette
 def test_snap_destinations(default_ors_settings):
     destinations = pd.DataFrame(
@@ -311,63 +300,6 @@ def test_snap_destinations(default_ors_settings):
     results = snap_destinations(destinations, ors_settings=settings, profile='foot-walking')
 
     assert_frame_equal(results, expected_results)
-
-
-def test_snap_batched_records(small_ors_snapping_response, default_ors_settings):
-    locations = [
-        gpd.GeoSeries(
-            index=['8a1faad6992ffff', '8a1faad69927fff'],
-            data=[
-                shapely.Point(8.774708093757534, 49.37706987059154),
-                shapely.Point(8.772978584588666, 49.377259809601995),
-            ],
-            crs='EPSG:4326',
-        ).rename_axis('id'),
-    ]
-
-    expected_result = pd.DataFrame(
-        data={'snapped_location': [None, [8.773085, 49.376161]], 'snapped_distance': [None, 114.44]},
-        index=['8a1faad6992ffff', '8a1faad69927fff'],
-    ).rename_axis('id')
-
-    with responses.RequestsMock() as rsps:
-        rsps.add(
-            method='POST',
-            url='http://localhost:8080/ors/v2/snap/foot-walking',
-            json={'locations': [None, small_ors_snapping_response[1]['locations'][0]]},
-        )
-
-        result = snap_batched_records(
-            ors_settings=default_ors_settings, batched_locations=locations, profile='foot-walking'
-        )
-
-        assert_frame_equal(result, expected_result)
-
-
-@use_cassette
-def test_snapping_request_fail_bad_gateway(default_ors_settings):
-    coordinates = [gpd.GeoSeries([shapely.Point(1.0, 1.0), shapely.Point(1.1, 1.1)], crs='EPSG:4326')]
-    with pytest.raises(RetryError):
-        snap_batched_records(default_ors_settings, batched_locations=coordinates, profile='foot-walking')
-
-
-@use_cassette
-def test_snapping_request_fail_forbidden(default_ors_settings):
-    coordinates = [gpd.GeoSeries([shapely.Point(1.0, 1.0), shapely.Point(1.1, 1.1)], crs='EPSG:4326')]
-    with pytest.raises(HTTPError):
-        snap_batched_records(default_ors_settings, batched_locations=coordinates, profile='foot-walking')
-
-
-def test_batching():
-    origins = pd.Series([i for i in range(0, 6)])
-    batch_size = 2
-
-    expected_result = [pd.Series([0, 1]), pd.Series([2, 3]), pd.Series([4, 5])]
-    result = batching(origins, batch_size)  # type: ignore
-
-    for index, batch in enumerate(result):
-        assert len(batch) == batch_size
-        assert_series_equal(batch, expected_result[index], check_index=False)
 
 
 def test_exclude_ferries():

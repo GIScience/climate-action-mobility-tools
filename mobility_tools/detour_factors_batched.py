@@ -10,8 +10,9 @@ import pandas as pd
 import shapely
 from pyproj import Transformer
 
-from mobility_tools.detour_factors import batching, snap_batched_records
 from mobility_tools.ors_settings import ORSSettings
+from mobility_tools.utils.batching import batching
+from mobility_tools.utils.snapping import snap_batched_records
 
 log = logging.getLogger(__name__)
 
