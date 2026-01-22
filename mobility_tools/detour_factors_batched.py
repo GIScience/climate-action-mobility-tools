@@ -5,6 +5,7 @@ import geopandas as gpd
 import h3pandas
 import numpy as np
 import openrouteservice.directions as directions
+import pandas as pd
 import shapely
 from pyproj import Transformer
 
@@ -13,10 +14,13 @@ from mobility_tools.ors_settings import ORSSettings
 log = logging.getLogger(__name__)
 
 
-def calculate_detour_factors(chunk_distances, transform: Transformer):
+def calculate_detour_factors(chunk_distances: list[dict], transform: Transformer) -> list[float]:
     chunk_detour_factors = []
-    for actual_distances, coordinates in chunk_distances:
-        center, waypoints = coordinates
+    for chunk_distance in chunk_distances:
+        actual_distances = chunk_distance['distances']
+        center = chunk_distance['snapped_coordinates']['center']
+        waypoints = chunk_distance['snapped_coordinates']['corners']
+
         waypoints.insert(0, center)
 
         utm_lon, utm_lat = transform.transform(
@@ -83,7 +87,7 @@ def get_detour_factors_batched(
     return full_hexgrid
 
 
-def extract_points(row):
+def extract_points(row: pd.Series) -> list[tuple[float, float]]:
     center: shapely.Point = row['cell_center']
     boundary: shapely.Polygon = row['geometry']
 
@@ -97,7 +101,7 @@ def extract_points(row):
     return vertices
 
 
-def extract_coordinates(row):
+def extract_coordinates(row: pd.Series) -> dict[str, tuple | list[tuple]]:
     center_point: shapely.Point = row['cell_center']
     boundary: shapely.Polygon = row['geometry']
 
@@ -107,14 +111,18 @@ def extract_coordinates(row):
     corners = list(zip(boundary_lon, boundary_lat))
     corners.pop()
 
-    return (center, corners)
+    return {'center': center, 'corners': corners}
 
 
-def compute_distances(chunk_coordinates, ors_settings: ORSSettings, profile: str) -> list[(list[float], list[float])]:
+def compute_distances(
+    chunk_coordinates: pd.Series, ors_settings: ORSSettings, profile: str
+) -> list[dict[str, list[float] | dict]]:
     coordinates = []
     skip_segments = []
     segment_indices = []
-    for center, waypoints in chunk_coordinates:
+    for chunk in chunk_coordinates:
+        center = chunk['center']
+        waypoints = chunk['corners']
         if len(coordinates):
             # skip connection from last cell center to this cell center
             skip_segments.append(len(coordinates))
@@ -157,6 +165,11 @@ def compute_distances(chunk_coordinates, ors_settings: ORSSettings, profile: str
         corners = [1, 2, 4, 5, 7, 8]
         corner_indices = [corners[i] + indices[0] for i in valid_indices]
         snapped_corners = [snapped_coordinates[i] for i in corner_indices]
-        distances.append((routes_distances, (snapped_center, snapped_corners)))
+        distances.append(
+            {
+                'distances': routes_distances,
+                'snapped_coordinates': {'center': snapped_center, 'corners': snapped_corners},
+            }
+        )
 
     return distances
