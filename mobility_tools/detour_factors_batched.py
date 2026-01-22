@@ -120,6 +120,9 @@ def compute_distances(
         format='geojson',
     )
 
+    # TODO handle responses where points aren't routable, or segments are impossible
+    # In a way snapping points before the routing request has the elegance of filtering out cells where routing is not possible e.g. because they are entirely at sea
+
     with open('test.json', 'w+') as file:
         json.dump(result, indent=2, fp=file)
 
