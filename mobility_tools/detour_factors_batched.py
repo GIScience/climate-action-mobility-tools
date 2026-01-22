@@ -43,6 +43,7 @@ def get_detour_factors_batched(
     # get cell centers and geometry
     hexgrid = full_hexgrid.h3.h3_to_geo().rename(columns={'geometry': 'cell_center'}).set_geometry('cell_center')
     hexgrid = hexgrid.h3.h3_to_geo_boundary()
+    hexgrid['coordinates'] = hexgrid.apply(extract_coordinates, axis=1)
 
     # Process hexgrid in batches to avoid applying row-by-row for the entire frame
     batch_size = 7  # should be set dynamically depending on the size of the hexgrid and ORS rate limits
@@ -51,7 +52,7 @@ def get_detour_factors_batched(
         end = min(start + batch_size, len(hexgrid))
         chunk = hexgrid.iloc[start:end]
         log.debug(f'Processing hexgrid batch {start}:{end}')
-        chunk_coordinates = chunk.apply(extract_coordinates, axis=1).tolist()
+        chunk_coordinates = chunk['coordinates'].to_list()
         chunk_distances = compute_distances(chunk_coordinates, ors_settings, profile)
         batch_detour_factors = calculate_detour_factors(chunk_distances, transform)
         detour_factors += batch_detour_factors
@@ -74,7 +75,7 @@ def extract_coordinates(row: pd.Series) -> dict[str, tuple | list[tuple]]:
 
 
 def compute_distances(
-    chunk_coordinates: pd.Series, ors_settings: ORSSettings, profile: str
+    chunk_coordinates: list[dict], ors_settings: ORSSettings, profile: str
 ) -> list[dict[str, list[float] | dict]]:
     coordinates = []
     skip_segments = []
