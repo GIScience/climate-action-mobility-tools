@@ -46,10 +46,7 @@ def get_detour_factors_simplified(
     return full_hexgrid
 
 
-def extract_routing_coordinates(
-    row: pd.Series, ors_settings: ORSSettings, profile: str
-) -> float:
-    
+def extract_routing_coordinates(row: pd.Series, ors_settings: ORSSettings, profile: str) -> float:
     vertices = extract_points(row)
 
     skip_segments = range(2, len(vertices), 2)
@@ -58,7 +55,7 @@ def extract_routing_coordinates(
         coordinates=vertices,
         profile=profile,
         geometry=False,
-        skip_segments=list(skip_segments)
+        skip_segments=list(skip_segments),
     )
 
     detour_factor = calculate_detour_factor(result)
@@ -71,7 +68,7 @@ def calculate_detour_factor(result):
     distances = [segment['distance'] for segment in segments]
     indices = list(range(0, len(distances), 2))
     actual_distances = [distances[i] for i in indices]
-    linear_distances = [distances[i+1] for i in indices]
+    linear_distances = [distances[i + 1] for i in indices]
 
     for index, linear_distance in enumerate(linear_distances):
         if linear_distance == 0.0:

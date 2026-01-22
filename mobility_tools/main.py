@@ -3,9 +3,9 @@ from time import time_ns
 import shapely
 from detour_factors_batched import get_detour_factors_batched
 from matplotlib import pyplot as plt
+from ors_settings import ORSSettings
 
 from mobility_tools.detour_factors import get_detour_factors
-from ors_settings import ORSSettings
 
 aoi = shapely.box(8.671217, 49.408404, 8.7000658, 49.420400)
 ors_settings = ORSSettings()
