@@ -44,6 +44,7 @@ def test_extract_coordinates():
 
 def test_calculate_detour_factors():
     # TODO think about how to make this test more understandable, made up coordinates for easy math
+    # atm this basicall tests the current implementation against it's own results
     chunk_distances = [
         {
             'distances': [66.4, 73.7, 101.2, 52.4, 72.9, 833.4],
