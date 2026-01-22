@@ -9,6 +9,7 @@ from mobility_tools.detour_factors_batched import (
     extract_coordinates,
     get_detour_factors_batched,
 )
+from mobility_tools.ors_settings import ORSSettings
 
 
 @use_cassette
@@ -23,6 +24,13 @@ def test_get_detour_factors_batched(default_ors_settings):
     for detour_factor in result.detour_factor:
         assert isinstance(detour_factor, float)
     assert result.active_geometry_name is not None
+
+
+def test_get_detour_factors_low_paths(default_aoi):
+    ors_settings = ORSSettings()
+    aoi = shapely.box(8.671217, 49.408404, 8.6800658, 49.410400)
+
+    get_detour_factors_batched(aoi, ors_settings, profile='foot-walking')
 
 
 def test_extract_coordinates():

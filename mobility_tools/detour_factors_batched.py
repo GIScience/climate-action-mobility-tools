@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 
 import geopandas as gpd
 import h3pandas
@@ -9,6 +10,7 @@ import pandas as pd
 import shapely
 from pyproj import Transformer
 
+from mobility_tools.detour_factors import batching, snap_batched_records
 from mobility_tools.ors_settings import ORSSettings
 
 log = logging.getLogger(__name__)
@@ -43,6 +45,15 @@ def get_detour_factors_batched(
     # get cell centers and geometry
     hexgrid = full_hexgrid.h3.h3_to_geo().rename(columns={'geometry': 'cell_center'}).set_geometry('cell_center')
     hexgrid = hexgrid.h3.h3_to_geo_boundary()
+
+    snapping_start = time.time_ns()
+    hexgrid['snapped'] = snap_centers(hexgrid['cell_center'], ors_settings=ors_settings, profile=profile)
+    hexgrid = hexgrid[~hexgrid['snapped'].isna()]
+    hexgrid['snapped_centers'] = hexgrid['snapped'].apply(lambda x: shapely.Point(x[0], x[1]))
+    hexgrid = hexgrid.drop(columns=['cell_center', 'snapped']).rename(columns={'snapped_centers': 'cell_center'})
+    snapping_end = time.time_ns()
+    print(f'snapping time: {(snapping_end - snapping_start) / 10**9}s')
+
     hexgrid['coordinates'] = hexgrid.apply(extract_coordinates, axis=1)
 
     # Process hexgrid in batches to avoid applying row-by-row for the entire frame
@@ -56,9 +67,18 @@ def get_detour_factors_batched(
         chunk_distances = compute_distances(chunk_coordinates, ors_settings, profile)
         batch_detour_factors = calculate_detour_factors(chunk_distances, transform)
         detour_factors += batch_detour_factors
-    full_hexgrid['detour_factor'] = detour_factors
+    hexgrid['detour_factor'] = detour_factors
 
-    return full_hexgrid
+    return hexgrid
+
+
+def snap_centers(centers: gpd.GeoSeries, ors_settings: ORSSettings, profile: str):
+    batched_centers = batching(series=centers, batch_size=ors_settings.ors_snapping_request_size_limit)
+
+    # snapping radius is set based on cell resolution of 10
+    snapped_records = snap_batched_records(ors_settings, batched_centers, profile=profile, snapping_radius=70)
+
+    return snapped_records['snapped_location']
 
 
 def extract_coordinates(row: pd.Series) -> dict[str, tuple | list[tuple]]:
