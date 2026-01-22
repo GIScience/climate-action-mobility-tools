@@ -9,6 +9,7 @@ import openrouteservice.directions as directions
 import pandas as pd
 import shapely
 from pyproj import Transformer
+from tqdm import tqdm
 
 from mobility_tools.ors_settings import ORSSettings
 from mobility_tools.utils.batching import batching
@@ -38,7 +39,9 @@ def get_detour_factors_batched(
     log.info('Computing detour factors')
 
     log.debug(f'Using h3pandas v{h3pandas.version} to get hexgrid for aoi.')  # need to use h3pandas import
-    full_hexgrid = gpd.GeoDataFrame(geometry=[aoi], crs='EPSG:4326').h3.polyfill_resample(resolution).sort_values(by='h3_polyfill')
+    full_hexgrid = (
+        gpd.GeoDataFrame(geometry=[aoi], crs='EPSG:4326').h3.polyfill_resample(resolution).sort_values(by='h3_polyfill')
+    )
 
     crs = full_hexgrid.estimate_utm_crs()
     transform = Transformer.from_crs(crs_from='EPSG:4326', crs_to=crs)
@@ -60,7 +63,8 @@ def get_detour_factors_batched(
     # Process hexgrid in batches to avoid applying row-by-row for the entire frame
     batch_size = 7  # should be set dynamically depending on the size of the hexgrid and ORS rate limits
     detour_factors = []
-    for start in range(0, len(hexgrid), batch_size):
+
+    for start in tqdm(range(0, len(hexgrid), batch_size), desc='Processing batches'):
         end = min(start + batch_size, len(hexgrid))
         chunk = hexgrid.iloc[start:end]
         log.debug(f'Processing hexgrid batch {start}:{end}')
