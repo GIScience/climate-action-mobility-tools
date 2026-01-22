@@ -60,20 +60,6 @@ def get_detour_factors_batched(
     return full_hexgrid
 
 
-def extract_points(row: pd.Series) -> list[tuple[float, float]]:
-    center: shapely.Point = row['cell_center']
-    boundary: shapely.Polygon = row['geometry']
-
-    center_lon, center_lat = center.coords.xy
-    boundary_lon, boundary_lat = boundary.exterior.coords.xy
-    center_point = (center_lon[0], center_lat[0])
-    vertices = list(zip(boundary_lon, boundary_lat))
-    for i in range(len(vertices)):
-        vertices.insert(2 * i, center_point)
-    vertices.pop()
-    return vertices
-
-
 def extract_coordinates(row: pd.Series) -> dict[str, tuple | list[tuple]]:
     center_point: shapely.Point = row['cell_center']
     boundary: shapely.Polygon = row['geometry']
