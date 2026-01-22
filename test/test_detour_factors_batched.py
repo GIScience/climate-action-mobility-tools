@@ -1,16 +1,15 @@
 import numpy as np
 import pandas as pd
 import shapely
+from approvaltests import verify
 from pyproj import Transformer
 from vcr import use_cassette
-from approvaltests import verify
 
 from mobility_tools.detour_factors_batched import (
     calculate_detour_factors,
     extract_coordinates,
     get_detour_factors_batched,
 )
-from mobility_tools.ors_settings import ORSSettings
 
 
 @use_cassette
@@ -24,9 +23,9 @@ def test_get_detour_factors_batched(default_ors_settings):
         assert isinstance(detour_factor, float)
     assert result.active_geometry_name is not None
 
+
 @use_cassette
 def test_get_detour_factors_approval_test(small_aoi, default_ors_settings):
-    
     result = get_detour_factors_batched(small_aoi, default_ors_settings, profile='foot-walking')
     verify(result.to_csv())
 
