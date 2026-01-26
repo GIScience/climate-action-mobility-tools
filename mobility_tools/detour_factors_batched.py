@@ -100,32 +100,17 @@ def compute_distances(
     chunk_coordinates: list[dict], ors_settings: ORSSettings, profile: str
 ) -> list[dict[str, list[float] | dict]]:
     coordinates = []
-    skip_segments = []
-    segment_indices = []
     for chunk in chunk_coordinates:
         center = chunk['center']
         waypoints = chunk['corners']
-        if len(coordinates):
-            # skip connection from last cell center to this cell center
-            skip_segments.append(len(coordinates))
         for i in range(len(waypoints) // 2 + 1):
             waypoints.insert(3 * i, center)
-        offset = len(coordinates)
-        connecting_segments = [i + offset for i in list(range(2, len(waypoints), 3))]
-        route_segments = []
-        for i in connecting_segments:
-            route_segments.append(i - 1)
-            route_segments.append(i + 1)
         coordinates += waypoints
-        skip_segments += connecting_segments
-        segment_indices.append([i - 1 for i in route_segments])
 
     result = directions.directions(
         client=ors_settings.client,
         coordinates=coordinates,
         profile=profile,
-        # geometry=False,
-        # skip_segments=skip_segments,
         format='geojson',
     )
 
@@ -138,15 +123,21 @@ def compute_distances(
     ]
 
     distances = []
-    for indices in segment_indices:
-        offset = indices[0]
-        routes_distances = [segment_distances[i] for i in indices]
-        valid_indices = [i for i, dist in enumerate(routes_distances) if dist > 0.0]
-        routes_distances = [routes_distances[i] for i in valid_indices]
-        snapped_center = snapped_coordinates[offset]
-        corners = [1, 2, 4, 5, 7, 8]
-        corner_indices = [corners[i] + indices[0] for i in valid_indices]
-        snapped_corners = [snapped_coordinates[i] for i in corner_indices]
+    for index in range(0, len(snapped_coordinates), 10):
+        cell_coordinates = snapped_coordinates[index : index + 10]
+        cell_distances = segment_distances[index : index + 10]
+
+        center_indices = list(range(0, len(cell_coordinates), 3))
+
+        snapped_center = None
+        routes_distances = []
+        for i in reversed(center_indices):
+            snapped_center = cell_coordinates.pop(i)
+            if i != 9:
+                routes_distances.insert(0, cell_distances[i + 2])
+                routes_distances.insert(0, cell_distances[i])
+        snapped_corners = cell_coordinates
+
         distances.append(
             {
                 'distances': routes_distances,
