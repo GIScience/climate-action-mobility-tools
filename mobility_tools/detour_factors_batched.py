@@ -99,13 +99,7 @@ def extract_coordinates(row: pd.Series) -> dict[str, tuple | list[tuple]]:
 def compute_distances(
     chunk_coordinates: list[dict], ors_settings: ORSSettings, profile: str
 ) -> list[dict[str, list[float] | dict]]:
-    coordinates = []
-    for chunk in chunk_coordinates:
-        center = chunk['center']
-        waypoints = chunk['corners']
-        for i in range(len(waypoints) // 2 + 1):
-            waypoints.insert(3 * i, center)
-        coordinates += waypoints
+    coordinates = create_waypoint_path(chunk_coordinates)
 
     result = directions.directions(
         client=ors_settings.client,
@@ -114,9 +108,26 @@ def compute_distances(
         format='geojson',
     )
 
-    # TODO handle responses where points aren't routable, or segments are impossible
-    # In a way snapping points before the routing request has the elegance of filtering out cells where routing is not possible e.g. because they are entirely at sea
+    distances = extract_data_from_ors_result(result)
 
+    return distances
+
+
+def create_waypoint_path(chunk_coordinates: list[dict]) -> list[list[float]]:
+    # TODO this function needs testing
+    coordinates = []
+    for chunk in chunk_coordinates:
+        center = chunk['center']
+        waypoints = chunk['corners']
+        for i in range(len(waypoints) // 2 + 1):
+            waypoints.insert(3 * i, center)
+        coordinates += waypoints
+    return coordinates
+
+
+def extract_data_from_ors_result(result: dict) -> list[dict]:
+    # TODO this function needs testing
+    # TODO try out if this needs more error handling
     segment_distances = [segment['distance'] for segment in result['features'][0]['properties']['segments']]
     snapped_coordinates = [
         result['features'][0]['geometry']['coordinates'][i] for i in result['features'][0]['properties']['way_points']
