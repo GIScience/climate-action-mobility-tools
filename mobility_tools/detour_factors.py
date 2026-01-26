@@ -13,6 +13,7 @@ import pandas as pd
 import shapely
 from tqdm import tqdm
 
+from mobility_tools.detour_factors_batched import exclude_ferries
 from mobility_tools.ors_settings import ORSSettings
 from mobility_tools.utils.batching import batching
 from mobility_tools.utils.exceptions import SizeLimitExceededError
@@ -23,7 +24,7 @@ log = logging.getLogger(__name__)
 
 def get_detour_factors(
     aoi: shapely.MultiPolygon,
-    # paths: gpd.GeoDataFrame,
+    paths: gpd.GeoDataFrame,
     ors_settings: ORSSettings,
     profile: str,
     resolution: int = 10,
@@ -61,7 +62,7 @@ def get_detour_factors(
         profile=profile,
     )
 
-    # snapped_destinations = exclude_ferries(snapped_destinations, paths)
+    snapped_destinations = exclude_ferries(snapped_destinations, paths)
 
     destinations_with_snapping = pd.merge(
         left=destinations,
@@ -340,13 +341,6 @@ def snap_destinations(
     )
     log.debug(f'Snapped {len(snapped_records)} unique destinations')
     return snapped_records
-
-
-def exclude_ferries(snapped_destinations: pd.DataFrame, paths: gpd.GeoDataFrame) -> pd.DataFrame:
-    boundaries = snapped_destinations.h3.h3_to_geo_boundary()
-    snapped_destinations['contains_paths'] = boundaries.intersects(paths.union_all())
-    snapped_destinations.loc[~snapped_destinations['contains_paths'], 'snapped_location'] = None
-    return snapped_destinations.drop(columns=['contains_paths'])
 
 
 def get_ors_walking_distances(

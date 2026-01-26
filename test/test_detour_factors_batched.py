@@ -1,3 +1,4 @@
+import geopandas as gpd
 import numpy as np
 import pandas as pd
 import shapely
@@ -7,6 +8,7 @@ from vcr import use_cassette
 
 from mobility_tools.detour_factors_batched import (
     calculate_detour_factors,
+    exclude_ferries,
     extract_coordinates,
     get_detour_factors_batched,
 )
@@ -15,8 +17,9 @@ from mobility_tools.detour_factors_batched import (
 @use_cassette
 def test_get_detour_factors_batched(default_ors_settings):
     aoi = shapely.box(8.671217, 49.408404, 8.6800658, 49.410400)
+    paths = gpd.GeoDataFrame(data={'test': [0]}, geometry=[aoi], crs='EPSG:4326')
 
-    result = get_detour_factors_batched(aoi, default_ors_settings, profile='foot-walking')
+    result = get_detour_factors_batched(aoi, paths, default_ors_settings, profile='foot-walking')
 
     assert 'detour_factor' in result.columns
     for detour_factor in result.detour_factor:
@@ -26,7 +29,8 @@ def test_get_detour_factors_batched(default_ors_settings):
 
 @use_cassette
 def test_get_detour_factors_approval_test(small_aoi, default_ors_settings):
-    result = get_detour_factors_batched(small_aoi, default_ors_settings, profile='foot-walking')
+    paths = gpd.GeoDataFrame(data={'test': [0]}, geometry=[small_aoi], crs='EPSG:4326')
+    result = get_detour_factors_batched(small_aoi, paths, default_ors_settings, profile='foot-walking')
     verify(result.to_csv())
 
 
@@ -88,3 +92,17 @@ def test_calculate_detour_factors():
     expected_result = [np.float64(1.8221085635843355), np.float64(9.080471601313818)]
 
     assert result == expected_result
+
+
+def test_exclude_ferries():
+    # TODO rewrite test so it's a bit more useful and has some cells that pass
+    snapped_input = pd.DataFrame(
+        data={'snapped_location': [[8.773085, 49.376161], None], 'snapped_distance': [122.49, None]},
+        index=['8a1faad69927fff', '8a1faad6992ffff'],
+    ).rename_axis('id')
+
+    paths = gpd.GeoDataFrame(geometry=[shapely.LineString([(0, 0), (1, 1)])])
+
+    result = exclude_ferries(snapped_input, paths)
+
+    verify(result.to_json())

@@ -1,0 +1,1 @@
+{"snapped_location":{},"snapped_distance":{}}

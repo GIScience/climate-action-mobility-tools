@@ -10,7 +10,6 @@ import pandas as pd
 import pytest
 import responses
 import responses.matchers
-import shapely
 from approvaltests import DiffReporter, set_default_reporter, verify
 from pandas.testing import assert_frame_equal
 from vcr import use_cassette
@@ -19,7 +18,6 @@ from mobility_tools.detour_factors import (
     batch_and_filter_spurs,
     check_aoi_contains_cell,
     create_destinations,
-    exclude_ferries,
     generate_waypoint_pairs,
     get_cell_distance,
     get_detour_factors,
@@ -300,19 +298,6 @@ def test_snap_destinations(default_ors_settings):
     results = snap_destinations(destinations, ors_settings=settings, profile='foot-walking')
 
     assert_frame_equal(results, expected_results)
-
-
-def test_exclude_ferries():
-    snapped_input = pd.DataFrame(
-        data={'snapped_location': [[8.773085, 49.376161], None], 'snapped_distance': [122.49, None]},
-        index=['8a1faad69927fff', '8a1faad6992ffff'],
-    ).rename_axis('id')
-
-    paths = gpd.GeoDataFrame(geometry=[shapely.LineString([(0, 0), (1, 1)])])
-
-    result = exclude_ferries(snapped_input, paths)
-
-    verify(result.to_json())
 
 
 @use_cassette

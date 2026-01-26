@@ -1,6 +1,5 @@
 import json
 import logging
-import time
 
 import geopandas as gpd
 import h3pandas
@@ -20,7 +19,7 @@ log = logging.getLogger(__name__)
 
 def get_detour_factors_batched(
     aoi: shapely.MultiPolygon,
-    # paths: gpd.GeoDataFrame,
+    paths: gpd.GeoDataFrame,
     ors_settings: ORSSettings,
     profile: str,
     resolution: int = 10,
@@ -50,13 +49,12 @@ def get_detour_factors_batched(
     hexgrid = full_hexgrid.h3.h3_to_geo().rename(columns={'geometry': 'cell_center'}).set_geometry('cell_center')
     hexgrid = hexgrid.h3.h3_to_geo_boundary()
 
-    snapping_start = time.time_ns()
     hexgrid['snapped'] = snap_centers(hexgrid['cell_center'], ors_settings=ors_settings, profile=profile)
     hexgrid = hexgrid[~hexgrid['snapped'].isna()]
     hexgrid['snapped_centers'] = hexgrid['snapped'].apply(lambda x: shapely.Point(x[0], x[1]))
     hexgrid = hexgrid.drop(columns=['cell_center', 'snapped']).rename(columns={'snapped_centers': 'cell_center'})
-    snapping_end = time.time_ns()
-    print(f'snapping time: {(snapping_end - snapping_start) / 10**9}s')
+    if paths is not None:
+        hexgrid = exclude_ferries(hexgrid, paths)
 
     hexgrid['coordinates'] = hexgrid.apply(extract_coordinates, axis=1)
 
@@ -188,3 +186,10 @@ def calculate_detour_factors(chunk_distances: list[dict], transform: Transformer
         chunk_detour_factors.append(detour_factor)
 
     return chunk_detour_factors
+
+
+def exclude_ferries(snapped_destinations: pd.DataFrame, paths: gpd.GeoDataFrame) -> pd.DataFrame:
+    boundaries = snapped_destinations.h3.h3_to_geo_boundary()
+    snapped_destinations['contains_paths'] = boundaries.intersects(paths.union_all())
+    snapped_destinations = snapped_destinations[snapped_destinations['contains_paths'] == True]
+    return snapped_destinations.drop(columns=['contains_paths'])
