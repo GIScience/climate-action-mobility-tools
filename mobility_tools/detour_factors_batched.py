@@ -1,4 +1,3 @@
-import json
 import logging
 
 import geopandas as gpd
@@ -133,9 +132,6 @@ def compute_distances(
     # TODO handle responses where points aren't routable, or segments are impossible
     # In a way snapping points before the routing request has the elegance of filtering out cells where routing is not possible e.g. because they are entirely at sea
 
-    with open('test.json', 'w+') as file:
-        json.dump(result, indent=2, fp=file)
-
     segment_distances = [segment['distance'] for segment in result['features'][0]['properties']['segments']]
     snapped_coordinates = [
         result['features'][0]['geometry']['coordinates'][i] for i in result['features'][0]['properties']['way_points']
@@ -191,5 +187,5 @@ def calculate_detour_factors(chunk_distances: list[dict], transform: Transformer
 def exclude_ferries(snapped_destinations: pd.DataFrame, paths: gpd.GeoDataFrame) -> pd.DataFrame:
     boundaries = snapped_destinations.h3.h3_to_geo_boundary()
     snapped_destinations['contains_paths'] = boundaries.intersects(paths.union_all())
-    snapped_destinations = snapped_destinations[snapped_destinations['contains_paths'] == True]
+    snapped_destinations = snapped_destinations[snapped_destinations['contains_paths']]
     return snapped_destinations.drop(columns=['contains_paths'])
