@@ -140,15 +140,14 @@ def extract_data_from_ors_result(result: dict) -> list[dict]:
 
         center_indices = list(range(0, len(cell_coordinates), 3))
         snapped_center = cell_coordinates.pop()
-        routes_distances = []
+        route_distances = []
         for i in reversed(center_indices[:-1]):
             snapped_center = cell_coordinates.pop(i)
-            routes_distances.insert(0, cell_distances[i + 2])
-            routes_distances.insert(0, cell_distances[i])
+            route_distances[0:0] = [cell_distances[i], cell_distances[i + 2]]
 
         distances.append(
             {
-                'distances': routes_distances,
+                'distances': route_distances,
                 'snapped_coordinates': {'center': snapped_center, 'corners': cell_coordinates},
             }
         )
