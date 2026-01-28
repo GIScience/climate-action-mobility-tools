@@ -52,8 +52,7 @@ def get_detour_factors_batched(
     hexgrid = hexgrid[~hexgrid['snapped'].isna()]
     hexgrid['snapped_centers'] = hexgrid['snapped'].apply(lambda x: shapely.Point(x[0], x[1]))
     hexgrid = hexgrid.drop(columns=['cell_center', 'snapped']).rename(columns={'snapped_centers': 'cell_center'})
-    if paths is not None:
-        hexgrid = exclude_ferries(hexgrid, paths)
+    hexgrid = exclude_ferries(hexgrid, paths)
 
     hexgrid['coordinates'] = hexgrid.apply(extract_coordinates, axis=1)
 
@@ -187,6 +186,8 @@ def calculate_detour_factors(chunk_distances: list[dict], transform: Transformer
 
 
 def exclude_ferries(snapped_destinations: pd.DataFrame, paths: gpd.GeoDataFrame) -> pd.DataFrame:
+    if paths is None or len(paths) == 0:
+        return snapped_destinations
     boundaries = snapped_destinations.h3.h3_to_geo_boundary()
     snapped_destinations['contains_paths'] = boundaries.intersects(paths.union_all())
     snapped_destinations = snapped_destinations[snapped_destinations['contains_paths']]
