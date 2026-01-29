@@ -131,11 +131,11 @@ def extract_data_from_ors_result(result: dict) -> list[dict]:
     snapped_coordinates = [
         result['features'][0]['geometry']['coordinates'][i] for i in result['features'][0]['properties']['way_points']
     ]
-    COORDINATES_PER_CELL = 10
+    coordinates_per_cell = 10
     distances = []
-    for cell_offset in range(0, len(snapped_coordinates), COORDINATES_PER_CELL):
-        cell_coordinates = snapped_coordinates[cell_offset : cell_offset + COORDINATES_PER_CELL]
-        cell_distances = segment_distances[cell_offset : cell_offset + COORDINATES_PER_CELL]
+    for cell_offset in range(0, len(snapped_coordinates), coordinates_per_cell):
+        cell_coordinates = snapped_coordinates[cell_offset : cell_offset + coordinates_per_cell]
+        cell_distances = segment_distances[cell_offset : cell_offset + coordinates_per_cell]
 
         center_indices = list(range(0, len(cell_coordinates), 3))
         snapped_center = cell_coordinates.pop()
