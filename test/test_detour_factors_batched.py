@@ -1,6 +1,7 @@
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+import pytest
 import shapely
 from approvaltests import verify
 from pyproj import Transformer
@@ -11,6 +12,7 @@ from mobility_tools.detour_factors_batched import (
     create_waypoint_path,
     exclude_ferries,
     extract_coordinates,
+    extract_data_from_ors_result,
     get_detour_factors_batched,
 )
 
@@ -52,12 +54,18 @@ def test_extract_coordinates():
     assert corners == expected_corners
 
 
-def test_create_waypoint_path():
+@pytest.fixture
+def default_chunk_coordinates() -> list[dict]:
     chunk_coordinates = [
         {'center': 'center0', 'corners': [f'corner0-{x}' for x in range(6)]},
         {'center': 'center1', 'corners': [f'corner1-{x}' for x in range(6)]},
     ]
 
+    return chunk_coordinates
+
+
+@pytest.fixture
+def expected_hexcell_corner_paths() -> list[str]:
     first_cell_path = [
         'center0',
         'corner0-0',
@@ -83,10 +91,35 @@ def test_create_waypoint_path():
         'center1',
     ]
     expected = first_cell_path + second_cell_path
+    return expected
 
-    received = create_waypoint_path(chunk_coordinates=chunk_coordinates)
 
-    assert received == expected
+def test_create_waypoint_path(default_chunk_coordinates, expected_hexcell_corner_paths):
+    received = create_waypoint_path(chunk_coordinates=default_chunk_coordinates)
+
+    assert received == expected_hexcell_corner_paths
+
+
+def test_extract_data_from_ors_result(expected_hexcell_corner_paths, default_chunk_coordinates):
+    json = {
+        'features': [
+            {
+                'geometry': {'coordinates': expected_hexcell_corner_paths},
+                'properties': {
+                    'way_points': list(range(len(expected_hexcell_corner_paths))),
+                    'segments': [{'distance': distance} for distance in range(len(expected_hexcell_corner_paths) - 1)],
+                },
+            }
+        ]
+    }
+
+    expected = [
+        {'distances': [0, 2, 3, 5, 6, 8], 'snapped_coordinates': default_chunk_coordinates[0]},
+        {'distances': [10, 12, 13, 15, 16, 18], 'snapped_coordinates': default_chunk_coordinates[1]},
+    ]
+    recieved = extract_data_from_ors_result(json)
+
+    assert expected == recieved
 
 
 def test_calculate_detour_factors():

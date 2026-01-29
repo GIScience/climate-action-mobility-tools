@@ -124,7 +124,6 @@ def create_waypoint_path(chunk_coordinates: list[dict]) -> list[list[float]]:
 
 
 def extract_data_from_ors_result(result: dict) -> list[dict]:
-    # TODO this function needs testing
     # TODO try out if this needs more error handling
     segment_distances = [segment['distance'] for segment in result['features'][0]['properties']['segments']]
     snapped_coordinates = [
