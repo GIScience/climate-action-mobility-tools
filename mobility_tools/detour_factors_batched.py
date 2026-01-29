@@ -113,7 +113,6 @@ def compute_distances(
 
 
 def create_waypoint_path(chunk_coordinates: list[dict]) -> list[list[float]]:
-    # TODO this function needs testing
     coordinates = []
     for chunk in chunk_coordinates:
         center = chunk['center']

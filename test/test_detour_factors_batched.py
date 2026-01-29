@@ -8,6 +8,7 @@ from vcr import use_cassette
 
 from mobility_tools.detour_factors_batched import (
     calculate_detour_factors,
+    create_waypoint_path,
     exclude_ferries,
     extract_coordinates,
     get_detour_factors_batched,
@@ -49,6 +50,43 @@ def test_extract_coordinates():
 
     assert center == (0.0, 0.0)
     assert corners == expected_corners
+
+
+def test_create_waypoint_path():
+    chunk_coordinates = [
+        {'center': 'center0', 'corners': [f'corner0-{x}' for x in range(6)]},
+        {'center': 'center1', 'corners': [f'corner1-{x}' for x in range(6)]},
+    ]
+
+    first_cell_path = [
+        'center0',
+        'corner0-0',
+        'corner0-1',
+        'center0',
+        'corner0-2',
+        'corner0-3',
+        'center0',
+        'corner0-4',
+        'corner0-5',
+        'center0',
+    ]
+    second_cell_path = [
+        'center1',
+        'corner1-0',
+        'corner1-1',
+        'center1',
+        'corner1-2',
+        'corner1-3',
+        'center1',
+        'corner1-4',
+        'corner1-5',
+        'center1',
+    ]
+    expected = first_cell_path + second_cell_path
+
+    received = create_waypoint_path(chunk_coordinates=chunk_coordinates)
+
+    assert received == expected
 
 
 def test_calculate_detour_factors():
