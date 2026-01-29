@@ -144,7 +144,7 @@ def extract_data_from_ors_result(result: dict) -> list[dict]:
             snapped_center = cell_coordinates.pop(i)
             route_distances[0:0] = [cell_distances[i], cell_distances[i + 2]]
 
-        valid_indices = [i for i, distance in enumerate(route_distances) if distance > 0.0]
+        valid_indices = [i for i, snapped_corner in enumerate(cell_coordinates) if snapped_corner != snapped_center]
         route_distances = [route_distances[i] for i in valid_indices]
         cell_coordinates = [cell_coordinates[i] for i in valid_indices]
 
