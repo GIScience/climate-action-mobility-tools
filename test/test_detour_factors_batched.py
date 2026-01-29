@@ -122,6 +122,36 @@ def test_extract_data_from_ors_result(expected_hexcell_corner_paths, default_chu
     assert expected == recieved
 
 
+def test_extract_data_from_ors_result_zero_distanc_snapping(expected_hexcell_corner_paths, default_chunk_coordinates):
+    # simulating that the first corner snapped to the same point as the center
+    paths_with_same_snapping = expected_hexcell_corner_paths.copy()
+    paths_with_same_snapping[1] = 'center0'
+
+    json = {
+        'features': [
+            {
+                'geometry': {'coordinates': paths_with_same_snapping},
+                'properties': {
+                    'way_points': list(range(len(expected_hexcell_corner_paths))),
+                    'segments': [{'distance': distance} for distance in range(len(expected_hexcell_corner_paths) - 1)],
+                },
+            }
+        ]
+    }
+
+    # first corner should be missing as it snapped to the center
+    snapped_chunk_coordinates = default_chunk_coordinates[0]
+    snapped_chunk_coordinates['corners'].pop(0)
+
+    expected = [
+        {'distances': [2, 3, 5, 6, 8], 'snapped_coordinates': snapped_chunk_coordinates},
+        {'distances': [10, 12, 13, 15, 16, 18], 'snapped_coordinates': default_chunk_coordinates[1]},
+    ]
+    recieved = extract_data_from_ors_result(json)
+
+    assert expected == recieved
+
+
 def test_calculate_detour_factors():
     # TODO think about how to make this test more understandable, made up coordinates for easy math
     # atm this basicall tests the current implementation against it's own results
