@@ -26,7 +26,9 @@ ors_settings = ORSSettings()
 print('Running detour factor calculations...')
 
 start = time_ns()
-detour_factors_batched = get_detour_factors_batched(aoi=aoi, paths=None, ors_settings=ors_settings, profile='foot-walking')
+detour_factors_batched = get_detour_factors_batched(
+    aoi=aoi, paths=None, ors_settings=ors_settings, profile='foot-walking'
+)
 end = time_ns()
 print(f'Batched: {(end - start) / 10**9} s')
 
