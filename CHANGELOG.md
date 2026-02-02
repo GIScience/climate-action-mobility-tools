@@ -9,6 +9,7 @@ and this project mostly adheres to [Semantic Versioning](https://semver.org/spec
 ### Changed
 
 - update the license to LGPL 3.0 according to company guidelines
+- use a new methodology for detour factors using the corners of cells and their center as ([#7](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/issues/7))
 
 ## [1.0.3](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/releases/1.0.3) 2025-10-14
 
