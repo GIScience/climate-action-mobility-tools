@@ -1,6 +1,6 @@
 [project]
 name = "mobility-tools"
-version = "1.0.3"
+version = "2.0.0"
 description = "A library to bundle shared code between hiWalk and hiBike plugins"
 authors = [
     {name = "Emily C. Wilke", email = "emily.wilke@heigit.org"},
