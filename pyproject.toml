@@ -4,7 +4,8 @@ version = "1.0.3"
 description = "A library to bundle shared code between hiWalk and hiBike plugins"
 authors = [
     {name = "Emily C. Wilke", email = "emily.wilke@heigit.org"},
-    {name = "Satvik Parashar", email = "satvik.parashar@heigit.org"}
+    {name = "Satvik Parashar", email = "satvik.parashar@heigit.org"},
+    {name = "Andrzej Oleś", email = "andrzej.oles@heigit.org"}
 ]
 readme = "README.md"
 requires-python = "~=3.11"
