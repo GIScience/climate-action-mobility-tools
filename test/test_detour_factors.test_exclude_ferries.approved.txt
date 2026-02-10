@@ -1,1 +1,1 @@
-{"snapped_location":{"8a1faad69927fff":null,"8a1faad6992ffff":null},"snapped_distance":{"8a1faad69927fff":122.49,"8a1faad6992ffff":null}}
+{"snapped_location":{},"snapped_distance":{}}

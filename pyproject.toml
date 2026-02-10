@@ -1,13 +1,14 @@
 [project]
 name = "mobility-tools"
-version = "1.0.3"
+version = "2.0.0"
 description = "A library to bundle shared code between hiWalk and hiBike plugins"
 authors = [
     {name = "Emily C. Wilke", email = "emily.wilke@heigit.org"},
-    {name = "Satvik Parashar", email = "satvik.parashar@heigit.org"}
+    {name = "Satvik Parashar", email = "satvik.parashar@heigit.org"},
+    {name = "Andrzej Oleś", email = "andrzej.oles@heigit.org"}
 ]
 readme = "README.md"
-requires-python = "~=3.11"
+requires-python = "~=3.13"
 dependencies = [
     "shapely (>=2.1.1,<3.0.0)",
     "pandas (>=2.3.2,<3.0.0)",
@@ -18,6 +19,7 @@ dependencies = [
     "numpy (>=2.3.3,<3.0.0)",
     "requests-ratelimiter (>=0.7.0,<0.8.0)",
     "tqdm (>=4.67.1,<5.0.0)",
+    "folium (>=0.20.0,<0.21.0)",
 ]
 
 [tool.poetry]

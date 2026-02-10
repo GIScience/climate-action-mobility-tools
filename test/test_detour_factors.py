@@ -1,376 +1,202 @@
-import json
-from functools import partial
-
 import geopandas as gpd
-import h3
-import h3pandas
-import numpy
 import numpy as np
 import pandas as pd
 import pytest
-import responses
-import responses.matchers
 import shapely
-from approvaltests import DiffReporter, set_default_reporter, verify
-from pandas.testing import assert_frame_equal, assert_series_equal
-from requests.exceptions import HTTPError, RetryError
+from approvaltests import verify
+from pyproj import Transformer
 from vcr import use_cassette
 
 from mobility_tools.detour_factors import (
-    batch_and_filter_spurs,
-    batching,
-    check_aoi_contains_cell,
-    create_destinations,
+    calculate_detour_factors,
+    create_waypoint_path,
     exclude_ferries,
-    generate_waypoint_pairs,
-    get_cell_distance,
+    extract_coordinates,
+    extract_data_from_ors_result,
     get_detour_factors,
-    get_i_or_j_spurs,
-    get_ij_spurs,
-    get_ors_walking_distances,
-    match_ors_distance_to_cells,
-    ors_request,
-    snap_batched_records,
-    snap_destinations,
 )
-from mobility_tools.utils.exceptions import SizeLimitExceededError
 
 
-@pytest.fixture(autouse=True)
-def configure_approvaltests():
-    set_default_reporter(DiffReporter())
+@use_cassette
+def test_get_detour_factors(default_ors_settings):
+    aoi = shapely.box(8.671217, 49.408404, 8.6800658, 49.410400)
+    paths = gpd.GeoDataFrame(data={'test': [0]}, geometry=[aoi], crs='EPSG:4326')
+
+    result = get_detour_factors(aoi, paths, default_ors_settings, profile='foot-walking')
+
+    assert 'detour_factor' in result.columns
+    for detour_factor in result.detour_factor:
+        assert isinstance(detour_factor, float)
+    assert result.active_geometry_name is not None
 
 
-def test_get_detour_factors(
-    small_aoi,
-    expected_detour_factors,
-    snapping_response,
-    default_ors_settings,
-    ors_directions_responses,
-):
-    assert h3pandas.version is not None
-
-    def request_handling(request, directions: list[dict]) -> tuple[int, dict, str] | Exception:
-        payload: dict[str, list] = json.loads(request.body)
-        request_length = len(payload['coordinates'])
-
-        status_code: int = 404
-        body: dict | None = None
-        for index, response in enumerate(directions):
-            if len(response['routes'][0]['segments']) == (request_length - 1):
-                body = response
-                status_code = 200
-                break
-
-        if body is None:
-            body = {'error': 'not_found'}
-
-        headers = {'request_id': '0'}
-
-        return (status_code, headers, json.dumps(body))
-
-    request_call_back = partial(request_handling, directions=ors_directions_responses['responses'])
-
+@use_cassette
+def test_get_detour_factors_approval_test(small_aoi, default_ors_settings):
     paths = gpd.GeoDataFrame(data={'test': [0]}, geometry=[small_aoi], crs='EPSG:4326')
-
-    with responses.RequestsMock() as rsps:
-        rsps.add(method='POST', url='http://localhost:8080/ors/v2/snap/foot-walking', json=snapping_response)
-
-        rsps.add_callback(
-            method='POST',
-            url='http://localhost:8080/ors/v2/directions/foot-walking/json',
-            callback=request_call_back,
-        )
-
-        result = get_detour_factors(
-            aoi=small_aoi, paths=paths, ors_settings=default_ors_settings, profile='foot-walking'
-        )
-
-        result.geometry = result.geometry.set_precision(0.0000001)
-        verify(result.sort_index().to_csv())
+    result = get_detour_factors(small_aoi, paths, default_ors_settings, profile='foot-walking')
+    verify(result.to_csv())
 
 
-def test_create_destinations(default_aoi):
-    full_hexgrid = gpd.GeoDataFrame(geometry=[default_aoi], crs='EPSG:4326').h3.polyfill_resample(10).reset_index()
+def test_extract_coordinates():
+    cell_center = shapely.Point(0.0, 0.0)
+    ring = [(1.0, 1.0), (-1.0, 1.0), (-1.0, -1.0), (1.0, -1.0), (1.0, 1.0)]
+    geometry = shapely.Polygon(ring)
 
-    result: pd.DataFrame = create_destinations(default_aoi, hexgrid=full_hexgrid)
+    expected_corners = ring.copy()
+    expected_corners.pop()
 
-    hexgrid_size = gpd.GeoDataFrame(geometry=[default_aoi], crs='EPSG:4326').h3.polyfill(10).shape[0]
+    row = pd.Series(data=[cell_center, geometry], index=['cell_center', 'geometry'])
+    result = extract_coordinates(row)
+    center = result['center']
+    corners = result['corners']
 
-    assert result.shape[0] > 3 * hexgrid_size
-
-    length_counts = result.groupby(by='spur_id').count()
-
-    length_under_2 = length_counts[length_counts['id'] < 2]
-    assert length_under_2.empty
-
-    length_over_50 = length_counts[length_counts['id'] > 50]
-    assert length_over_50.empty
-
-    for spur_id in set(result['spur_id']):
-        spur: pd.DataFrame = result[result['spur_id'] == spur_id]
-        id_sublist = spur['id'].to_list()
-        for index, _ in enumerate(id_sublist):
-            if index >= len(id_sublist) - 1:
-                break
-            first_cell = np.array(h3.cell_to_local_ij(origin=id_sublist[0], h=id_sublist[index]))
-            second_cell = np.array(h3.cell_to_local_ij(origin=id_sublist[0], h=id_sublist[index + 1]))
-            difference = second_cell - first_cell
-            assert difference[0] in [0, 1]
-            assert difference[1] in [0, 1]
-            assert np.any(difference)
+    assert center == (0.0, 0.0)
+    assert corners == expected_corners
 
 
 @pytest.fixture
-def default_hexgrid(default_aoi) -> gpd.GeoDataFrame:
-    hexgrid = gpd.GeoDataFrame(geometry=[default_aoi], crs='EPSG:4326').h3.polyfill_resample(10).reset_index()
-    origin_id = hexgrid.loc[0, 'h3_polyfill']
-    hexgrid['local_ij'] = hexgrid['h3_polyfill'].apply(lambda cell_id: h3.cell_to_local_ij(origin=origin_id, h=cell_id))
-    hexgrid['local_i'] = hexgrid['local_ij'].apply(lambda ij: ij[0])
-    hexgrid['local_j'] = hexgrid['local_ij'].apply(lambda ij: ij[1])
-    return hexgrid
-
-
-@pytest.fixture
-def default_origin_id(default_hexgrid):
-    return default_hexgrid.loc[0, 'h3_polyfill']
-
-
-def test_get_i_or_j_spurs(default_aoi, default_hexgrid, default_origin_id):
-    min_ij: tuple[int, int] = (default_hexgrid.local_i.min(), default_hexgrid.local_j.min())
-    max_ij = (default_hexgrid.local_i.max(), default_hexgrid.local_j.max())
-
-    result_i: pd.DataFrame = get_i_or_j_spurs(
-        aoi=default_aoi,
-        origin_id=default_origin_id,
-        min_ij=min_ij,
-        max_ij=max_ij,
-        current_value=min_ij[1],
-        current_direction='i',
-    )
-    result_j: pd.DataFrame = get_i_or_j_spurs(
-        aoi=default_aoi,
-        origin_id=default_origin_id,
-        min_ij=min_ij,
-        max_ij=max_ij,
-        current_value=min_ij[0],
-        current_direction='j',
-    )
-
-    for spur_id in result_i['spur_id']:
-        spur = result_i[result_i['spur_id'] == spur_id]
-        id_sublist = spur['id'].to_list()
-        for index, _ in enumerate(id_sublist):
-            if index >= len(id_sublist) - 1:
-                break
-
-            first_cell = np.array(h3.cell_to_local_ij(origin=id_sublist[0], h=id_sublist[index]))
-            second_cell = np.array(h3.cell_to_local_ij(origin=id_sublist[0], h=id_sublist[index + 1]))
-            difference = second_cell - first_cell
-            assert difference[0] == 1
-            assert difference[1] == 0
-
-    for spur_id in result_j['spur_id']:
-        spur = result_j[result_j['spur_id'] == spur_id]
-        id_sublist = spur['id'].to_list()
-        for index, _ in enumerate(id_sublist):
-            if index >= len(id_sublist) - 1:
-                break
-
-            first_cell = np.array(h3.cell_to_local_ij(origin=id_sublist[0], h=id_sublist[index]))
-            second_cell = np.array(h3.cell_to_local_ij(origin=id_sublist[0], h=id_sublist[index + 1]))
-            difference = second_cell - first_cell
-            assert difference[0] == 0
-            assert difference[1] == 1
-
-
-def test_get_ij_spurs(default_aoi, default_hexgrid, default_origin_id):
-    max_ij: tuple[int, int] = (default_hexgrid.local_i.max(), default_hexgrid.local_j.max())
-    min_ij: tuple[int, int] = (default_hexgrid.local_i.min(), default_hexgrid.local_j.min())
-
-    result: pd.DataFrame = get_ij_spurs(
-        aoi=default_aoi, hexgrid=default_hexgrid, origin_id=default_origin_id, min_ij=min_ij, max_ij=max_ij
-    )
-
-    for spur_id in result['spur_id']:
-        spur = result[result['spur_id'] == spur_id]
-        id_sublist = spur['id'].to_list()
-        for index, _ in enumerate(id_sublist):
-            if index >= len(id_sublist) - 1:
-                break
-
-            first_cell = np.array(h3.cell_to_local_ij(origin=id_sublist[0], h=id_sublist[index]))
-            second_cell = np.array(h3.cell_to_local_ij(origin=id_sublist[0], h=id_sublist[index + 1]))
-            difference = second_cell - first_cell
-            assert difference[0] == 1
-            assert difference[1] == 1
-
-
-def test_ij_spurs_order(small_aoi):
-    hexgrid = gpd.GeoDataFrame(geometry=[small_aoi], crs='EPSG:4326').h3.polyfill_resample(10).reset_index()
-    origin_id = hexgrid.loc[0, 'h3_polyfill']
-    hexgrid['local_ij'] = hexgrid['h3_polyfill'].apply(lambda cell_id: h3.cell_to_local_ij(origin=origin_id, h=cell_id))
-    hexgrid['local_i'] = hexgrid['local_ij'].apply(lambda ij: ij[0])
-    hexgrid['local_j'] = hexgrid['local_ij'].apply(lambda ij: ij[1])
-    result: pd.DataFrame = get_ij_spurs(
-        small_aoi,
-        hexgrid,
-        origin_id,
-        max_ij=(hexgrid.local_i.max(), hexgrid.local_j.max()),
-        min_ij=(hexgrid.local_i.min(), hexgrid.local_j.min()),
-    )
-
-    verify(result.to_json(indent=4))
-
-
-def test_check_aoi_contains_cell(default_aoi):
-    h3_cell_in_default_aoi = '8a1f8d2f492ffff'
-    h3_cell_not_in_default_aoi = '8a1faad6992ffff'
-
-    assert check_aoi_contains_cell(aoi=default_aoi, cell_id=h3_cell_in_default_aoi)
-    assert not check_aoi_contains_cell(aoi=default_aoi, cell_id=h3_cell_not_in_default_aoi)
-
-
-def test_batch_spurs():
-    spurs = pd.DataFrame(
-        data={
-            'id': ['a', 'b', 'c', 'a', 'b', 'a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'a'],
-            'spur_id': ['a', 'a', 'a', 'b', 'b', 'c', 'c', 'c', 'c', 'c', 'd', 'd', 'd', 'd', 'e'],
-            'ordinal': [0, 1, 2, 0, 1, 0, 1, 2, 3, 4, 0, 1, 2, 3, 0],
-        }
-    )
-
-    result = batch_and_filter_spurs(spurs, max_waypoint_number=3)
-
-    expected_result = pd.DataFrame(
-        data={
-            'id': ['a', 'b', 'c', 'a', 'b', 'a', 'b', 'c', 'c', 'd', 'e', 'a', 'b', 'c', 'c', 'd'],
-            'spur_id': [
-                'a',
-                'a',
-                'a',
-                'b',
-                'b',
-                'c:0',
-                'c:0',
-                'c:0',
-                'c:1',
-                'c:1',
-                'c:1',
-                'd:0',
-                'd:0',
-                'd:0',
-                'd:1',
-                'd:1',
-            ],
-            'ordinal': [0, 1, 2, 0, 1, 0, 1, 2, 2, 3, 4, 0, 1, 2, 2, 3],
-        }
-    )
-
-    assert_frame_equal(result, expected_result)
-
-
-def test_get_cell_distance():
-    destinations = pd.DataFrame(
-        data={
-            'id': ['8a1faa99684ffff', '8a1faa99685ffff', '8a1faa9968effff', '8a1faa9968c7fff'],
-            'spur_id': ['ij:2:0', 'ij:2:0', 'ij:2:1', 'ij:2:1'],
-            'ordinal': [0, 1, 0, 1],
-        }
-    )
-    result = get_cell_distance(destinations)
-    assert pytest.approx(result, abs=1.0) == 131.75
-
-
-@pytest.fixture
-def small_ors_snapping_response():
-    return [
-        {'locations': [None]},
-        {'locations': [{'location': [8.773085, 49.376161], 'name': 'Schulstraße', 'snapped_distance': 114.44}]},
+def default_chunk_coordinates() -> list[dict]:
+    chunk_coordinates = [
+        {'center': 'center0', 'corners': [f'corner0-{x}' for x in range(6)]},
+        {'center': 'center1', 'corners': [f'corner1-{x}' for x in range(6)]},
     ]
 
-
-@use_cassette
-def test_snap_destinations(default_ors_settings):
-    destinations = pd.DataFrame(
-        data={
-            'id': ['8a1faad6992ffff', '8a1faad69927fff', '8a1faad69927fff', '8a1faad6992ffff'],
-            'spur_id': ['ij:1', 'ij:1', 'ij:2', 'ij:2'],
-            'ordinal': [0, 1, 0, 1],
-        }
-    )
-
-    expected_results = pd.DataFrame(
-        data={'snapped_location': [[8.773085, 49.376161], None], 'snapped_distance': [122.49, None]},
-        index=['8a1faad69927fff', '8a1faad6992ffff'],
-    ).rename_axis('id')
-
-    settings = default_ors_settings.model_copy(deep=True)
-    settings.ors_snapping_request_size_limit = 1
-
-    results = snap_destinations(destinations, ors_settings=settings, profile='foot-walking')
-
-    assert_frame_equal(results, expected_results)
+    return chunk_coordinates
 
 
-def test_snap_batched_records(small_ors_snapping_response, default_ors_settings):
-    locations = [
-        gpd.GeoSeries(
-            index=['8a1faad6992ffff', '8a1faad69927fff'],
-            data=[
-                shapely.Point(8.774708093757534, 49.37706987059154),
-                shapely.Point(8.772978584588666, 49.377259809601995),
-            ],
-            crs='EPSG:4326',
-        ).rename_axis('id'),
+@pytest.fixture
+def expected_hexcell_corner_paths() -> list[str]:
+    first_cell_path = [
+        'center0',
+        'corner0-0',
+        'corner0-1',
+        'center0',
+        'corner0-2',
+        'corner0-3',
+        'center0',
+        'corner0-4',
+        'corner0-5',
+        'center0',
+    ]
+    second_cell_path = [
+        'center1',
+        'corner1-0',
+        'corner1-1',
+        'center1',
+        'corner1-2',
+        'corner1-3',
+        'center1',
+        'corner1-4',
+        'corner1-5',
+        'center1',
+    ]
+    expected = first_cell_path + second_cell_path
+    return expected
+
+
+def test_create_waypoint_path(default_chunk_coordinates, expected_hexcell_corner_paths):
+    received = create_waypoint_path(chunk_coordinates=default_chunk_coordinates)
+
+    assert received == expected_hexcell_corner_paths
+
+
+def test_extract_data_from_ors_result(expected_hexcell_corner_paths, default_chunk_coordinates):
+    json = {
+        'features': [
+            {
+                'geometry': {'coordinates': expected_hexcell_corner_paths},
+                'properties': {
+                    'way_points': list(range(len(expected_hexcell_corner_paths))),
+                    'segments': [{'distance': distance} for distance in range(len(expected_hexcell_corner_paths) - 1)],
+                },
+            }
+        ]
+    }
+
+    expected = [
+        {'distances': [0, 2, 3, 5, 6, 8], 'snapped_coordinates': default_chunk_coordinates[0]},
+        {'distances': [10, 12, 13, 15, 16, 18], 'snapped_coordinates': default_chunk_coordinates[1]},
+    ]
+    recieved = extract_data_from_ors_result(json)
+
+    assert expected == recieved
+
+
+def test_extract_data_from_ors_result_zero_distanc_snapping(expected_hexcell_corner_paths, default_chunk_coordinates):
+    # simulating that the first corner snapped to the same point as the center
+    paths_with_same_snapping = expected_hexcell_corner_paths.copy()
+    paths_with_same_snapping[1] = 'center0'
+
+    json = {
+        'features': [
+            {
+                'geometry': {'coordinates': paths_with_same_snapping},
+                'properties': {
+                    'way_points': list(range(len(expected_hexcell_corner_paths))),
+                    'segments': [{'distance': distance} for distance in range(len(expected_hexcell_corner_paths) - 1)],
+                },
+            }
+        ]
+    }
+
+    # first corner should be missing as it snapped to the center
+    snapped_chunk_coordinates = default_chunk_coordinates[0]
+    snapped_chunk_coordinates['corners'].pop(0)
+
+    expected = [
+        {'distances': [2, 3, 5, 6, 8], 'snapped_coordinates': snapped_chunk_coordinates},
+        {'distances': [10, 12, 13, 15, 16, 18], 'snapped_coordinates': default_chunk_coordinates[1]},
+    ]
+    recieved = extract_data_from_ors_result(json)
+
+    assert expected == recieved
+
+
+def test_calculate_detour_factors():
+    # TODO think about how to make this test more understandable, made up coordinates for easy math
+    # atm this basicall tests the current implementation against it's own results
+    chunk_distances = [
+        {
+            'distances': [66.4, 73.7, 101.2, 52.4, 72.9, 833.4],
+            'snapped_coordinates': {
+                'center': [8.674202, 49.409577],
+                'corners': [
+                    [8.673291, 49.409591],
+                    [8.67319, 49.409592],
+                    [8.673858, 49.40931],
+                    [8.674926, 49.409588],
+                    [8.675209, 49.409593],
+                    [8.674519, 49.4113],
+                ],
+            },
+        },
+        {
+            'distances': [495.2, 397.8, 416.5, 500.7, 544.8, 495.1],
+            'snapped_coordinates': {
+                'center': [8.677646, 49.409741],
+                'corners': [
+                    [8.676915, 49.410034],
+                    [8.676694, 49.409398],
+                    [8.677398, 49.408886],
+                    [8.678332, 49.409522],
+                    [8.67864, 49.409852],
+                    [8.677954, 49.409818],
+                ],
+            },
+        },
     ]
 
-    expected_result = pd.DataFrame(
-        data={'snapped_location': [None, [8.773085, 49.376161]], 'snapped_distance': [None, 114.44]},
-        index=['8a1faad6992ffff', '8a1faad69927fff'],
-    ).rename_axis('id')
+    result = calculate_detour_factors(
+        chunk_distances, transform=Transformer.from_crs(crs_from='EPSG:4326', crs_to='EPSG:32632')
+    )
 
-    with responses.RequestsMock() as rsps:
-        rsps.add(
-            method='POST',
-            url='http://localhost:8080/ors/v2/snap/foot-walking',
-            json={'locations': [None, small_ors_snapping_response[1]['locations'][0]]},
-        )
+    expected_result = [np.float64(1.8221085635843355), np.float64(9.080471601313818)]
 
-        result = snap_batched_records(
-            ors_settings=default_ors_settings, batched_locations=locations, profile='foot-walking'
-        )
-
-        assert_frame_equal(result, expected_result)
-
-
-@use_cassette
-def test_snapping_request_fail_bad_gateway(default_ors_settings):
-    coordinates = [gpd.GeoSeries([shapely.Point(1.0, 1.0), shapely.Point(1.1, 1.1)], crs='EPSG:4326')]
-    with pytest.raises(RetryError):
-        snap_batched_records(default_ors_settings, batched_locations=coordinates, profile='foot-walking')
-
-
-@use_cassette
-def test_snapping_request_fail_forbidden(default_ors_settings):
-    coordinates = [gpd.GeoSeries([shapely.Point(1.0, 1.0), shapely.Point(1.1, 1.1)], crs='EPSG:4326')]
-    with pytest.raises(HTTPError):
-        snap_batched_records(default_ors_settings, batched_locations=coordinates, profile='foot-walking')
-
-
-def test_batching():
-    origins = pd.Series([i for i in range(0, 6)])
-    batch_size = 2
-
-    expected_result = [pd.Series([0, 1]), pd.Series([2, 3]), pd.Series([4, 5])]
-    result = batching(origins, batch_size)  # type: ignore
-
-    for index, batch in enumerate(result):
-        assert len(batch) == batch_size
-        assert_series_equal(batch, expected_result[index], check_index=False)
+    assert result == expected_result
 
 
 def test_exclude_ferries():
+    # TODO rewrite test so it's a bit more useful and has some cells that pass
     snapped_input = pd.DataFrame(
         data={'snapped_location': [[8.773085, 49.376161], None], 'snapped_distance': [122.49, None]},
         index=['8a1faad69927fff', '8a1faad6992ffff'],
@@ -381,197 +207,3 @@ def test_exclude_ferries():
     result = exclude_ferries(snapped_input, paths)
 
     verify(result.to_json())
-
-
-@use_cassette
-def test_get_ors_walking_distances(default_ors_settings):
-    destinations = pd.DataFrame(
-        data={
-            'id': ['8a1faad6992ffff', '8a1faad69927fff'],
-            'spur_id': ['a', 'a'],
-            'ordinal': [0, 1],
-            'snapped_location': [[8.773, 49.376], [8.773085, 49.376161]],
-            'snapped_distance': [114.44, 114.44],
-        },
-    )
-    result = get_ors_walking_distances(
-        ors_settings=default_ors_settings,
-        cell_distance=150,
-        destinations_with_snapping=destinations,
-        profile='foot-walking',
-    )
-
-    verify(result.to_json(indent=2))
-
-
-@use_cassette
-def test_get_ors_walking_distances_breaking_route(default_ors_settings):
-    destinations = pd.DataFrame(
-        data={
-            'id': ['a', 'b', 'c', 'd', 'e'],
-            'spur_id': ['a'] * 5,
-            'ordinal': [0, 1, 2, 3, 4],
-            'snapped_location': [
-                [8.655924, 53.135569],
-                [8.656426, 53.136326],
-                [8.656937, 53.134469],
-                [8.656426, 53.136326],
-                [8.655924, 53.135569],
-            ],
-            'snapped_distance': [0] * 5,
-        },
-    )
-    expected_distances = pd.Series(data=[90.6, numpy.inf, numpy.inf, numpy.inf, 90.6], name='distance')
-    expected_detours = pd.Series(data=[0.604, numpy.inf, numpy.inf, numpy.inf, 0.604], name='detour_factor')
-
-    result = get_ors_walking_distances(
-        ors_settings=default_ors_settings,
-        cell_distance=150,
-        destinations_with_snapping=destinations,
-        profile='foot-walking',
-    )
-
-    pd.testing.assert_series_equal(result.distance, expected_distances, check_index=False)
-    pd.testing.assert_series_equal(result.detour_factor, expected_detours, check_index=False)
-
-
-def test_get_ors_walking_distance_too_large(default_ors_settings):
-    ors_settings = default_ors_settings.copy(deep=True)
-    ors_settings.ors_directions_rate_limit = 0.1
-
-    destinations = pd.DataFrame(
-        data={
-            'id': ['8a1faad6992ffff', '8a1faad69927fff', '8a1faad69927fff'],
-            'spur_id': ['a', 'b', 'c'],
-            'ordinal': [0, 1, 2],
-            'snapped_location': [[8.773, 49.376], [8.773085, 49.376161], [8.773085, 49.376161]],
-            'snapped_distance': [114.44, 114.44, 114.2],
-        },
-    )
-
-    with pytest.raises(SizeLimitExceededError):
-        get_ors_walking_distances(
-            ors_settings=ors_settings,
-            cell_distance=150,
-            destinations_with_snapping=destinations,
-            profile='foot-walking',
-        )
-
-
-@use_cassette
-def test_ors_request(default_ors_settings):
-    result = ors_request(
-        ors_settings=default_ors_settings, coordinates=[[8.773, 49.376], [8.773085, 49.376161]], profile='foot-walking'
-    )
-
-    assert result == [18.7]
-
-
-def test_match_ors_distance_to_cells():
-    spur = pd.DataFrame(
-        data={
-            'id': ['0', '1'],
-            'spur_id': ['a', 'a'],
-            'ordinal': [0, 1],
-            'snapped_location': [[8.773, 49.376], [8.773085, 49.376161]],
-            'snapped_distance': [114.44, 114.44],
-        },
-    )
-    distances: list[float] = [134.2]
-
-    result = match_ors_distance_to_cells(spur, distances)
-
-    verify(result)
-
-
-def test_match_ors_distance_to_cells_edge_cases():
-    spur = pd.DataFrame(
-        data={
-            'id': ['0', '1', '2'],
-            'spur_id': ['a', 'a', 'a'],
-            'ordinal': [0, 1, 2],
-            'snapped_location': [None, [8.773085, 49.376161], [8.773085, 49.376161]],
-            'snapped_distance': [np.nan, 114.44, 20.0],
-        },
-    )
-    distances: list[float] = [134.2]
-
-    result = match_ors_distance_to_cells(spur, distances)
-
-    assert result.shape == (2, 2)
-
-    verify(result)
-
-
-def test_generate_waypoint_pairs():
-    spur = pd.DataFrame(
-        data={
-            'id': ['0', '1', '2', '3', '4', '5', '6'],
-            'spur_id': ['a', 'a', 'a', 'a', 'a', 'a', 'a'],
-            'ordinal': [2, 3, 4, 5, 6, 7, 8],
-            'snapped_location': [
-                None,
-                [8.773085, 49.376161],
-                [8.773085, 49.376161],
-                None,
-                None,
-                [8.773085, 49.376161],
-                None,
-            ],
-            'snapped_distance': [np.nan, 114.44, 20.0, np.nan, np.nan, 10, np.nan],
-        },
-    )
-    expected_result = [(3, 4), (4, 7)]
-    result = generate_waypoint_pairs(spur)
-
-    assert result == expected_result
-
-
-@use_cassette
-def test_ors_request_route_not_found(default_ors_settings):
-    result = ors_request(
-        ors_settings=default_ors_settings,
-        coordinates=[(8.6897870, 53.1485750), (8.6886660, 53.1479170)],
-        profile='foot-walking',
-    )
-
-    assert result == [None]
-
-
-@use_cassette
-def test_ors_request_route_not_found_start_of_line(default_ors_settings):
-    result = ors_request(
-        ors_settings=default_ors_settings,
-        coordinates=[[8.656937, 53.134469], [8.655924, 53.135569], [8.656426, 53.136326]],
-        profile='foot-walking',
-    )
-
-    assert result == [None, 90.6]
-
-
-@use_cassette
-def test_ors_request_route_not_found_end_of_line(default_ors_settings):
-    result = ors_request(
-        ors_settings=default_ors_settings,
-        coordinates=[[8.655924, 53.135569], [8.656426, 53.136326], [8.656937, 53.134469]],
-        profile='foot-walking',
-    )
-
-    assert result == [90.6, None]
-
-
-@use_cassette
-def test_ors_request_route_not_found_middle_of_line_multiple(default_ors_settings):
-    result = ors_request(
-        ors_settings=default_ors_settings,
-        coordinates=[
-            [8.655924, 53.135569],
-            [8.656426, 53.136326],
-            [8.656937, 53.134469],
-            [8.656426, 53.136326],
-            [8.655924, 53.135569],
-        ],
-        profile='foot-walking',
-    )
-
-    assert result == [90.6, None, None, 90.6]
