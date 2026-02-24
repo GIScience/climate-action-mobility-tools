@@ -1,24 +1,51 @@
 import geopandas as gpd
 import numpy as np
 import pandas as pd
-import pytest
 import shapely
 from approvaltests import verify
 from pyproj import Transformer
+from responses import RequestsMock, matchers
 from vcr import use_cassette
 
 from mobility_tools.detour_factors import (
+    _PathResponse,
     calculate_detour_factors,
     create_waypoint_path,
     exclude_ferries,
     extract_coordinates,
     extract_data_from_ors_result,
     get_detour_factors,
+    ors_request,
 )
+from mobility_tools.ors_settings import ORSSettings
+
+# Hexagons with 100m distances to points, in UTM CRS = EPSG:25832
+HEX1 = {
+    'center': [8.6839368, 49.4158878],
+    'corners': [
+        [8.6839310, 49.4167872],
+        [8.6839426, 49.4149883],
+        [8.6851336, 49.4154413],
+        [8.6827457, 49.4154347],
+        [8.6851279, 49.4163407],
+        [8.6827399, 49.4163342],
+    ],
+}
+HEX2 = {
+    'center': [8.6863190, 49.4167937],
+    'corners': [
+        [8.6851279, 49.4163407],
+        [8.6875102, 49.4172467],
+        [8.6875159, 49.4163472],
+        [8.6851221, 49.4172402],
+        [8.6863133, 49.4176932],
+        [8.6863247, 49.4158943],
+    ],
+}
 
 
 @use_cassette
-def test_get_detour_factors(default_ors_settings):
+def test_get_detour_factors(default_ors_settings: ORSSettings):
     aoi = shapely.box(8.671217, 49.408404, 8.6800658, 49.410400)
     paths = gpd.GeoDataFrame(data={'test': [0]}, geometry=[aoi], crs='EPSG:4326')
 
@@ -31,7 +58,7 @@ def test_get_detour_factors(default_ors_settings):
 
 
 @use_cassette
-def test_get_detour_factors_approval_test(small_aoi, default_ors_settings):
+def test_get_detour_factors_approval_test(small_aoi: shapely.Polygon, default_ors_settings: ORSSettings):
     paths = gpd.GeoDataFrame(data={'test': [0]}, geometry=[small_aoi], crs='EPSG:4326')
     result = get_detour_factors(small_aoi, paths, default_ors_settings, profile='foot-walking')
     verify(result.to_csv())
@@ -54,100 +81,313 @@ def test_extract_coordinates():
     assert corners == expected_corners
 
 
-@pytest.fixture
-def default_chunk_coordinates() -> list[dict]:
-    chunk_coordinates = [
-        {'center': 'center0', 'corners': [f'corner0-{x}' for x in range(6)]},
-        {'center': 'center1', 'corners': [f'corner1-{x}' for x in range(6)]},
-    ]
-
-    return chunk_coordinates
-
-
-@pytest.fixture
-def expected_hexcell_corner_paths() -> list[str]:
-    first_cell_path = [
-        'center0',
-        'corner0-0',
-        'corner0-1',
-        'center0',
-        'corner0-2',
-        'corner0-3',
-        'center0',
-        'corner0-4',
-        'corner0-5',
-        'center0',
-    ]
-    second_cell_path = [
-        'center1',
-        'corner1-0',
-        'corner1-1',
-        'center1',
-        'corner1-2',
-        'corner1-3',
-        'center1',
-        'corner1-4',
-        'corner1-5',
-        'center1',
-    ]
-    expected = first_cell_path + second_cell_path
-    return expected
-
-
-def test_create_waypoint_path(default_chunk_coordinates, expected_hexcell_corner_paths):
-    received = create_waypoint_path(chunk_coordinates=default_chunk_coordinates)
-
-    assert received == expected_hexcell_corner_paths
-
-
-def test_extract_data_from_ors_result(expected_hexcell_corner_paths, default_chunk_coordinates):
-    json = {
-        'features': [
-            {
-                'geometry': {'coordinates': expected_hexcell_corner_paths},
-                'properties': {
-                    'way_points': list(range(len(expected_hexcell_corner_paths))),
-                    'segments': [{'distance': distance} for distance in range(len(expected_hexcell_corner_paths) - 1)],
-                },
-            }
-        ]
-    }
+def test_create_waypoint_path():
+    received = create_waypoint_path(chunk_coordinates=[HEX1, HEX2])
 
     expected = [
-        {'distances': [0, 2, 3, 5, 6, 8], 'snapped_coordinates': default_chunk_coordinates[0]},
-        {'distances': [10, 12, 13, 15, 16, 18], 'snapped_coordinates': default_chunk_coordinates[1]},
+        HEX1['center'],
+        HEX1['corners'][0],
+        HEX1['corners'][1],
+        HEX1['center'],
+        HEX1['corners'][2],
+        HEX1['corners'][3],
+        HEX1['center'],
+        HEX1['corners'][4],
+        HEX1['corners'][5],
+        HEX1['center'],
+        HEX2['center'],
+        HEX2['corners'][0],
+        HEX2['corners'][1],
+        HEX2['center'],
+        HEX2['corners'][2],
+        HEX2['corners'][3],
+        HEX2['center'],
+        HEX2['corners'][4],
+        HEX2['corners'][5],
+        HEX2['center'],
     ]
-    recieved = extract_data_from_ors_result(json)
+    assert received == expected
+
+
+def test_ors_request(responses_mock: RequestsMock, default_ors_settings: ORSSettings):
+    a = [0.0, 0.0]
+    midpoint_ab = [0.0, 0.5]
+    b = [0.0, 1.0]
+    midpoint_bc1 = [0.3, 1.0]
+    midpoint_bc2 = [0.6, 1.0]
+    c = [1.0, 1.0]
+    responses_mock.post(
+        'http://localhost:8080/ors/v2/directions/foot-walking/geojson',
+        json={
+            'features': [
+                {
+                    'geometry': {'coordinates': [a, midpoint_ab, b, midpoint_bc1, midpoint_bc2, c, a]},
+                    'properties': {
+                        'way_points': [0, 2, 5, 6],
+                        'segments': [{'distance': 1}, {'distance': 2}, {'distance': 3}],
+                    },
+                }
+            ]
+        },
+    )
+
+    path_response = ors_request(ors_settings=default_ors_settings, profile='foot-walking', coordinates=[a, b, c, a])
+
+    assert path_response.coordinates == [a, b, c, a]
+    assert path_response.distances == [1, 2, 3]
+
+
+def test_ors_request_route_not_found_first_link(responses_mock: RequestsMock, default_ors_settings: ORSSettings):
+    a = [0.0, 0.0]
+    b = [0.0, 1.0]
+    c = [1.0, 1.0]
+
+    responses_mock.post(
+        'http://localhost:8080/ors/v2/directions/foot-walking/geojson',
+        match=[matchers.json_params_matcher({'coordinates': [a, b, c, a]})],
+        status=404,
+        json={
+            'error': {
+                'code': 2009,
+                'message': 'Route could not be found - Unable to find a route between points 0 (0.0, 0.0) and 1 (0.0, 1.0).',
+            },
+        },
+    )
+    responses_mock.post(
+        'http://localhost:8080/ors/v2/directions/foot-walking/geojson',
+        match=[matchers.json_params_matcher({'coordinates': [b, c, a]})],
+        json={
+            'features': [
+                {
+                    'geometry': {'coordinates': [b, c, a]},
+                    'properties': {
+                        'way_points': [0, 1, 2],
+                        'segments': [{'distance': 2}, {'distance': 3}],
+                    },
+                }
+            ]
+        },
+    )
+
+    path_response = ors_request(ors_settings=default_ors_settings, profile='foot-walking', coordinates=[a, b, c, a])
+
+    assert path_response.coordinates == [None, b, c, a]
+    assert path_response.distances == [np.inf, 2, 3]
+
+
+def test_ors_request_route_not_found_middle_link(responses_mock: RequestsMock, default_ors_settings: ORSSettings):
+    a = [0.0, 0.0]
+    b = [0.0, 1.0]
+    c = [1.0, 1.0]
+
+    responses_mock.post(
+        'http://localhost:8080/ors/v2/directions/foot-walking/geojson',
+        match=[matchers.json_params_matcher({'coordinates': [a, b, c, a]})],
+        status=404,
+        json={
+            'error': {
+                'code': 2009,
+                'message': 'Route could not be found - Unable to find a route between points 1 (0.0, 1.0) and 2 (1.0, 1.0).',
+            },
+        },
+    )
+    responses_mock.post(
+        'http://localhost:8080/ors/v2/directions/foot-walking/geojson',
+        match=[matchers.json_params_matcher({'coordinates': [a, b]})],
+        json={
+            'features': [
+                {
+                    'geometry': {'coordinates': [a, b]},
+                    'properties': {
+                        'way_points': [0, 1],
+                        'segments': [{'distance': 1}],
+                    },
+                }
+            ]
+        },
+    )
+    responses_mock.post(
+        'http://localhost:8080/ors/v2/directions/foot-walking/geojson',
+        match=[matchers.json_params_matcher({'coordinates': [c, a]})],
+        json={
+            'features': [
+                {
+                    'geometry': {'coordinates': [c, a]},
+                    'properties': {
+                        'way_points': [0, 1],
+                        'segments': [{'distance': 3}],
+                    },
+                }
+            ]
+        },
+    )
+
+    path_response = ors_request(ors_settings=default_ors_settings, profile='foot-walking', coordinates=[a, b, c, a])
+
+    assert path_response.coordinates == [a, b, c, a]
+    assert path_response.distances == [1, np.inf, 3]
+
+
+def test_ors_request_route_not_found_last_link(responses_mock: RequestsMock, default_ors_settings: ORSSettings):
+    a = [0.0, 0.0]
+    b = [0.0, 1.0]
+    c = [1.0, 1.0]
+
+    responses_mock.post(
+        'http://localhost:8080/ors/v2/directions/foot-walking/geojson',
+        match=[matchers.json_params_matcher({'coordinates': [a, b, c, a]})],
+        status=404,
+        json={
+            'error': {
+                'code': 2009,
+                'message': 'Route could not be found - Unable to find a route between points 2 (1.0, 1.0) and 3 (0.0, 0.0).',
+            },
+        },
+    )
+    responses_mock.post(
+        'http://localhost:8080/ors/v2/directions/foot-walking/geojson',
+        match=[matchers.json_params_matcher({'coordinates': [a, b, c]})],
+        json={
+            'features': [
+                {
+                    'geometry': {'coordinates': [a, b, c]},
+                    'properties': {
+                        'way_points': [0, 1, 2],
+                        'segments': [{'distance': 1}, {'distance': 2}],
+                    },
+                }
+            ]
+        },
+    )
+
+    path_response = ors_request(ors_settings=default_ors_settings, profile='foot-walking', coordinates=[a, b, c, a])
+
+    assert path_response.coordinates == [a, b, c, None]
+    assert path_response.distances == [1, 2, np.inf]
+
+
+def test_extract_data_from_ors_result():
+    expected = [
+        {
+            'distances': [110, 120, 130, 140, 150, 160],
+            'snapped_coordinates': HEX1,
+        },
+        {
+            'distances': [210, 220, 230, 240, 250, 260],
+            'snapped_coordinates': HEX2,
+        },
+    ]
+
+    path_with_distances = [
+        [HEX1['center'], 110],
+        [HEX1['corners'][0], 999],
+        [HEX1['corners'][1], 120],
+        [HEX1['center'], 130],
+        [HEX1['corners'][2], 999],
+        [HEX1['corners'][3], 140],
+        [HEX1['center'], 150],
+        [HEX1['corners'][4], 999],
+        [HEX1['corners'][5], 160],
+        [HEX1['center'], 999],
+        [HEX2['center'], 210],
+        [HEX2['corners'][0], 999],
+        [HEX2['corners'][1], 220],
+        [HEX2['center'], 230],
+        [HEX2['corners'][2], 999],
+        [HEX2['corners'][3], 240],
+        [HEX2['center'], 250],
+        [HEX2['corners'][4], 999],
+        [HEX2['corners'][5], 260],
+        [HEX2['center'], None],
+    ]
+    coordinates, distances = list(zip(*path_with_distances))
+    recieved = extract_data_from_ors_result(
+        _PathResponse(coordinates=list(coordinates), distances=list(distances[:-1]))
+    )
 
     assert expected == recieved
 
 
-def test_extract_data_from_ors_result_zero_distanc_snapping(expected_hexcell_corner_paths, default_chunk_coordinates):
-    # simulating that the first corner snapped to the same point as the center
-    paths_with_same_snapping = expected_hexcell_corner_paths.copy()
-    paths_with_same_snapping[1] = 'center0'
+def test_extract_data_from_ors_result_with_unroutable_links():
+    # TODO this needs more thought about special cases
+    expected = [
+        {
+            'distances': [110, 120, 130, 140, 150, 160],
+            'snapped_coordinates': HEX1,
+        },
+        {
+            'distances': [210, 220, np.inf, 240, 250, np.inf],
+            'snapped_coordinates': {
+                'center': HEX2['center'],
+                'corners': [HEX2['corners'][0], HEX2['corners'][1], None, HEX2['corners'][3], HEX2['corners'][4], None],
+            },
+        },
+    ]
 
-    json = {
-        'features': [
-            {
-                'geometry': {'coordinates': paths_with_same_snapping},
-                'properties': {
-                    'way_points': list(range(len(expected_hexcell_corner_paths))),
-                    'segments': [{'distance': distance} for distance in range(len(expected_hexcell_corner_paths) - 1)],
-                },
-            }
-        ]
-    }
+    path_with_distances = [
+        [HEX1['center'], 110],
+        [HEX1['corners'][0], 999],
+        [HEX1['corners'][1], 120],
+        [HEX1['center'], 130],
+        [HEX1['corners'][2], 999],
+        [HEX1['corners'][3], 140],
+        [HEX1['center'], 150],
+        [HEX1['corners'][4], 999],
+        [HEX1['corners'][5], 160],
+        [HEX1['center'], 999],
+        [HEX2['center'], 210],
+        [HEX2['corners'][0], 999],
+        [HEX2['corners'][1], 220],
+        [HEX2['center'], np.inf],  # next node is unroutable
+        [None, np.inf],  # unroutable node
+        [HEX2['corners'][3], 240],
+        [HEX2['center'], 250],
+        [HEX2['corners'][4], np.inf],  # next node is unroutable
+        [None, np.inf],  # unroutable node
+        [None, np.inf],  # last node is unroutable because previous node was unroutable
+    ]
+    coordinates, distances = list(zip(*path_with_distances))
+    recieved = extract_data_from_ors_result(
+        _PathResponse(coordinates=list(coordinates), distances=list(distances[:-1]))
+    )
 
-    # first corner should be missing as it snapped to the center
-    snapped_chunk_coordinates = default_chunk_coordinates[0]
-    snapped_chunk_coordinates['corners'].pop(0)
+    assert expected == recieved
+
+
+def test_extract_data_from_ors_result_point_snapped_to_center():
+    path_response = _PathResponse(
+        coordinates=[
+            HEX1['center'],
+            HEX1['center'],  # simulating that the first corner snapped to the same point as the center
+            HEX1['corners'][1],
+            HEX1['center'],
+            HEX1['corners'][2],
+            HEX1['corners'][3],
+            HEX1['center'],
+            HEX1['corners'][4],
+            HEX1['corners'][5],
+            HEX1['center'],
+        ],
+        distances=[0, 120, 120, 130, 999, 140, 150, 999, 160],
+    )
 
     expected = [
-        {'distances': [2, 3, 5, 6, 8], 'snapped_coordinates': snapped_chunk_coordinates},
-        {'distances': [10, 12, 13, 15, 16, 18], 'snapped_coordinates': default_chunk_coordinates[1]},
+        {
+            'distances': [120, 130, 140, 150, 160],
+            'snapped_coordinates': {
+                'center': HEX1['center'],
+                'corners': [
+                    HEX1['corners'][1],
+                    HEX1['corners'][2],
+                    HEX1['corners'][3],
+                    HEX1['corners'][4],
+                    HEX1['corners'][5],
+                ],
+            },
+        },
     ]
-    recieved = extract_data_from_ors_result(json)
+
+    recieved = extract_data_from_ors_result(path_response)
 
     assert expected == recieved
 
@@ -193,6 +433,30 @@ def test_calculate_detour_factors():
     expected_result = [np.float64(1.8221085635843355), np.float64(9.080471601313818)]
 
     assert result == expected_result
+
+
+def test_calculate_detour_factors_with_unroutable_corner():
+    chunk_distances = [
+        {
+            'distances': [110, 120, 130, 140, 150, 160],
+            'snapped_coordinates': HEX1,
+        },
+        {
+            'distances': [210, 220, np.inf, 240, 250, np.inf],
+            'snapped_coordinates': {
+                'center': HEX2['center'],
+                'corners': [HEX2['corners'][0], HEX2['corners'][1], None, HEX2['corners'][3], HEX2['corners'][4], None],
+            },
+        },
+    ]
+
+    result = calculate_detour_factors(
+        chunk_distances, transform=Transformer.from_crs(crs_from='EPSG:4326', crs_to='EPSG:25832')
+    )
+
+    expected_result = [np.float64(1.35), np.inf]
+
+    np.testing.assert_array_almost_equal(result, expected_result, decimal=2)
 
 
 def test_exclude_ferries():

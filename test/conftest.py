@@ -1,9 +1,9 @@
-import json
-
 import numpy as np
 import pandas as pd
 import pytest
+import responses
 import shapely
+from responses.registries import OrderedRegistry
 
 from mobility_tools.ors_settings import ORSSettings
 
@@ -63,12 +63,6 @@ def expected_detour_factors() -> pd.DataFrame:
 
 
 @pytest.fixture
-def ors_directions_responses() -> dict:
-    with open('test/resources/ors_directions_responses.json', 'r') as file:
-        return json.load(file)
-
-
-@pytest.fixture
 def snapping_response():
     return {
         'locations': [
@@ -84,8 +78,6 @@ def snapping_response():
 
 
 @pytest.fixture
-def large_mock_ors_directions_api(ordered_responses_mock, ors_directions_responses):
-    for response in ors_directions_responses['responses']:
-        ordered_responses_mock.add(
-            method='POST', url='https://api.openrouteservice.org/v2/directions/foot-walking', json=response
-        )
+def responses_mock():
+    with responses.RequestsMock(registry=OrderedRegistry) as rsps:
+        yield rsps

@@ -3,7 +3,7 @@
 */__pycache__
 *.pyc
 .idea/
-
+.coverage
 
 mobility_tools/utils/__pycache__/exceptions.cpython-311.pyc
 .env.ors
