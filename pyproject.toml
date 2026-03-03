@@ -32,7 +32,7 @@ pre-commit = "^4.3.0"
 vcrpy = {version = "^8.0.0", markers = "platform_python_implementation !='PyPy'"}
 pytest-cov = "^7.0.0"
 approvaltests = "^16.0.0"
-responses = "^0.25.8"
+responses = "^0.26.0"
 pytest = "^9.0.0"
 
 [tool.ruff]
