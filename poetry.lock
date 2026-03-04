@@ -31,33 +31,33 @@ files = [
 
 [[package]]
 name = "approval-utilities"
-version = "16.3.0"
+version = "17.2.0"
 description = "Utilities for your production code that work well with approvaltests"
 optional = false
 python-versions = ">=3.8"
 groups = ["test"]
 markers = "sys_platform == \"win32\" or sys_platform == \"emscripten\" or sys_platform != \"win32\" and sys_platform != \"emscripten\""
 files = [
-    {file = "approval_utilities-16.3.0-py3-none-any.whl", hash = "sha256:f815b82798aeb2b7979d41cf330ee2b7a34a943a8f68852bea8b04dba3acae14"},
-    {file = "approval_utilities-16.3.0.tar.gz", hash = "sha256:44ae5f81db03778f2ad842cd1a0724b5c7328d4052d8e067d2f6b1e3c9db95b6"},
+    {file = "approval_utilities-17.2.0-py3-none-any.whl", hash = "sha256:5b7b4ba4ed364beb33b10425f6a8e0a75816fb1dae7e61eb6df1e43cb96c3eec"},
+    {file = "approval_utilities-17.2.0.tar.gz", hash = "sha256:c8aa6494946811a89bf5d3292f9c39ad9b4b7e66ef78e5898e57e9401a6283fb"},
 ]
 
 [[package]]
 name = "approvaltests"
-version = "16.3.0"
+version = "17.2.0"
 description = "Assertion/verification library to aid testing"
 optional = false
 python-versions = ">=3.8"
 groups = ["test"]
 markers = "sys_platform == \"win32\" or sys_platform == \"emscripten\" or sys_platform != \"win32\" and sys_platform != \"emscripten\""
 files = [
-    {file = "approvaltests-16.3.0-py3-none-any.whl", hash = "sha256:e15f2ae86a737278ab495c0aaf9ef815a456bdbe8f1b9e0af7058d583f588509"},
-    {file = "approvaltests-16.3.0.tar.gz", hash = "sha256:6b7fe840c788b724ed4c96129e2db9961eb662df4942d2aab6d291e767e84a9b"},
+    {file = "approvaltests-17.2.0-py3-none-any.whl", hash = "sha256:1f829865f0cf6d7a7d0adc9eee0fa42181408d51984ad4664e5454f5ac081be6"},
+    {file = "approvaltests-17.2.0.tar.gz", hash = "sha256:a2dc356268cfba388d188367230d7af8387925718c742374db22369ea412f163"},
 ]
 
 [package.dependencies]
 allpairspy = ">=2.1.0"
-approval_utilities = "16.3.0"
+approval_utilities = "17.2.0"
 beautifulsoup4 = ">=4.4.0"
 empty-files = ">=0.0.3"
 mock = ">=5.1.0"
@@ -1866,4 +1866,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "~=3.13"
-content-hash = "e88bae04194651d35450b78f8d8816a0958a73d799c36d4249f10dd43d8400ea"
+content-hash = "75b203800d50ef04982d9e5256e71bb9bb9c7495001f3359abb53239d7368222"
