@@ -25,15 +25,14 @@ dependencies = [
 [tool.poetry]
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^9.0.0"
 pre-commit = "^4.3.0"
 
 [tool.poetry.group.test.dependencies]
 vcrpy = {version = "^8.0.0", markers = "platform_python_implementation !='PyPy'"}
 pytest-cov = "^7.0.0"
-approvaltests = "17.2.0"
 responses = "^0.26.0"
-pytest = "^9.0.0"
+approvaltests = "17.2.1"
+pytest = "^9.0.2"
 
 [tool.ruff]
 line-length = 120
