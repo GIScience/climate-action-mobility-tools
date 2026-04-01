@@ -7,7 +7,7 @@ from pyproj import Transformer
 from responses import RequestsMock, matchers
 from vcr import use_cassette
 
-from mobility_tools.detour_factors import (
+from mobility_tools.detour_factors.detour_factors import (
     _PathResponse,
     calculate_detour_factors,
     create_waypoint_path,
@@ -17,7 +17,7 @@ from mobility_tools.detour_factors import (
     get_detour_factors,
     ors_request,
 )
-from mobility_tools.ors_settings import ORSSettings
+from mobility_tools.settings import ORSSettings
 
 # Hexagons with 100m distances to points, in UTM CRS = EPSG:25832
 HEX1 = {

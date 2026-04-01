@@ -1,7 +1,7 @@
 import pandas as pd
 from pandas.testing import assert_series_equal
 
-from mobility_tools.utils.batching import batching
+from mobility_tools.detour_factors.batching import batching
 
 
 def test_batching():

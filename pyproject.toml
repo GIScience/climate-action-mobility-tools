@@ -5,7 +5,8 @@ description = "A library to bundle shared code between hiWalk and hiBike plugins
 authors = [
     {name = "Emily C. Wilke", email = "emily.wilke@heigit.org"},
     {name = "Satvik Parashar", email = "satvik.parashar@heigit.org"},
-    {name = "Andrzej Oleś", email = "andrzej.oles@heigit.org"}
+    {name = "Andrzej Oleś", email = "andrzej.oles@heigit.org"},
+    {name = "Gefei Kong", email = "gefei.kong@heigit.org"}
 ]
 readme = "README.md"
 requires-python = "~=3.13"
@@ -20,6 +21,10 @@ dependencies = [
     "requests-ratelimiter (>=0.9.0,<0.10.0)",
     "tqdm (>=4.67.1,<5.0.0)",
     "folium (>=0.20.0,<0.21.0)",
+    "pmtiles (>=3.5.0,<4.0.0)",
+    "pillow (>=12.1.0,<13.0.0)",
+    "async-pmtiles (>=0.1.0,<0.2.0)",
+    "obstore (>=0.8.2,<0.9.0)",
 ]
 
 [tool.poetry]

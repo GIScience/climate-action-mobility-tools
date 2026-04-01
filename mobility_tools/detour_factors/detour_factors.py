@@ -1,7 +1,6 @@
 import logging
 import re
 from dataclasses import dataclass
-from typing import TypeAlias
 
 import geopandas as gpd
 import h3pandas
@@ -13,14 +12,12 @@ import shapely
 from pyproj import Transformer
 from tqdm import tqdm
 
-from mobility_tools.ors_settings import ORSSettings
-from mobility_tools.utils.batching import batching
-from mobility_tools.utils.snapping import snap_batched_records
+from mobility_tools.detour_factors.batching import batching
+from mobility_tools.detour_factors.snapping import snap_batched_records
+from mobility_tools.settings import ORSSettings
+from mobility_tools.utils import Coordinate
 
 log = logging.getLogger(__name__)
-
-
-Coordinate: TypeAlias = list[float]
 
 
 @dataclass

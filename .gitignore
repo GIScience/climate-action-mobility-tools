@@ -1,5 +1,9 @@
 .python-version
 .vscode
+*/__pycache__/
+**/cache/
+*.py[oc]
+
 */__pycache__
 *.pyc
 .idea/
@@ -7,4 +11,8 @@
 
 mobility_tools/utils/__pycache__/exceptions.cpython-311.pyc
 .env.ors
+.env.s3
 playground.py
+.venv/
+playgorund/
+resources/

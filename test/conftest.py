@@ -1,11 +1,14 @@
+import geopandas as gpd
 import numpy as np
 import pandas as pd
 import pytest
 import responses
 import shapely
 from responses.registries import OrderedRegistry
+from shapely import LineString
 
-from mobility_tools.ors_settings import ORSSettings
+from mobility_tools.settings import ORSSettings, S3Settings
+from mobility_tools.slope.pmtiles_utils import BoundingBox
 
 
 @pytest.fixture
@@ -81,3 +84,41 @@ def snapping_response():
 def responses_mock():
     with responses.RequestsMock(registry=OrderedRegistry) as rsps:
         yield rsps
+
+
+@pytest.fixture
+def default_s3_settings() -> S3Settings:
+    return S3Settings(
+        s3_endpoint='test.s3.endpoint',
+        s3_access_key='test',
+        s3_secret_key='test-key',
+        s3_bucket='test-bucket',
+        s3_dem_version='0.0.7',
+        s3_default_filename='planet.pmtiles',
+    )
+
+
+@pytest.fixture
+def slope_geo_bbox():
+    # across tiles (6, 32, 29) and (6, 32, 30)
+    return BoundingBox(min_lon=0, min_lat=10, max_lon=5, max_lat=15)
+
+
+@pytest.fixture
+def default_rgb_img():
+    # elev=[0, 9.9]
+    return np.array([[[128, 0, 0], [128, 9, 230]]])
+
+
+@pytest.fixture
+def default_test_slope_path():
+    path = gpd.GeoDataFrame(
+        index=[1],
+        data={'@osmId': ['way/a']},
+        geometry=[
+            LineString([[0, 0], [10, 0], [10, 10], [20, 10], [20, 30]]),
+        ],
+        crs='EPSG:25829',
+    ).to_crs('EPSG:4326')
+
+    return path

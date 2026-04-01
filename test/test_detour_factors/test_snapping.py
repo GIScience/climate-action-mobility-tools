@@ -7,7 +7,7 @@ from pandas.testing import assert_frame_equal
 from requests.exceptions import HTTPError, RetryError
 from vcr import use_cassette
 
-from mobility_tools.utils.snapping import snap_batched_records
+from mobility_tools.detour_factors.snapping import snap_batched_records
 
 
 @pytest.fixture

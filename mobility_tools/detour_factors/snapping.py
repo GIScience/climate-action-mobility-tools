@@ -6,7 +6,7 @@ from requests.adapters import HTTPAdapter
 from requests_ratelimiter import LimiterSession
 from urllib3.util import Retry
 
-from mobility_tools.ors_settings import ORSSettings
+from mobility_tools.settings import ORSSettings
 
 log = logging.getLogger(__name__)
 
