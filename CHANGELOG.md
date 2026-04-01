@@ -7,7 +7,7 @@ and this project mostly adheres to [Semantic Versioning](https://semver.org/spec
 
 ## [Unreleased](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/compare/2.0.0...main)
 
-## [2.0.0](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/releases/1.0.3) 2026-04-01
+## [2.0.0](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/releases/2.0.0) 2026-04-01
 
 ### Changed
 - update the license to LGPL 3.0 according to company guidelines
