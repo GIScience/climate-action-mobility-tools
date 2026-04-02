@@ -7,7 +7,7 @@ import numpy as np
 import obstore as obs
 from obstore.store import S3Store
 from PIL import Image
-from pmtiles.tile import Entry, zxy_to_tileid
+from pmtiles.tile import Entry, find_tile, zxy_to_tileid
 from tqdm import tqdm
 
 from mobility_tools.settings import S3Settings
@@ -27,7 +27,16 @@ log = logging.getLogger(__name__)
 def get_point_elevations(
     s3settings: S3Settings,
     points: np.ndarray[float],
+    is_smooth: bool = True,
 ) -> np.ndarray[float]:
+    """
+    Input a series of (lon, lat) points (CRS=WGS84,4326), and return their smoothed elevations.
+    :param s3settings: settings of the s3 bucket
+    :param points: 2d-array, each row is (lon, lat)
+    :param is_smooth: bool, whether to smooth the elevation
+    :return:
+        point_elevations: 1d-array, the smoothed/raw elevations of input points.
+    """
     # get groups at zoom level 6
     tile_xys_l6 = match_points_to_tiles(points, zoom=6)
     tile_names_l6 = get_l6_source(s3settings, tile_xys_l6)
@@ -39,12 +48,8 @@ def get_point_elevations(
         group_point_ids = tile_xys_l6[tile_key]  # e.g. [0,2,3,4]
         group_points = points[group_point_ids]
 
-        # get groups at corresponding highest-resolution zoom level
-        # (maybe planet.pmtile at z12 or 6-xx-xx.pmtile at higher zoom level)
-        minzoom, maxzoom, entries = asyncio.run(
-            get_subtile_info(client_store=s3settings.s3store, object_name=tilename_l6)
-        )
-        subtiles_xy = match_points_to_entries(group_points, zoom=maxzoom, minzoom=minzoom, entries=entries)
+        # match points to corresponding entries with highest zoom level
+        subtiles_xy = match_points_to_entries(group_points, tilename_l6, s3settings)
 
         # for every sub-group, get their corresponding smaller tiles
         log.debug('Processing groups of points by PMTiles at HIGHER zoom levels')
@@ -124,22 +129,26 @@ def get_pmtile_source(s3settings: S3Settings, tile_x: int, tile_y: int, zoom: in
 
 
 def match_points_to_entries(
-    points: np.ndarray[float], zoom: int, minzoom: int | None = None, entries: list[Entry] | None = None
+    points: np.ndarray[float],
+    tilename_l6: str,
+    s3settings: S3Settings,
 ) -> dict[TileKey | str, list]:
-    log.debug(f'Matching points to tiles from maxzoom level {zoom} to minzoom level {minzoom}')
+    pmtile_src = asyncio.run(ExtendedPMTilesReader.open(tilename_l6, store=s3settings.s3store))
 
-    entry_tile_ids = [entry.tile_id for entry in entries]
+    # get root_entries (all leaf directories)
+    minzoom, maxzoom, root_entries = asyncio.run(get_subtile_info(pmtile_src))
+    log.debug(f'Matching points to tiles from maxzoom level {maxzoom} to minzoom level {minzoom}')
 
-    initial_tiles_xy: dict[TileCoordinate, list[int]] = defaultdict(list)
+    initial_tiles_xy: dict[TileKey, list[int]] = defaultdict(list)
 
     # Step 1: group point indices by their tile at maxzoom
     for index, point in enumerate(points):
-        tile_zxy = TileCoordinate.from_lon_lat(lon=point[0], lat=point[1], zoom=zoom)
-        initial_tiles_xy[tile_zxy].append(index)
+        tile_zxy = TileCoordinate.from_lon_lat(lon=point[0], lat=point[1], zoom=maxzoom)
+        initial_tiles_xy[TileKey(**tile_zxy.__dict__)].append(index)
 
     # Step 2: walk zoom levels downward, merging unmatched groups each level
     tiles_xy = find_entry_from_all_potential_tiles(
-        initial_tiles_xy, from_zoom=zoom, to_zoom=minzoom, entry_tile_ids=entry_tile_ids
+        initial_tiles_xy, from_zoom=maxzoom, to_zoom=minzoom, root_entries=root_entries, pmtile_src=pmtile_src
     )
 
     # Step 3: update the tile info of points at planet.pmtiles
@@ -154,7 +163,11 @@ def match_points_to_entries(
 
 
 def find_entry_from_all_potential_tiles(
-    pending_tiles: dict[TileCoordinate, list], from_zoom: int, to_zoom: int, entry_tile_ids: list[int]
+    pending_tiles: dict[TileKey, list],
+    from_zoom: int,
+    to_zoom: int,
+    root_entries: list[Entry],
+    pmtile_src: ExtendedPMTilesReader,
 ) -> dict[TileKey, list]:
     result: dict[TileKey, list[int]] = defaultdict(list)
     fallback_indices: list[int] = []  # points that never matched
@@ -163,22 +176,26 @@ def find_entry_from_all_potential_tiles(
         if not pending_tiles:
             break
 
-        next_pending: dict[TileCoordinate, list[int]] = defaultdict(list)
+        next_pending: dict[TileKey, list[int]] = defaultdict(list)
 
         # compute tile coords at current z from original maxzoom tile
         for tile, indices in pending_tiles.items():
-            dz = from_zoom - temp_zoom
-            cx, cy = tile.tile_x >> dz, tile.tile_y >> dz
-            tile_id = zxy_to_tileid(temp_zoom, cx, cy)
+            tile_id = zxy_to_tileid(tile.zoom, tile.tile_x, tile.tile_y)
 
-            if tile_id in entry_tile_ids:
-                key = TileKey(zoom=temp_zoom, tile_x=cx, tile_y=cy)
-                result[key].extend(indices)
+            matched_root_entry = find_tile(root_entries, tile_id)
+            if matched_root_entry.run_length > 0:  # no leaf directory
+                is_exist = tile_id == matched_root_entry.tile_id
+            else:  # search leaf dicrectory
+                _, leaf_entries_tile_ids = asyncio.run(get_leaf_entries(pmtile_src, query_entry=matched_root_entry))
+                is_exist = tile_id in leaf_entries_tile_ids
+
+            if is_exist:
+                result[tile].extend(indices)
             else:
                 if temp_zoom == to_zoom:  # exhausted all zoom levels — falls back to planet.pmtiles
                     fallback_indices.extend(indices)
                 else:  # merge into parent tile group for next iteration
-                    parent = TileCoordinate(zoom=temp_zoom - 1, tile_x=cx >> 1, tile_y=cy >> 1)
+                    parent = TileKey(zoom=temp_zoom - 1, tile_x=tile.tile_x >> 1, tile_y=tile.tile_y >> 1)
                     next_pending[parent].extend(indices)
 
         pending_tiles = next_pending
@@ -189,10 +206,15 @@ def find_entry_from_all_potential_tiles(
     return result
 
 
-async def get_subtile_info(client_store: S3Store, object_name: str) -> tuple[int, int, list[Entry]]:
-    src = await ExtendedPMTilesReader.open(object_name, store=client_store)
+async def get_subtile_info(src: ExtendedPMTilesReader) -> tuple[int, int, list[Entry]]:
     entries = await src.load_root_entries()
     return src.minzoom, src.maxzoom, entries
+
+
+async def get_leaf_entries(src: ExtendedPMTilesReader, query_entry: Entry) -> tuple[list[Entry], list[int]]:
+    leaf_entries = await src.load_leaf_entries(query_entry)
+    leaf_entries_tile_ids = [entry.tile_id for entry in leaf_entries]
+    return leaf_entries, leaf_entries_tile_ids
 
 
 async def load_sub_pmtiles(

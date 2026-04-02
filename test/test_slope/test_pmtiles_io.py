@@ -1,14 +1,16 @@
 # Assuming these are the exception types your code uses
 import asyncio
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import geopandas as gpd
 import numpy as np
 import pytest
 from obstore.store import LocalStore
 from PIL import Image
+from pmtiles.tile import Entry
 
 from mobility_tools.slope.pmtiles_io import (
+    find_entry_from_all_potential_tiles,
     get_l6_source,
     get_pmtile_source,
     get_point_elevations,
@@ -70,6 +72,50 @@ def default_points_tiles_bounds(default_points):
 
 
 @pytest.fixture
+def mock_pmtile_reader(default_local_store):
+    fake_root_entries = [
+        Entry(tile_id=79385941, offset=0, length=9993, run_length=0),
+        Entry(tile_id=79390041, offset=9993, length=10170, run_length=0),
+        Entry(tile_id=79394137, offset=9993, length=10170, run_length=0),
+        Entry(tile_id=317543771, offset=100, length=200, run_length=0),  # z14 of first entry
+    ]
+
+    mock_reader = AsyncMock()
+    mock_reader.load_leaf_entries = AsyncMock()
+
+    mock_reader.minzoom = 6
+    mock_reader.maxzoom = 16
+    mock_reader._root_entries = fake_root_entries
+    mock_reader._load_leaf_entries = {
+        79385941: [
+            Entry(tile_id=79385941, offset=0, length=9993, run_length=1),
+            Entry(tile_id=79385942, offset=0, length=9993, run_length=1),
+        ],
+        79390041: [
+            Entry(tile_id=79390041, offset=9993, length=10170, run_length=1),
+            Entry(tile_id=79390042, offset=9993, length=10170, run_length=1),
+        ],
+        79394137: [
+            Entry(tile_id=79394137, offset=9993, length=10170, run_length=1),
+            Entry(tile_id=79394138, offset=9993, length=10170, run_length=1),
+        ],
+        317543771: [
+            Entry(tile_id=317543771, offset=0, length=9993, run_length=1),
+        ],
+    }
+
+    async def fake_load_leaf_entries(entry: Entry):
+        # Look up by tile_id in the dict
+        result = mock_reader._load_leaf_entries.get(entry.tile_id, [])
+        return result
+
+    # Attach the fake async function
+    mock_reader.load_leaf_entries = AsyncMock(side_effect=fake_load_leaf_entries)
+
+    return mock_reader
+
+
+@pytest.fixture
 def default_points_tilexy_l6():
     return {
         TileKey(zoom=6, tile_x=32, tile_y=30): [0, 2],
@@ -93,13 +139,13 @@ def mock_values_for_get_grouped_points_elevations(
 ):
     rgb_img_2x2 = np.concatenate([default_rgb_img, default_rgb_img[:, ::-1, :]], axis=0).astype(np.uint8)
 
-    async def mock_get_subtile_info(client_store, object_name):
-        return 10, 12, []
+    def match_points_to_entries(points, tilename_l6, s3settings):
+        return {TileKey(zoom=12, tile_x=0, tile_y=0): range(len(points))}
 
     def mock_rgb_img(file_pointer):
         return Image.fromarray(rgb_img_2x2)
 
-    monkeypatch.setattr('mobility_tools.slope.pmtiles_io.get_subtile_info', mock_get_subtile_info)
+    monkeypatch.setattr('mobility_tools.slope.pmtiles_io.match_points_to_entries', match_points_to_entries)
     monkeypatch.setattr('PIL.Image.open', mock_rgb_img)
 
 
@@ -166,6 +212,42 @@ def test_match_points_to_tiles(default_points, default_points_tilexy_l6):
     pois_tiles_xy = match_points_to_tiles(default_points, zoom=6)
 
     assert pois_tiles_xy == default_points_tilexy_l6
+
+
+def test_find_entry_from_all_potential_tiles(mock_pmtile_reader):
+    pending_tile_ids = [
+        TileKey(zoom=zoom, tile_x=x, tile_y=y)
+        for zoom, x, y in [
+            [15, 17404, 11258],  # zoom 13-79385942 (1), with efficient leaf entry
+            [15, 17404, 11256],  # zoom 14-317543771 (4), with efficient leaf entry
+            [15, 17404, 10992],  # zoom 13-79390042 (2), with efficient leaf entry,
+            [15, 17144, 10992],  # zoom 13-79394138 (3), no efficient leaf entry
+        ]
+    ]  # corresponds to 6-33-21
+
+    input_pending_tiles = {
+        pending_tile_ids[0]: [0, 2],
+        pending_tile_ids[1]: [3, 4],
+        pending_tile_ids[2]: [1],
+        pending_tile_ids[3]: [5],
+    }
+
+    result_tile_info = find_entry_from_all_potential_tiles(
+        input_pending_tiles,
+        from_zoom=15,
+        to_zoom=13,
+        root_entries=mock_pmtile_reader._root_entries,
+        pmtile_src=mock_pmtile_reader,
+    )
+
+    expected_tile_info = {
+        TileKey(zoom=14, tile_x=8702, tile_y=5628): [3, 4],
+        TileKey(zoom=13, tile_x=4351, tile_y=2814): [0, 2],
+        TileKey(zoom=13, tile_x=4351, tile_y=2748): [1],
+        'unassigned_points': [5],
+    }
+
+    assert result_tile_info == expected_tile_info
 
 
 def test_get_l6_source(default_s3_settings, default_points_tilexy_l6, mock_get_pmtile_source):
