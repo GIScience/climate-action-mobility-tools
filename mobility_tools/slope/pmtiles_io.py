@@ -27,7 +27,6 @@ log = logging.getLogger(__name__)
 def get_point_elevations(
     s3settings: S3Settings,
     points: np.ndarray[float],
-    is_smooth: bool = True,
 ) -> np.ndarray[float]:
     """
     Input a series of (lon, lat) points (CRS=WGS84,4326), and return their smoothed elevations.
@@ -49,7 +48,7 @@ def get_point_elevations(
         group_points = points[group_point_ids]
 
         # match points to corresponding entries with highest zoom level
-        subtiles_xy = match_points_to_entries(group_points, tilename_l6, s3settings)
+        subtiles_xy = asyncio.run(match_points_to_entries(group_points, tilename_l6, s3settings))
 
         # for every sub-group, get their corresponding smaller tiles
         log.debug('Processing groups of points by PMTiles at HIGHER zoom levels')
@@ -128,15 +127,15 @@ def get_pmtile_source(s3settings: S3Settings, tile_x: int, tile_y: int, zoom: in
     return object_name
 
 
-def match_points_to_entries(
+async def match_points_to_entries(
     points: np.ndarray[float],
     tilename_l6: str,
     s3settings: S3Settings,
 ) -> dict[TileKey | str, list]:
-    pmtile_src = asyncio.run(ExtendedPMTilesReader.open(tilename_l6, store=s3settings.s3store))
+    pmtile_src = await ExtendedPMTilesReader.open(tilename_l6, store=s3settings.s3store)
 
     # get root_entries (all leaf directories)
-    minzoom, maxzoom, root_entries = asyncio.run(get_subtile_info(pmtile_src))
+    minzoom, maxzoom, root_entries = await get_subtile_info(pmtile_src)
     log.debug(f'Matching points to tiles from maxzoom level {maxzoom} to minzoom level {minzoom}')
 
     initial_tiles_xy: dict[TileKey, list[int]] = defaultdict(list)
@@ -147,7 +146,7 @@ def match_points_to_entries(
         initial_tiles_xy[TileKey(**tile_zxy.__dict__)].append(index)
 
     # Step 2: walk zoom levels downward, merging unmatched groups each level
-    tiles_xy = find_entry_from_all_potential_tiles(
+    tiles_xy = await find_entry_from_all_potential_tiles(
         initial_tiles_xy, from_zoom=maxzoom, to_zoom=minzoom, root_entries=root_entries, pmtile_src=pmtile_src
     )
 
@@ -162,7 +161,7 @@ def match_points_to_entries(
     return tiles_xy
 
 
-def find_entry_from_all_potential_tiles(
+async def find_entry_from_all_potential_tiles(
     pending_tiles: dict[TileKey, list],
     from_zoom: int,
     to_zoom: int,
@@ -186,7 +185,7 @@ def find_entry_from_all_potential_tiles(
             if matched_root_entry.run_length > 0:  # no leaf directory
                 is_exist = tile_id == matched_root_entry.tile_id
             else:  # search leaf dicrectory
-                _, leaf_entries_tile_ids = asyncio.run(get_leaf_entries(pmtile_src, query_entry=matched_root_entry))
+                _, leaf_entries_tile_ids = await get_leaf_entries(pmtile_src, query_entry=matched_root_entry)
                 is_exist = tile_id in leaf_entries_tile_ids
 
             if is_exist:

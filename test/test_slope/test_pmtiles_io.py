@@ -139,7 +139,7 @@ def mock_values_for_get_grouped_points_elevations(
 ):
     rgb_img_2x2 = np.concatenate([default_rgb_img, default_rgb_img[:, ::-1, :]], axis=0).astype(np.uint8)
 
-    def match_points_to_entries(points, tilename_l6, s3settings):
+    async def match_points_to_entries(points, tilename_l6, s3settings):
         return {TileKey(zoom=12, tile_x=0, tile_y=0): range(len(points))}
 
     def mock_rgb_img(file_pointer):
@@ -232,12 +232,14 @@ def test_find_entry_from_all_potential_tiles(mock_pmtile_reader):
         pending_tile_ids[3]: [5],
     }
 
-    result_tile_info = find_entry_from_all_potential_tiles(
-        input_pending_tiles,
-        from_zoom=15,
-        to_zoom=13,
-        root_entries=mock_pmtile_reader._root_entries,
-        pmtile_src=mock_pmtile_reader,
+    result_tile_info = asyncio.run(
+        find_entry_from_all_potential_tiles(
+            input_pending_tiles,
+            from_zoom=15,
+            to_zoom=13,
+            root_entries=mock_pmtile_reader._root_entries,
+            pmtile_src=mock_pmtile_reader,
+        )
     )
 
     expected_tile_info = {
