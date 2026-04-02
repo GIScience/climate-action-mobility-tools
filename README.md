@@ -33,7 +33,3 @@ slope.get_paths_slopes(paths, s3settings)
 ```
 This will use elevation pmtiles in s3storage to calculate slope for the paths in `paths` as a percentage.
 Note that due to the discontinous nature of raster elevation data, there might be some small error depending on the exact positon of the path in reference to the tiles and pixels of the tile.
-
-## License
-This project is licensed under the GNU AFFERO GENERAL PUBLIC LICENSE Version 3
-

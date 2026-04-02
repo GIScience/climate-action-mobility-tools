@@ -7,6 +7,9 @@ and this project mostly adheres to [Semantic Versioning](https://semver.org/spec
 
 ## [Unreleased](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/compare/2.0.0...main)
 
+### Fix
+- remove wrong licensing information from the README.md
+
 ## [2.0.0](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/releases/2.0.0) 2026-04-01
 
 ### Changed
