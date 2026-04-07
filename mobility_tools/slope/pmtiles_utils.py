@@ -1,12 +1,12 @@
 import math
 from dataclasses import dataclass
-from typing import Self, TypeAlias
+from typing import Self
 
 import numpy as np
 from async_pmtiles import PMTilesReader as aiopmReader
 from pmtiles.tile import Entry, deserialize_directory
 
-Coordinate: TypeAlias = tuple[float, float]
+from mobility_tools.utils import Coordinate
 
 
 class ExtendedPMTilesReader(aiopmReader):
