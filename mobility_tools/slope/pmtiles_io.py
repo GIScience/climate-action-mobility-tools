@@ -1,6 +1,7 @@
 import asyncio
 import logging
 from collections import defaultdict
+from collections.abc import Buffer
 from io import BytesIO
 
 import numpy as np
@@ -20,14 +21,15 @@ from mobility_tools.slope.pmtiles_utils import (
     rgb_to_elevation,
 )
 from mobility_tools.utils import Coordinate
+from mobility_tools.utils.exceptions import NoTileDataError, TileNotFoundError
 
 log = logging.getLogger(__name__)
 
 
 def get_point_elevations(
     s3settings: S3Settings,
-    points: np.ndarray[float],
-) -> np.ndarray[float]:
+    points: np.ndarray,
+) -> np.ndarray:
     """
     Input a series of (lon, lat) points (CRS=WGS84,4326), and return their smoothed elevations.
     :param s3settings: settings of the s3 bucket
@@ -84,7 +86,7 @@ def get_point_elevations(
     return point_smooth_elevations
 
 
-def match_points_to_tiles(points: np.ndarray[float], zoom: int, minzoom: int | None = None) -> dict[TileKey, list]:
+def match_points_to_tiles(points: np.ndarray, zoom: int, minzoom: int | None = None) -> dict[TileKey, list]:
     """
     Match/group points to corresponding tiles at specified zoom level.
     Returns:
@@ -128,10 +130,10 @@ def get_pmtile_source(s3settings: S3Settings, tile_x: int, tile_y: int, zoom: in
 
 
 async def match_points_to_entries(
-    points: np.ndarray[float],
+    points: np.ndarray,
     tilename_l6: str,
     s3settings: S3Settings,
-) -> dict[TileKey | str, list]:
+) -> dict[TileKey, list]:
     pmtile_src = await ExtendedPMTilesReader.open(tilename_l6, store=s3settings.s3store)
 
     # get root_entries (all leaf directories)
@@ -153,12 +155,12 @@ async def match_points_to_entries(
     # Step 3: update the tile info of points at planet.pmtiles
     #   Note: 12 is the maxzoom level of planet.pmtiles
     if 'unassigned_points' in tiles_xy:
-        planet_points_idx = tiles_xy.pop('unassigned_points')
+        planet_points_idx: list = tiles_xy.pop('unassigned_points')
         planet_tiles_xy = match_points_to_tiles(points[planet_points_idx], zoom=12)
 
-        tiles_xy.update(planet_tiles_xy)
+        tiles_xy.update(planet_tiles_xy)  # type: ignore
 
-    return tiles_xy
+    return tiles_xy  # type: ignore this will have been converted to a dict with no string entries
 
 
 async def find_entry_from_all_potential_tiles(
@@ -167,8 +169,8 @@ async def find_entry_from_all_potential_tiles(
     to_zoom: int,
     root_entries: list[Entry],
     pmtile_src: ExtendedPMTilesReader,
-) -> dict[TileKey, list]:
-    result: dict[TileKey, list[int]] = defaultdict(list)
+) -> dict[TileKey | str, list]:
+    result: dict[TileKey | str, list[int]] = defaultdict(list)
     fallback_indices: list[int] = []  # points that never matched
 
     for temp_zoom in range(from_zoom, to_zoom - 1, -1):
@@ -182,6 +184,8 @@ async def find_entry_from_all_potential_tiles(
             tile_id = zxy_to_tileid(tile.zoom, tile.tile_x, tile.tile_y)
 
             matched_root_entry = find_tile(root_entries, tile_id)
+            if matched_root_entry is None:
+                raise TileNotFoundError()
             if matched_root_entry.run_length > 0:  # no leaf directory
                 tile_exists = tile_id == matched_root_entry.tile_id
             else:  # search leaf dicrectory
@@ -222,8 +226,8 @@ async def load_sub_pmtiles(
     maxzoom: int | None,
     tile_x: int | None = None,
     tile_y: int | None = None,
-    lonlat: Coordinate | None = None,
-) -> tuple[bytes, BoundingBox]:
+    coordinate: Coordinate | None = None,
+) -> tuple[Buffer, BoundingBox]:
     """
     Load a tile from a PMTiles file, and return the tile data and its geographical bounds.
     Args:
@@ -233,22 +237,27 @@ async def load_sub_pmtiles(
     - tile_x, tile_y: The x and y indices of the tile to load. Used when maxzoom is not None.
     - lon, lat: longitude and latitude/ If maxzoom is None,  the corresponding tile indices at maxzoom will be calculated.
     """
+
+    src = await ExtendedPMTilesReader.open(object_name, store=client_store)
+
     # todo: return dict instead of tuple
     if maxzoom is not None:
         assert tile_x is not None and tile_y is not None, ValueError(
             'When maxzoom is provided, tile_x and tile_y must also be provided'
         )
     else:
-        assert lonlat is not None, ValueError(
+        assert coordinate is not None, ValueError(
             'When maxzoom is not provided, lon and lat must be provided to calculate tile indices'
         )
 
-    src = await ExtendedPMTilesReader.open(object_name, store=client_store)
-    if maxzoom is None:  # get from planet pmtile
+        # if maxzoom is None we get the source from planet tile
         maxzoom = src.maxzoom
-        tile_zxy = TileCoordinate.from_lon_lat(lon=lonlat[0], lat=lonlat[1], zoom=maxzoom)
+        tile_zxy = TileCoordinate.from_lon_lat(lon=coordinate[0], lat=coordinate[1], zoom=maxzoom)
         tile_x, tile_y = tile_zxy.tile_x, tile_zxy.tile_y
+
     data = await src.get_tile(z=maxzoom, x=tile_x, y=tile_y)
+    if data is None:
+        raise NoTileDataError(f'No data in Tile at {maxzoom}')
 
     # Get tile bounds
     lon_min, lat_max = TileCoordinate.to_lon_lat(TileCoordinate(zoom=maxzoom, tile_x=tile_x, tile_y=tile_y))

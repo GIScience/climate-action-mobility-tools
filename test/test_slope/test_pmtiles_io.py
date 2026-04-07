@@ -185,26 +185,26 @@ def test_load_sub_pmtiles_tilexy(default_local_store, default_local_pmtile_objec
     upper_right_coords = [tile_bounds.max_lon, tile_bounds.max_lat]
     expected_coords = [105.7324218, -10.4013775]
 
-    assert len(data) == 66442
+    assert len(data) == 66442  # type: ignore
     assert np.allclose(upper_right_coords, expected_coords, rtol=1e-6)
 
 
 def test_load_sub_pmtiles_lonlat(default_local_store, default_local_pmtile_object):
-    lonlat = (105.72948, -10.40439)  # first point of default_pathway
+    coordinate = (105.72948, -10.40439)  # first point of default_pathway
 
     data, tile_bounds = asyncio.run(
         load_sub_pmtiles(
             default_local_store.s3store,
             default_local_pmtile_object,
             maxzoom=None,
-            lonlat=lonlat,
+            coordinate=coordinate,
         )
     )
 
     upper_right_coords = [tile_bounds.max_lon, tile_bounds.max_lat]
     expected_coords = [105.7324218, -10.4013775]
 
-    assert len(data) == 52
+    assert len(data) == 52  # type: ignore
     assert np.allclose(upper_right_coords, expected_coords, rtol=1e-6)
 
 
