@@ -13,7 +13,7 @@ class ExtendedPMTilesReader(aiopmReader):
     _root_entries: list[Entry] = None
     _leaf_entries_cache: dict[int, list[Entry]] = dict()  # cache leaf entries by their offset for efficiency
 
-    async def _load_directory(self, offset: int, length: int):
+    async def _load_directory(self, offset: int, length: int) -> list[Entry]:
         data = await self.store.get_range_async(
             self.path,
             start=offset,

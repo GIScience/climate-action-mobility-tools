@@ -1,14 +1,45 @@
+from pathlib import Path
+
 import numpy as np
 import pytest
+from obstore.store import LocalStore
+from pmtiles.tile import Entry
 
 from mobility_tools.slope.pmtiles_utils import (
     BoundingBox,
+    ExtendedPMTilesReader,
     TileCoordinate,
     get_pixel_coordinates,
     get_smoothed_elevation,
     get_tiles_for_bbox,
     rgb_to_elevation,
 )
+
+
+@pytest.mark.asyncio
+async def test_load_root_entries():
+    local_store = LocalStore(Path(__file__).parent.parent / 'resources')
+    src = await ExtendedPMTilesReader.open('6-50-33.pmtiles', store=local_store)
+
+    directory_data = await src.load_root_entries()
+
+    for entry in directory_data:
+        assert isinstance(entry, Entry)
+
+
+@pytest.mark.asyncio
+async def test_load_leaf_entries_cached():
+    local_store = LocalStore(Path(__file__).parent.parent / 'resources')
+    src = await ExtendedPMTilesReader.open('6-50-33.pmtiles', store=local_store)
+
+    directory_data = await src.load_root_entries()
+
+    src._leaf_entries_cache = {directory_data[0].tile_id: [directory_data[0]]}
+
+    leaf_entry_data = await src.load_leaf_entries(directory_data[0])
+
+    for entry in leaf_entry_data:
+        assert isinstance(entry, Entry)
 
 
 def test_tilecoordinate_from_lon_lat():
