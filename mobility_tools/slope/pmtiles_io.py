@@ -183,12 +183,12 @@ async def find_entry_from_all_potential_tiles(
 
             matched_root_entry = find_tile(root_entries, tile_id)
             if matched_root_entry.run_length > 0:  # no leaf directory
-                is_exist = tile_id == matched_root_entry.tile_id
+                tile_exists = tile_id == matched_root_entry.tile_id
             else:  # search leaf dicrectory
                 _, leaf_entries_tile_ids = await get_leaf_entries(pmtile_src, query_entry=matched_root_entry)
-                is_exist = tile_id in leaf_entries_tile_ids
+                tile_exists = tile_id in leaf_entries_tile_ids
 
-            if is_exist:
+            if tile_exists:
                 result[tile].extend(indices)
             else:
                 if temp_zoom == to_zoom:  # exhausted all zoom levels — falls back to planet.pmtiles
