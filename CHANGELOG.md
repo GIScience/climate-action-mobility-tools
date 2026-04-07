@@ -9,6 +9,7 @@ and this project mostly adheres to [Semantic Versioning](https://semver.org/spec
 
 ### Fix
 - remove wrong licensing information from the README.md
+- query entires at leaf directories correctly according to pmtiles standard v3
 
 ## [2.0.0](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/releases/2.0.0) 2026-04-01
 
