@@ -29,6 +29,7 @@ async def test_load_root_entries():
 
 @pytest.mark.asyncio
 async def test_load_leaf_entries_cached():
+    # FIXME this same test should exist for non-cached leaf entries, but needs a small pmtiles file with leaf directories
     local_store = LocalStore(Path(__file__).parent.parent / 'resources')
     src = await ExtendedPMTilesReader.open('6-50-33.pmtiles', store=local_store)
 
