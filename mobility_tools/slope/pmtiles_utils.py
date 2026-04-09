@@ -6,11 +6,31 @@ import numpy as np
 from async_pmtiles import PMTilesReader as aiopmReader
 from pmtiles.tile import Entry, deserialize_directory
 
-from mobility_tools.utils import Coordinate
+from mobility_tools.utils import LonLat
 
 
 class ExtendedPMTilesReader(aiopmReader):
     _root_entries: list[Entry] = None
+    _leaf_entries_cache: dict[int, list[Entry]] = dict()  # cache leaf entries by their offset for efficiency
+
+    async def _load_directory(self, offset: int, length: int) -> list[Entry]:
+        data = await self.store.get_range_async(
+            self.path,
+            start=offset,
+            length=length,
+        )
+        return deserialize_directory(data)
+
+    async def load_leaf_entries(self, entry: Entry) -> list[Entry]:
+        if entry.tile_id in self._leaf_entries_cache:
+            return self._leaf_entries_cache[entry.tile_id]
+
+        child_offset = self.header['leaf_directory_offset'] + entry.offset
+        child_length = entry.length
+        leaf_entries = await self._load_directory(child_offset, child_length)
+        self._leaf_entries_cache[entry.tile_id] = leaf_entries
+
+        return leaf_entries
 
     async def load_root_entries(self) -> list[Entry]:
         """
@@ -73,7 +93,7 @@ class TileCoordinate:
 
         return cls(zoom, tile_x, tile_y)
 
-    def to_lon_lat(self) -> Coordinate:
+    def to_lon_lat(self) -> LonLat:
         """
         Convert tile coordinates to longitude/latitude (top-left corner)
 
@@ -146,9 +166,9 @@ def rgb_to_elevation(img: np.ndarray) -> np.ndarray:
     return (r * 256 + g + b / 256) - 32768
 
 
-def get_point_elevation(elev: np.ndarray, tilebounds: BoundingBox, plon: float, plat: float) -> float:
+def get_point_elevation(bbox: BoundingBox, elev: np.ndarray, lon: float, lat: float) -> float:
     img_h, img_w = elev.shape
-    pixel_x, pixel_y = get_pixel_coordinates(tilebounds, img_w, img_h, lon=plon, lat=plat)
+    pixel_x, pixel_y = get_pixel_coordinates(bbox, img_w, img_h, lon=lon, lat=lat)
 
     return elev[pixel_y, pixel_x]
 

@@ -15,7 +15,7 @@ from tqdm import tqdm
 from mobility_tools.detour_factors.batching import batching
 from mobility_tools.detour_factors.snapping import snap_batched_records
 from mobility_tools.settings import ORSSettings
-from mobility_tools.utils import Coordinate
+from mobility_tools.utils import LonLat
 
 log = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class _PathResponse:
     (len(coordinates)==len(distances)+1). A coordinate value of `None` represents an unroutable point.
     """
 
-    coordinates: list[Coordinate | None]
+    coordinates: list[LonLat | None]
     distances: list[float]
 
 
@@ -125,7 +125,7 @@ def compute_distances(
     return distances
 
 
-def create_waypoint_path(chunk_coordinates: list[dict]) -> list[Coordinate]:
+def create_waypoint_path(chunk_coordinates: list[dict]) -> list[LonLat]:
     coordinates = []
     for chunk in chunk_coordinates:
         center = chunk['center']
@@ -136,7 +136,7 @@ def create_waypoint_path(chunk_coordinates: list[dict]) -> list[Coordinate]:
     return coordinates
 
 
-def ors_request(coordinates: list[Coordinate], profile: str, ors_settings: ORSSettings) -> _PathResponse:
+def ors_request(coordinates: list[LonLat], profile: str, ors_settings: ORSSettings) -> _PathResponse:
     """
     Request distances between sequential pairs of coordinates from ORS. If a point is disconnected in the network, set
     the corresponding coordinates to `None` and the distances to `np.inf`.
@@ -181,7 +181,7 @@ def ors_request(coordinates: list[Coordinate], profile: str, ors_settings: ORSSe
                 distances_to_error = path_response.distances
             else:
                 distances_to_error = []
-                coordinates_to_error: list[Coordinate | None] = [None]
+                coordinates_to_error: list[LonLat | None] = [None]
 
             route_from_error_end = coordinates[error_end_index:]
             if len(route_from_error_end) > 1:
@@ -192,7 +192,7 @@ def ors_request(coordinates: list[Coordinate], profile: str, ors_settings: ORSSe
                 distances_from_error = path_response.distances
             else:
                 distances_from_error = []
-                coordinates_from_error: list[Coordinate | None] = [None]
+                coordinates_from_error: list[LonLat | None] = [None]
 
             segment_distances = distances_to_error + [np.inf] + distances_from_error
             snapped_coordinates = coordinates_to_error + coordinates_from_error
