@@ -74,10 +74,10 @@ def default_points_tiles_bounds(default_points):
 @pytest.fixture
 def mock_pmtile_reader(default_local_store):
     fake_root_entries = [
-        Entry(tile_id=79385941, offset=0, length=9993, run_length=0),
-        Entry(tile_id=79390041, offset=9993, length=10170, run_length=0),
-        Entry(tile_id=79394137, offset=9993, length=10170, run_length=0),
-        Entry(tile_id=317543771, offset=100, length=200, run_length=0),  # z14 of first entry
+        Entry(tile_id=79385941, offset=0, length=9993, run_length=0),  # 13, 4351, 2815
+        Entry(tile_id=79390041, offset=9993, length=10170, run_length=0),  # 13, 4351, 2749
+        Entry(tile_id=79394137, offset=9993, length=10170, run_length=0),  # 13, 4287, 2749
+        Entry(tile_id=317543771, offset=100, length=200, run_length=0),  # z14 of first entry - 14, 8702, 5628
     ]
 
     mock_reader = AsyncMock()
@@ -222,6 +222,7 @@ def test_find_entry_from_all_potential_tiles(mock_pmtile_reader):
             [15, 17404, 11256],  # zoom 14-317543771 (4), with efficient leaf entry
             [15, 17404, 10992],  # zoom 13-79390042 (2), with efficient leaf entry,
             [15, 17144, 10992],  # zoom 13-79394138 (3), no efficient leaf entry
+            [15, 17404, 11264],  # zoom 13-79385940, non exist, no root entry, should be unassigned
         ]
     ]  # corresponds to 6-33-21
 
@@ -230,6 +231,7 @@ def test_find_entry_from_all_potential_tiles(mock_pmtile_reader):
         pending_tile_ids[1]: [3, 4],
         pending_tile_ids[2]: [1],
         pending_tile_ids[3]: [5],
+        pending_tile_ids[4]: [6],
     }
 
     result_tile_info = asyncio.run(
@@ -246,7 +248,7 @@ def test_find_entry_from_all_potential_tiles(mock_pmtile_reader):
         TileKey(zoom=14, tile_x=8702, tile_y=5628): [3, 4],
         TileKey(zoom=13, tile_x=4351, tile_y=2814): [0, 2],
         TileKey(zoom=13, tile_x=4351, tile_y=2748): [1],
-        'unassigned_points': [5],
+        'unassigned_points': [5, 6],
     }
 
     assert result_tile_info == expected_tile_info

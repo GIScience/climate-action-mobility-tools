@@ -21,7 +21,7 @@ from mobility_tools.slope.pmtiles_utils import (
     rgb_to_elevation,
 )
 from mobility_tools.utils import LonLat
-from mobility_tools.utils.exceptions import NoTileDataError, TileNotFoundError
+from mobility_tools.utils.exceptions import NoTileDataError
 
 log = logging.getLogger(__name__)
 
@@ -185,7 +185,11 @@ async def find_entry_from_all_potential_tiles(
 
             matched_root_entry = find_tile(root_entries, tile_id)
             if matched_root_entry is None:
-                raise TileNotFoundError()
+                log.debug(
+                    f'No matching root entry found for tile {tile} between zoom levels {from_zoom} - {to_zoom}. Give planet.pmtiles as default.'
+                )
+                fallback_indices.extend(indices)
+                continue
             if matched_root_entry.run_length > 0:  # no leaf directory
                 tile_exists = tile_id == matched_root_entry.tile_id
             else:  # search leaf dicrectory

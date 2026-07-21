@@ -7,6 +7,9 @@ and this project mostly adheres to [Semantic Versioning](https://semver.org/spec
 
 ## [Unreleased](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/compare/2.0.1...main)
 
+### Fix
+- assign points to global 30 m dem which are in low-res region of a pmtile with incomplete high-res data coverage ([#15](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/work_items/15))
+
 ## [2.0.1](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/releases/2.0.1) 2026-04-09
 
 ### Fix
