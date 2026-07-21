@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import geopandas as gpd
 import numpy as np
+import pandas as pd
 import pytest
 from obstore.store import LocalStore
 from PIL import Image
@@ -39,7 +40,7 @@ def default_pathway() -> gpd.GeoDataFrame:
 
 
 @pytest.fixture
-def default_points(slope_geo_bbox, default_pathway):
+def default_points(slope_geo_bbox, default_pathway) -> pd.DataFrame:
     dafault_way_points = default_pathway.geometry.get_coordinates()
     supplement_points = np.array(
         [
@@ -50,11 +51,11 @@ def default_points(slope_geo_bbox, default_pathway):
         ]
     )
 
-    return np.vstack((supplement_points, dafault_way_points))
+    return pd.DataFrame(np.vstack((supplement_points, dafault_way_points)), columns=['x', 'y'])
 
 
 @pytest.fixture
-def default_points_tiles_bounds(default_points):
+def default_points_tiles_bounds():
     tile_xys = [[32, 30], [32, 29], [30, 21]]
     tiles_bounds = {}
     for i in range(len(tile_xys)):
@@ -140,7 +141,7 @@ def mock_values_for_get_grouped_points_elevations(
     rgb_img_2x2 = np.concatenate([default_rgb_img, default_rgb_img[:, ::-1, :]], axis=0).astype(np.uint8)
 
     async def match_points_to_entries(points, tilename_l6, s3settings):
-        return {TileKey(zoom=12, tile_x=0, tile_y=0): range(len(points))}
+        return {TileKey(zoom=12, tile_x=0, tile_y=0): points.index.values}
 
     def mock_rgb_img(file_pointer):
         return Image.fromarray(rgb_img_2x2)
@@ -274,15 +275,17 @@ def test_get_point_elevations_tile_exist(
     mock_get_pmtile_source,
     monkeypatch,
 ):
-    add_points_christmas_island = [[105.6893, -10.42792]]
-    points_christmas_island = np.vstack([default_points[4:], add_points_christmas_island])
+    add_points_christmas_island = pd.DataFrame([[105.6893, -10.42792]], columns=['x', 'y'])
+    points_christmas_island = pd.concat(
+        [default_points.iloc[4:], add_points_christmas_island], ignore_index=True
+    )  # np.vstack([default_points[4:], add_points_christmas_island])
     smooth_elevations_result = get_point_elevations(
         default_local_store, points_christmas_island
     )  # points from default_pathway
 
     expected_start_end_elevations = [155.2, 182.8, 278.55]  # Ground truth.
 
-    assert np.allclose(smooth_elevations_result[[0, -2, -1]], expected_start_end_elevations, 1e-1)
+    assert np.allclose(smooth_elevations_result.iloc[[0, -2, -1]].values, expected_start_end_elevations, 1e-1)
 
 
 def test_get_point_elevations_tile_not_exist(
@@ -301,8 +304,8 @@ def test_get_point_elevations_tile_not_exist(
 
     monkeypatch.setattr('mobility_tools.slope.pmtiles_io.load_sub_pmtiles', mock_load_sub_pmtiles_w_nodata)
 
-    smth_elevs_result = get_point_elevations(default_local_store, default_points[:4])
+    smth_elevs_result = get_point_elevations(default_local_store, default_points.iloc[:4])
 
     expected_smth_elevs = [4.95, 0, 4.75, 0]
 
-    assert np.allclose(smth_elevs_result, expected_smth_elevs, 1e-2)
+    assert np.allclose(smth_elevs_result.values, expected_smth_elevs, 1e-2)

@@ -5,10 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project mostly adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/compare/2.0.1...main)
+## [Unreleased](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/compare/2.0.2...main)
+
+## [2.0.2](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/releases/2.0.2) 2026-07-21
 
 ### Fix
 - assign points to global 30 m dem which are in low-res region of a pmtile with incomplete high-res data coverage ([#15](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/work_items/15))
+- deliver points to `get_point_elevations` by pd.DataFrame with unique index to avoid index mismatching ([#19](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/work_items/19))
 
 ## [2.0.1](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/releases/2.0.1) 2026-04-09
 

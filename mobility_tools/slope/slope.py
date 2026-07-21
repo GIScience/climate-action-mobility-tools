@@ -33,20 +33,12 @@ def get_paths_slopes(
     paths_pts_wid = paths_lines_to_points(paths)
 
     # get elevations for points in PMTiles
-    path_smoothed_elevations = get_point_elevations(
-        s3settings, points=paths_pts_wid[['x', 'y']].values
+    paths_pts_wid['smoothed_elevation'] = get_point_elevations(
+        s3settings, points=paths_pts_wid[['x', 'y']]
     )  # todo: think again input it as pd.Series or array
 
     # reconstruct segments and calculate slope
-    paths_pts_elevations = pd.DataFrame(
-        {
-            '@osmId': paths_pts_wid['id'],
-            'smoothed_elevation': path_smoothed_elevations,
-            'x': paths_pts_wid['x'],
-            'y': paths_pts_wid['y'],
-        }
-    )
-    paths_segments = get_segments_slopes_from_points(paths_pts_elevations, estimated_utm)
+    paths_segments = get_segments_slopes_from_points(paths_pts_wid, estimated_utm)
 
     return paths_segments
 

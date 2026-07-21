@@ -17,7 +17,7 @@ def paths_lines_to_points(paths: gpd.GeoDataFrame) -> pd.DataFrame:
     path_points = []
     for _, path_row in paths.iterrows():
         x, y = path_row.geometry.xy
-        path_points.append(pd.DataFrame({'id': path_row['@osmId'], 'x': x, 'y': y}))
+        path_points.append(pd.DataFrame({'@osmId': path_row['@osmId'], 'x': x, 'y': y}))
 
     return pd.concat(path_points, ignore_index=True)
 

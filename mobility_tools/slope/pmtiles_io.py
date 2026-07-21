@@ -6,6 +6,7 @@ from io import BytesIO
 
 import numpy as np
 import obstore as obs
+import pandas as pd
 from obstore.store import S3Store
 from PIL import Image
 from pmtiles.tile import Entry, find_tile, zxy_to_tileid
@@ -28,12 +29,12 @@ log = logging.getLogger(__name__)
 
 def get_point_elevations(
     s3settings: S3Settings,
-    points: np.ndarray,
-) -> np.ndarray:
+    points: pd.DataFrame,
+) -> pd.Series:
     """
     Input a series of (lon, lat) points (CRS=WGS84,4326), and return their smoothed elevations.
     :param s3settings: settings of the s3 bucket
-    :param points: 2d-array, each row is (lon, lat)
+    :param points: dataframe includes (x, y) columns = (lon, lat)
     :param is_smooth: bool, whether to smooth the elevation
     :return:
         point_elevations: 1d-array, the smoothed/raw elevations of input points.
@@ -42,12 +43,11 @@ def get_point_elevations(
     tile_xys_l6 = match_points_to_tiles(points, zoom=6)
     tile_names_l6 = get_l6_source(s3settings, tile_xys_l6)
 
-    point_smooth_elevations_w_ids = []
     log.debug('Processing groups of points by PMTiles at zoom level 6')
     for tile_key, tilename_l6 in tqdm(tile_names_l6.items()):
         # pick up points belonging to the same pmtile file at zoom level 6
         group_point_ids = tile_xys_l6[tile_key]  # e.g. [0,2,3,4]
-        group_points = points[group_point_ids]
+        group_points = points.loc[group_point_ids]
 
         # match points to corresponding entries with highest zoom level
         subtiles_xy = asyncio.run(match_points_to_entries(group_points, tilename_l6, s3settings))
@@ -74,19 +74,14 @@ def get_point_elevations(
             # get elev
             elevations = rgb_to_elevation(img)
             for point_id in subgroup_point_ids:
-                point_lon, point_lat = group_points[point_id]
+                point_lon, point_lat = group_points.loc[point_id]['x'], group_points.loc[point_id]['y']
                 point_smoothed_elevation = get_smoothed_elevation(tile_bounds, elevations, point_lon, point_lat)
-                point_smooth_elevations_w_ids.append(
-                    [group_point_ids[point_id], point_smoothed_elevation]
-                )  # todo: Emily wants to implement it by BTreeMap (in RUST)
+                points.loc[point_id, 'elevation'] = point_smoothed_elevation
 
-    point_smooth_elevations_w_ids = np.asarray(point_smooth_elevations_w_ids)
-    point_smooth_elevations = point_smooth_elevations_w_ids[np.argsort(point_smooth_elevations_w_ids[:, 0]), 1]
-
-    return point_smooth_elevations
+    return points['elevation']
 
 
-def match_points_to_tiles(points: np.ndarray, zoom: int, minzoom: int | None = None) -> dict[TileKey, list]:
+def match_points_to_tiles(points: pd.DataFrame, zoom: int, minzoom: int | None = None) -> dict[TileKey, list]:
     """
     Match/group points to corresponding tiles at specified zoom level.
     Returns:
@@ -96,8 +91,8 @@ def match_points_to_tiles(points: np.ndarray, zoom: int, minzoom: int | None = N
     """
     tiles_xy: dict[TileKey, list[int]] = defaultdict(list)
     log.debug(f'Matching points to tiles at zoom level {zoom}')
-    for index, point in enumerate(points):
-        tile_zxy = TileCoordinate.from_lon_lat(lon=point[0], lat=point[1], zoom=zoom)
+    for index, point in points.iterrows():
+        tile_zxy = TileCoordinate.from_lon_lat(lon=point['x'], lat=point['y'], zoom=zoom)
         tile_key = TileKey(zoom=zoom, tile_x=tile_zxy.tile_x, tile_y=tile_zxy.tile_y, minzoom=minzoom)
         tiles_xy[tile_key].append(index)
 
@@ -130,7 +125,7 @@ def get_pmtile_source(s3settings: S3Settings, tile_x: int, tile_y: int, zoom: in
 
 
 async def match_points_to_entries(
-    points: np.ndarray,
+    points: pd.DataFrame,
     tilename_l6: str,
     s3settings: S3Settings,
 ) -> dict[TileKey, list]:
@@ -143,8 +138,8 @@ async def match_points_to_entries(
     initial_tiles_xy: dict[TileKey, list[int]] = defaultdict(list)
 
     # Step 1: group point indices by their tile at maxzoom
-    for index, point in enumerate(points):
-        tile_zxy = TileCoordinate.from_lon_lat(lon=point[0], lat=point[1], zoom=maxzoom)
+    for index, point in points.iterrows():
+        tile_zxy = TileCoordinate.from_lon_lat(lon=point['x'], lat=point['y'], zoom=maxzoom)
         initial_tiles_xy[TileKey(**tile_zxy.__dict__)].append(index)
 
     # Step 2: walk zoom levels downward, merging unmatched groups each level
