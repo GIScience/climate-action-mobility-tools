@@ -151,7 +151,7 @@ async def match_points_to_entries(
     #   Note: 12 is the maxzoom level of planet.pmtiles
     if 'unassigned_points' in tiles_xy:
         planet_points_idx: list = tiles_xy.pop('unassigned_points')
-        planet_tiles_xy = match_points_to_tiles(points[planet_points_idx], zoom=12)
+        planet_tiles_xy = match_points_to_tiles(points.loc[planet_points_idx], zoom=12)
 
         tiles_xy.update(planet_tiles_xy)  # type: ignore
 
