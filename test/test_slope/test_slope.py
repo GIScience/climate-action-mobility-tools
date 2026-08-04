@@ -17,13 +17,13 @@ def test_calc_slope():
     assert np.allclose(calculated_slopes, expected_slopes, equal_nan=True)
 
 
-def test_get_paths_slopes(default_test_slope_path):
+def test_get_paths_slopes(default_test_slope_path, id_col_name):
     with patch('mobility_tools.slope.slope.get_point_elevations') as mock_path_smoothed_elevs:
         mock_path_smoothed_elevs.return_value = [0, 1, 10, 5, 0]
 
-        calculated_slopes_grouped = get_paths_slopes(default_test_slope_path, s3settings=None, segment_length=None)[
-            'slope'
-        ].values
+        calculated_slopes_grouped = get_paths_slopes(
+            default_test_slope_path, s3settings=None, segment_length=None, id_col=id_col_name
+        )['slope'].values
 
     expected_slopes = np.array([10, 90, -50, -25])
 

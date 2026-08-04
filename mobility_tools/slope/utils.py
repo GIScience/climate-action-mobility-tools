@@ -13,11 +13,11 @@ def segmentize_paths(paths: gpd.GeoDataFrame, estimated_utm: CRS, segment_length
     return paths
 
 
-def paths_lines_to_points(paths: gpd.GeoDataFrame) -> pd.DataFrame:
+def paths_lines_to_points(paths: gpd.GeoDataFrame, id_col: str = '@osmId') -> pd.DataFrame:
     path_points = []
     for _, path_row in paths.iterrows():
         x, y = path_row.geometry.xy
-        path_points.append(pd.DataFrame({'@osmId': path_row['@osmId'], 'x': x, 'y': y}))
+        path_points.append(pd.DataFrame({id_col: path_row[id_col], 'x': x, 'y': y}))
 
     return pd.concat(path_points, ignore_index=True)
 

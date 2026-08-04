@@ -110,11 +110,16 @@ def default_rgb_img():
     return np.array([[[128, 0, 0], [128, 9, 230]]])
 
 
+@pytest.fixture(params=['@osmId', 'osm_id'])
+def id_col_name(request):
+    return request.param
+
+
 @pytest.fixture
-def default_test_slope_path():
+def default_test_slope_path(id_col_name):
     path = gpd.GeoDataFrame(
         index=[1],
-        data={'@osmId': ['way/a']},
+        data={id_col_name: ['way/a']},
         geometry=[
             LineString([[0, 0], [10, 0], [10, 10], [20, 10], [20, 30]]),
         ],

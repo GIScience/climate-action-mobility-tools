@@ -9,14 +9,18 @@ from mobility_tools.slope.utils import paths_lines_to_points, points_to_lines, s
 
 
 def get_paths_slopes(
-    paths: gpd.GeoDataFrame, s3settings: S3Settings, segment_length: float | None = 10.0
+    paths: gpd.GeoDataFrame,
+    s3settings: S3Settings,
+    segment_length: float | None = 10.0,
+    id_col: str = '@osmId',
 ) -> gpd.GeoDataFrame:
     """
     Calculate slope for paths segments.
     Args:
-    - paths: GeoDataFrame with LineString geometries and '@osmId'
+    - paths: GeoDataFrame with LineString geometries and OSM ID column (defined by id_col argument)
     - s3settings: S3Settings object with S3 connection settings and PMTiles info.
     - segment_length: Non-negative, non-zero length in meters for segmentizing paths. If no segmentizing is desired, supply `None`.
+    - id_col: Column name of OSM ID.
     Returns:
     - GeoDataFrame with LineString segments and their slope values.
         columns = ['@osmId', 'segment_length', 'slope', 'segment_id', 'geometry']
@@ -30,7 +34,7 @@ def get_paths_slopes(
         paths = segmentize_paths(paths, estimated_utm, segment_length)
 
     # convert paths to points to get elevations.
-    paths_pts_wid = paths_lines_to_points(paths)
+    paths_pts_wid = paths_lines_to_points(paths, id_col)
 
     # get elevations for points in PMTiles
     paths_pts_wid['smoothed_elevation'] = get_point_elevations(
@@ -38,24 +42,27 @@ def get_paths_slopes(
     )  # todo: think again input it as pd.Series or array
 
     # reconstruct segments and calculate slope
-    paths_segments = get_segments_slopes_from_points(paths_pts_wid, estimated_utm)
+    paths_segments = get_segments_slopes_from_points(paths_pts_wid, estimated_utm, id_col)
 
     return paths_segments
 
 
-def get_segments_slopes_from_points(paths_pts_elevations: pd.DataFrame, estimated_utm: CRS) -> gpd.GeoDataFrame:
+def get_segments_slopes_from_points(
+    paths_pts_elevations: pd.DataFrame, estimated_utm: CRS, id_col: str = '@osmId'
+) -> gpd.GeoDataFrame:
     """
     re-group path points to path segments, to calculate their slopes
-    :param paths_pts_elevations: DataFrame.columns = ['@osmId', 'smoothed_elevation', 'x', 'y']
+    :param paths_pts_elevations: DataFrame.columns = [id_col, 'smoothed_elevation', 'x', 'y']
     :param estimated_utm: projected crs to calculate segment length correctly (unit: meter)
+    :param id_col: Column name of OSM ID.
     :return:
         GeoDataFrame with LineString segments and their slope values.
     """
     paths_segments = []
-    for path_id, path_pts_info in paths_pts_elevations.groupby('@osmId'):
+    for path_id, path_pts_info in paths_pts_elevations.groupby(id_col):
         # Create LineString segments and calculate lengths
         segments = points_to_lines(path_pts_info[['x', 'y']].values, estimated_utm, crs='EPSG:4326', length=True)
-        segments.insert(0, '@osmId', path_id)
+        segments.insert(0, id_col, path_id)
         # Calculate slope
         segments['slope'] = calc_slope(path_pts_info['smoothed_elevation'].values, segments['segment_length'].values)
 
