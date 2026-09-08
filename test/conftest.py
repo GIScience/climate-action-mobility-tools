@@ -89,12 +89,12 @@ def responses_mock():
 @pytest.fixture
 def default_s3_settings() -> S3Settings:
     return S3Settings(
-        s3_endpoint='test.s3.endpoint',
-        s3_access_key='test',
-        s3_secret_key='test-key',
-        s3_bucket='test-bucket',
-        s3_dem_version='0.0.7',
-        s3_default_filename='planet.pmtiles',
+        elevation_s3_endpoint='test.s3.endpoint',
+        elevation_s3_access_key='test',
+        elevation_s3_secret_key='test-key',
+        elevation_s3_bucket='test-bucket',
+        dem_version='0.0.7',
+        default_filename='planet.pmtiles',
     )
 
 

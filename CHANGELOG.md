@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project mostly adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/compare/2.0.3...main)
+## [Unreleased](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/compare/3.0.0...main)
+
+## [3.0.0](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/releases/3.0.0) 2026-09-08
+
+### Changed
+- Settings in `S3_Settings` are renamed to make them less generic, and some defaults for the HeiGIT elevation storage are added ([#11](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/work_items/11))
 
 ## [2.0.3](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/releases/2.0.3) 2026-08-03
 

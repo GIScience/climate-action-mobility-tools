@@ -110,7 +110,7 @@ def get_l6_source(s3settings: S3Settings, tilexys_l6: dict[TileKey, list[int]]) 
 
 def get_pmtile_source(s3settings: S3Settings, tile_x: int, tile_y: int, zoom: int = 6) -> str:
     top_tile_name = f'6-{tile_x >> (zoom - 6)}-{tile_y >> (zoom - 6)}'
-    object_dir = f'mapterhorn/{s3settings.s3_dem_version}'
+    object_dir = f'mapterhorn/{s3settings.dem_version}'
     object_name = f'{object_dir}/{top_tile_name}.pmtiles'
 
     try:

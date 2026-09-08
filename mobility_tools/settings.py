@@ -36,28 +36,28 @@ class ORSSettings(BaseSettings):
 
 
 class S3Settings(BaseSettings):
-    s3_endpoint: str
-    s3_access_key: str
-    s3_secret_key: str
-    s3_secure: bool | None = True
-    s3_bucket: str
-    s3_dem_version: str
-    s3_default_filename: str
+    elevation_s3_endpoint: str
+    elevation_s3_access_key: str
+    elevation_s3_secret_key: str
+    elevation_s3_secure: bool = True
+    elevation_s3_bucket: str = 'heigit-highres-elevation-data'
+    dem_version: str = '0.0.8'
+    default_filename: str = 'planet.pmtiles'
 
     model_config = SettingsConfigDict(env_file='.env.s3')
 
     @cached_property
     def s3store(self) -> S3Store:
-        obstore_endpoint = self.s3_endpoint
+        obstore_endpoint = self.elevation_s3_endpoint
         if not obstore_endpoint.startswith(('http://', 'https://')):
-            scheme = 'https' if self.s3_secure else 'http'
+            scheme = 'https' if self.elevation_s3_secure else 'http'
             obstore_endpoint = f'{scheme}://{obstore_endpoint}'
 
         s3store = S3Store(
-            bucket=self.s3_bucket,
+            bucket=self.elevation_s3_bucket,
             endpoint=obstore_endpoint,
-            access_key_id=self.s3_access_key,
-            secret_access_key=self.s3_secret_key,
+            access_key_id=self.elevation_s3_access_key,
+            secret_access_key=self.elevation_s3_secret_key,
             virtual_hosted_style_request=False,
         )
 
@@ -65,4 +65,4 @@ class S3Settings(BaseSettings):
 
     @cached_property
     def obs_planet_source(self) -> str:
-        return f'mapterhorn/{self.s3_dem_version}/{self.s3_default_filename}'
+        return f'mapterhorn/{self.dem_version}/{self.default_filename}'
