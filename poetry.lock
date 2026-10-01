@@ -477,27 +477,26 @@ testing = ["pytest"]
 
 [[package]]
 name = "geopandas"
-version = "1.1.4"
+version = "1.2.0"
 description = "Geographic pandas extensions"
 optional = false
-python-versions = ">=3.10"
+python-versions = ">=3.11"
 groups = ["main"]
 files = [
-    {file = "geopandas-1.1.4-py3-none-any.whl", hash = "sha256:1a0c459cbdb1537cd154dafe6174be20d1760844b7f1c967dc8520b180f2e773"},
-    {file = "geopandas-1.1.4.tar.gz", hash = "sha256:06f2890a07e1a239047daa14b486a7c6ae5ce82dcf7405e13c46bf31f5d0dd66"},
+    {file = "geopandas-1.2.0-py3-none-any.whl", hash = "sha256:948fd57df4f713697d5cce149333c0e4714965320c9f5ffa411666c577962eba"},
+    {file = "geopandas-1.2.0.tar.gz", hash = "sha256:72425b0dec1b77122b1e00f72c2b3b91f320cf0331ae236d37e26865e8808628"},
 ]
 
 [package.dependencies]
-numpy = ">=1.24"
+numpy = ">=2"
 packaging = "*"
-pandas = ">=2.0.0"
-pyogrio = ">=0.7.2"
-pyproj = ">=3.5.0"
-shapely = ">=2.0.0"
+pandas = ">=2.2.0"
+pyogrio = ">=0.8"
+pyproj = ">=3.7.0"
+shapely = ">=2.1.0"
 
 [package.extras]
-all = ["GeoAlchemy2", "SQLAlchemy (>=2.0)", "folium", "geopy", "mapclassify (>=2.5)", "matplotlib (>=3.7)", "pointpats (>=2.5.3)", "psycopg[binary] (>=3.1.0)", "pyarrow (>=10.0.0)", "scipy", "xyzservices"]
-dev = ["codecov", "pre-commit", "pytest (>=3.1.0)", "pytest-cov", "pytest-xdist", "ruff"]
+all = ["contextily", "folium", "geoalchemy2", "geopy", "mapclassify (>=2.7)", "matplotlib (>=3.9)", "pointpats (>=2.5.3)", "psycopg[binary] (>=3.2.0)", "pyarrow (>=15.0.0)", "scipy", "sqlalchemy (>=2.0)", "xyzservices"]
 
 [[package]]
 name = "h3"
@@ -1171,14 +1170,14 @@ testing = ["coverage", "pytest", "pytest-benchmark"]
 
 [[package]]
 name = "pmtiles"
-version = "3.7.0"
+version = "3.8.1"
 description = "Library and utilities to write and read PMTiles archives - cloud-optimized archives of map tiles."
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "pmtiles-3.7.0-py3-none-any.whl", hash = "sha256:d1a7a7a166ce3c5c8756cc2c8e4b0aa55e3d854fbd4517c963de16c39b631b14"},
-    {file = "pmtiles-3.7.0.tar.gz", hash = "sha256:ed8b04d550d104c81a759c9cc07bfc5743750f62e751f840425f4b9f4bb903df"},
+    {file = "pmtiles-3.8.1-py3-none-any.whl", hash = "sha256:718561bb21f8c7dd5464fdcc3b9ad0e7b1c917be60ddfdf9a5ab56b8c67f7bde"},
+    {file = "pmtiles-3.8.1.tar.gz", hash = "sha256:0f594a61b37fca039f06162428781f76a4233f5beea94444702f0dc41f20f007"},
 ]
 
 [[package]]
