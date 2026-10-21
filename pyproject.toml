@@ -9,7 +9,7 @@ authors = [
     {name = "Gefei Kong", email = "gefei.kong@heigit.org"}
 ]
 readme = "README.md"
-requires-python = "~=3.13"
+requires-python = ">=3.13,<3.15"
 dependencies = [
     "shapely (>=2.1.1,<3.0.0)",
     "pandas (>=2.3.2,<4.0.0)",
@@ -38,7 +38,7 @@ pytest-cov = "^7.0.0"
 responses = "^0.26.0"
 pytest = "^9.0.2"
 pytest-asyncio = "^1.3.0"
-approvaltests = "^19.0.0"
+pytest-approval = "^0.18.1"
 
 [tool.ruff]
 line-length = 120
@@ -67,6 +67,9 @@ select=[
 
 [tool.coverage.run]
 omit = ["test/*" , "walkability/core/*"]
+
+[tool.pytest-approval]
+"approvals-dir"="tests/approvals"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

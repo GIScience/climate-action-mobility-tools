@@ -7,6 +7,12 @@ and this project mostly adheres to [Semantic Versioning](https://semver.org/spec
 
 ## [Unreleased](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/compare/3.0.0...main)
 
+### Changed
+- move from pytest-approvaltests to pytest-approval in testing
+
+### Fixed
+- use correct non zero indexing for ors error messages in error handling for routing ([#21](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/work_items/21))
+
 ## [3.0.0](https://gitlab.heigit.org/climate-action/utilities/mobility-tools/-/releases/3.0.0) 2026-09-08
 
 ### Changed

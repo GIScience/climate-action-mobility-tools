@@ -163,14 +163,15 @@ def ors_request(coordinates: list[LonLat], profile: str, ors_settings: ORSSettin
         message_text = error_message.get('message')
 
         if error_message.get('code') == 2009 and message_text:
-            log.debug(message_text)
+            log.warning(message_text)
 
+            # note that the numbers the ORS error message contains are not 0 indexed but start at 1
             capture = re.search(
                 '^Route could not be found - Unable to find a route between points ([0-9]*) \(.*\) and ([0-9]*) \(.*\)\.$',
                 message_text,
             )
-            error_start_index = int(capture.group(1))
-            error_end_index = int(capture.group(2))
+            error_start_index = int(capture.group(1)) - 1
+            error_end_index = int(capture.group(2)) - 1
 
             route_to_error_start = coordinates[: error_start_index + 1]
             if len(route_to_error_start) > 1:

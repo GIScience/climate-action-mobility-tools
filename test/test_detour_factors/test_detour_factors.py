@@ -2,8 +2,8 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import shapely
-from approvaltests import verify
 from pyproj import Transformer
+from pytest_approval import verify
 from responses import RequestsMock, matchers
 from vcr import use_cassette
 
@@ -149,7 +149,7 @@ def test_ors_request_route_not_found_first_link(responses_mock: RequestsMock, de
         json={
             'error': {
                 'code': 2009,
-                'message': 'Route could not be found - Unable to find a route between points 0 (0.0, 0.0) and 1 (0.0, 1.0).',
+                'message': 'Route could not be found - Unable to find a route between points 1 (0.0, 0.0) and 2 (0.0, 1.0).',
             },
         },
     )
@@ -187,7 +187,7 @@ def test_ors_request_route_not_found_middle_link(responses_mock: RequestsMock, d
         json={
             'error': {
                 'code': 2009,
-                'message': 'Route could not be found - Unable to find a route between points 1 (0.0, 1.0) and 2 (1.0, 1.0).',
+                'message': 'Route could not be found - Unable to find a route between points 2 (0.0, 1.0) and 3 (1.0, 1.0).',
             },
         },
     )
@@ -240,30 +240,41 @@ def test_ors_request_route_not_found_last_link(responses_mock: RequestsMock, def
         json={
             'error': {
                 'code': 2009,
-                'message': 'Route could not be found - Unable to find a route between points 2 (1.0, 1.0) and 3 (0.0, 0.0).',
+                'message': 'Route could not be found - Unable to find a route between points 2 (0.0, 1.0) and 3 (1.0, 1.0).',
             },
         },
     )
     responses_mock.post(
         'http://localhost:8080/ors/v2/directions/foot-walking/geojson',
-        match=[matchers.json_params_matcher({'coordinates': [a, b, c]})],
+        match=[matchers.json_params_matcher({'coordinates': [a, b]})],
         json={
             'features': [
                 {
-                    'geometry': {'coordinates': [a, b, c]},
+                    'geometry': {'coordinates': [a, b]},
                     'properties': {
-                        'way_points': [0, 1, 2],
-                        'segments': [{'distance': 1}, {'distance': 2}],
+                        'way_points': [0, 1],
+                        'segments': [{'distance': 1}],
                     },
                 }
             ]
         },
     )
+    responses_mock.post(
+        'http://localhost:8080/ors/v2/directions/foot-walking/geojson',
+        match=[matchers.json_params_matcher({'coordinates': [c, a]})],
+        status=404,
+        json={
+            'error': {
+                'code': 2009,
+                'message': 'Route could not be found - Unable to find a route between points 1 (0.0, 1.0) and 2 (1.0, 1.0).',
+            },
+        },
+    )
 
     path_response = ors_request(ors_settings=default_ors_settings, profile='foot-walking', coordinates=[a, b, c, a])
 
-    assert path_response.coordinates == [a, b, c, None]
-    assert path_response.distances == [1, 2, np.inf]
+    assert path_response.coordinates == [a, b, None, None]
+    assert path_response.distances == [1, np.inf, np.inf]
 
 
 def test_extract_data_from_ors_result():
