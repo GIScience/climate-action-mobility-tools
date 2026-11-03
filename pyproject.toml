@@ -33,7 +33,7 @@ dependencies = [
 pre-commit = "^4.3.0"
 
 [tool.poetry.group.test.dependencies]
-vcrpy = {version = "^8.0.0", markers = "platform_python_implementation !='PyPy'"}
+vcrpy = {version = "^9.0.0", markers = "platform_python_implementation !='PyPy'"}
 pytest-cov = "^7.0.0"
 responses = "^0.26.0"
 pytest = "^9.0.2"

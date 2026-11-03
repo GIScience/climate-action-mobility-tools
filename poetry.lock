@@ -1879,15 +1879,15 @@ zstd = ["backports-zstd (>=1.0.0) ; python_version < \"3.14\""]
 
 [[package]]
 name = "vcrpy"
-version = "8.3.0"
+version = "9.4.2"
 description = "Automatically mock your HTTP interactions to simplify and speed up testing"
 optional = false
-python-versions = ">=3.10"
+python-versions = ">=3.11"
 groups = ["test"]
 markers = "platform_python_implementation != \"PyPy\""
 files = [
-    {file = "vcrpy-8.3.0-py3-none-any.whl", hash = "sha256:bd66e6143746778157f00e2a922527a8d96b2fdc350be8988a45a29c843815b9"},
-    {file = "vcrpy-8.3.0.tar.gz", hash = "sha256:46d64e77e8d95e5c76c7d9a94ff05d8b38b2ae4e1d4869eb0235024b6fcb5212"},
+    {file = "vcrpy-9.4.2-py3-none-any.whl", hash = "sha256:ae6644e018e0663d4afd7cb232e029b4557ffccac2473b9ad4717f135b010b75"},
+    {file = "vcrpy-9.4.2.tar.gz", hash = "sha256:2ffc051adf50d9a83326c8d365c29929cd6788cef647326b55502b59276d443a"},
 ]
 
 [package.dependencies]
@@ -1895,7 +1895,7 @@ PyYAML = "*"
 wrapt = "*"
 
 [package.extras]
-tests = ["aiohttp", "boto3", "cryptography", "httpbin (>=0.10.3)", "httplib2", "httpx", "httpx-curl-cffi", "httpx2", "pycurl ; platform_python_implementation != \"PyPy\"", "pyreqwest ; python_version >= \"3.11\"", "pytest", "pytest-aiohttp", "pytest-asyncio", "pytest-cov", "pytest-httpbin", "requests (>=2.22.0)", "tornado", "urllib3"]
+tests = ["aiohttp", "boto3", "cryptography", "httpbin (>=0.10.3)", "httplib2", "httpx", "httpx-curl-cffi", "httpx2", "pycurl ; platform_python_implementation != \"PyPy\"", "pyreqwest", "pysocks", "pytest", "pytest-aiohttp", "pytest-asyncio", "pytest-cov", "pytest-httpbin", "requests (>=2.22.0)", "tornado", "urllib3"]
 tests-niquests = ["httpbin (>=0.10.3)", "niquests", "pytest", "pytest-aiohttp", "pytest-asyncio", "pytest-cov", "pytest-httpbin"]
 
 [[package]]
@@ -2035,4 +2035,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<3.15"
-content-hash = "dd6b0b7c01b1a7764b93503228c61577a2c945c8e1135fdee2d64b89f529e711"
+content-hash = "fa385f39b82dcf05d6993152a002cfc27373d6a5c27bfe0ca910d276ac1c9db3"
